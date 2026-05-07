@@ -69,6 +69,13 @@ export async function renderDetalheItemPage(request: FastifyRequest, reply: Fast
     return reply.status(404).send({ message: "Item não encontrado." });
   }
 
+  const modoPreco = rawItem.modo_preco ?? "sob_consulta";
+  let precoLabel = "Sob consulta";
+  if (modoPreco === "gratuito") precoLabel = "Gratuito";
+  else if (modoPreco === "fixo" && rawItem.preco != null) {
+    precoLabel = `R$ ${Number(rawItem.preco).toFixed(2).replace(".", ",")}`;
+  }
+
   const item = {
     ...rawItem,
     tipoLabel: ({
@@ -78,6 +85,10 @@ export async function renderDetalheItemPage(request: FastifyRequest, reply: Fast
       banner: "Institucional",
       link: "Link",
     } as Record<string, string>)[rawItem.tipo] ?? rawItem.tipo,
+    precoLabel,
+    isGratuito: modoPreco === "gratuito",
+    isFixo: modoPreco === "fixo",
+    isSobConsulta: modoPreco === "sob_consulta",
   };
 
   const layout = sessionUser?.tipo === "ong"

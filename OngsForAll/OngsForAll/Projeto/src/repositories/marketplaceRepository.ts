@@ -14,11 +14,13 @@ export async function createItem(params: {
   imagemUrl?: string;
   linkExterno?: string;
   statusPublicacao: "rascunho" | "pendente";
+  modoPreco?: "gratuito" | "fixo" | "sob_consulta";
+  preco?: number;
 }): Promise<number> {
   const [result]: any = await pool.query(
     `INSERT INTO marketplace_itens
-       (empresa_id, titulo, descricao, tipo, categoria_id, imagem_url, link_externo, status_publicacao)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+       (empresa_id, titulo, descricao, tipo, categoria_id, imagem_url, link_externo, status_publicacao, modo_preco, preco)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       params.empresaId,
       params.titulo,
@@ -28,6 +30,8 @@ export async function createItem(params: {
       params.imagemUrl ?? null,
       params.linkExterno ?? null,
       params.statusPublicacao,
+      params.modoPreco ?? "sob_consulta",
+      params.preco ?? null,
     ]
   );
   return result.insertId as number;
@@ -36,6 +40,7 @@ export async function createItem(params: {
 export async function listarItensDaEmpresa(empresaId: number) {
   const [rows]: any = await pool.query(
     `SELECT mi.id, mi.titulo, mi.descricao, mi.tipo, mi.imagem_url, mi.link_externo,
+            mi.modo_preco, mi.preco,
             mi.status_publicacao, mi.destaque, mi.observacao_admin,
             DATE_FORMAT(mi.criado_em, '%d/%m/%Y') AS criado_em,
             mc.nome AS categoria_nome
@@ -52,7 +57,9 @@ export async function findItemById(id: number) {
   const [rows]: any = await pool.query(
     `SELECT mi.*, mc.nome AS categoria_nome,
             e.nome_fantasia AS nome_empresa, e.logo AS logo_empresa, e.setor AS setor_empresa,
-            e.status_marketplace AS empresa_status_marketplace
+            e.descricao AS descricao_empresa,
+            e.status_marketplace AS empresa_status_marketplace,
+            DATE_FORMAT(mi.criado_em, '%d/%m/%Y') AS criado_em_formatado
      FROM marketplace_itens mi
      LEFT JOIN marketplace_categorias mc ON mc.id = mi.categoria_id
      INNER JOIN empresas e ON e.id = mi.empresa_id
@@ -65,6 +72,7 @@ export async function findItemById(id: number) {
 export async function findItemByIdDaEmpresa(id: number, empresaId: number) {
   const [rows]: any = await pool.query(
     `SELECT mi.id, mi.empresa_id, mi.titulo, mi.descricao, mi.tipo, mi.categoria_id, mi.imagem_url, mi.link_externo,
+            mi.modo_preco, mi.preco,
             mi.status_publicacao, mi.destaque, mi.observacao_admin,
             DATE_FORMAT(mi.criado_em, '%d/%m/%Y') AS criado_em,
             mc.nome AS categoria_nome
@@ -80,6 +88,7 @@ export async function findItemByIdDaEmpresa(id: number, empresaId: number) {
 export async function listarItensAprovados(params: { categoriaId?: number; tipo?: string } = {}) {
   let query = `
     SELECT mi.id, mi.titulo, mi.descricao, mi.tipo, mi.imagem_url, mi.link_externo,
+           mi.modo_preco, mi.preco,
            mi.destaque, DATE_FORMAT(mi.criado_em, '%d/%m/%Y') AS criado_em,
            mc.nome AS categoria_nome, mc.codigo AS categoria_codigo,
            e.id AS empresa_id, e.nome_fantasia AS nome_empresa, e.logo AS logo_empresa,
@@ -177,10 +186,13 @@ export async function updateItem(params: {
   imagemUrl: string | null;
   linkExterno: string | null;
   statusPublicacao: string;
+  modoPreco?: "gratuito" | "fixo" | "sob_consulta";
+  preco?: number | null;
 }): Promise<void> {
   await pool.query(
     `UPDATE marketplace_itens
-     SET titulo = ?, descricao = ?, tipo = ?, categoria_id = ?, imagem_url = ?, link_externo = ?, status_publicacao = ?, atualizado_em = NOW()
+     SET titulo = ?, descricao = ?, tipo = ?, categoria_id = ?, imagem_url = ?, link_externo = ?,
+         modo_preco = ?, preco = ?, status_publicacao = ?, atualizado_em = NOW()
      WHERE id = ?`,
     [
       params.titulo,
@@ -189,6 +201,8 @@ export async function updateItem(params: {
       params.categoriaId,
       params.imagemUrl,
       params.linkExterno,
+      params.modoPreco ?? "sob_consulta",
+      params.preco ?? null,
       params.statusPublicacao,
       params.id,
     ]
@@ -205,10 +219,13 @@ export async function updateItemDaEmpresa(params: {
   imagemUrl: string | null;
   linkExterno: string | null;
   statusPublicacao: "rascunho" | "pendente" | "rejeitado" | "aprovado";
+  modoPreco: "gratuito" | "fixo" | "sob_consulta";
+  preco: number | null;
 }): Promise<boolean> {
   const [result]: any = await pool.query(
     `UPDATE marketplace_itens
      SET titulo = ?, descricao = ?, tipo = ?, categoria_id = ?, imagem_url = ?, link_externo = ?,
+         modo_preco = ?, preco = ?,
          status_publicacao = ?, observacao_admin = CASE WHEN ? = 'pendente' THEN NULL ELSE observacao_admin END, atualizado_em = NOW()
      WHERE id = ? AND empresa_id = ?`,
     [
@@ -218,6 +235,8 @@ export async function updateItemDaEmpresa(params: {
       params.categoriaId,
       params.imagemUrl,
       params.linkExterno,
+      params.modoPreco,
+      params.preco,
       params.statusPublicacao,
       params.statusPublicacao,
       params.id,

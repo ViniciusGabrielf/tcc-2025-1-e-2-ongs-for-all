@@ -91,6 +91,12 @@
       <div class="flex-1 min-w-0">
         <p class="font-semibold text-[#2D4BA6] dark:text-white text-sm truncate">{{titulo}}</p>
         <p class="text-xs text-slate-400 dark:text-white/40 mt-0.5">{{tipoLabel}} · {{criado_em}}</p>
+        {{#if precoLabel}}
+        <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold
+          {{#if isGratuito}}bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400{{else}}{{#if isFixo}}bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400{{else}}bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-white/50{{/if}}{{/if}}">
+          {{precoLabel}}
+        </span>
+        {{/if}}
         {{#if observacao_admin}}
         <p class="text-xs text-red-500 mt-1">Obs. admin: {{observacao_admin}}</p>
         {{/if}}

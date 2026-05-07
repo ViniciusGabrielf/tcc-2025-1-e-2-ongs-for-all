@@ -193,7 +193,7 @@ async function renderNovoItemComErro(
   empresaId: number,
   user: any,
   error: string,
-  form: { titulo: string; descricao: string; tipo: string; categoriaId: string; linkExterno: string }
+  form: { titulo: string; descricao: string; tipo: string; categoriaId: string; linkExterno: string; modoPreco?: string; preco?: string }
 ) {
   const [categorias, naoLidas] = await Promise.all([
     marketplaceRepo.getCategorias(),
@@ -214,6 +214,7 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
   try {
     const data = await request.file();
     let titulo = "", descricao = "", tipo = "produto", categoriaId = "", linkExterno = "";
+    let modoPreco = "sob_consulta", preco = "";
     let imagemUrl: string | undefined;
 
     if (data) {
@@ -223,6 +224,8 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
       tipo = fields.tipo?.value ?? "produto";
       categoriaId = fields.categoria_id?.value ?? "";
       linkExterno = fields.link_externo?.value ?? "";
+      modoPreco = fields.modo_preco?.value ?? "sob_consulta";
+      preco = fields.preco?.value ?? "";
 
       if (data.filename) {
         if (!ALLOWED_MIMES.includes(data.mimetype)) {
@@ -232,7 +235,7 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
             Number(sessionUser.id),
             sessionUser,
             "Formato de imagem inválido. Use JPG, PNG ou WebP.",
-            { titulo, descricao, tipo, categoriaId, linkExterno }
+            { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco }
           );
         }
 
@@ -250,7 +253,7 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
             Number(sessionUser.id),
             sessionUser,
             "A imagem excede o limite de 3MB. Envie um arquivo menor.",
-            { titulo, descricao, tipo, categoriaId, linkExterno }
+            { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco }
           );
         }
 
@@ -263,7 +266,11 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
       tipo = body.tipo ?? "produto";
       categoriaId = body.categoria_id ?? "";
       linkExterno = body.link_externo ?? "";
+      modoPreco = body.modo_preco ?? "sob_consulta";
+      preco = body.preco ?? "";
     }
+
+    const precoNum = preco ? parseFloat(preco.replace(",", ".")) : undefined;
 
     const result = await empresaService.criarItemMarketplace({
       empresaId: Number(sessionUser.id),
@@ -273,6 +280,8 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
       categoriaId: categoriaId ? Number(categoriaId) : undefined,
       imagemUrl,
       linkExterno: linkExterno || undefined,
+      modoPreco: modoPreco as "gratuito" | "fixo" | "sob_consulta",
+      preco: isNaN(precoNum as number) ? undefined : precoNum,
     });
 
     if (!result.ok) {
@@ -281,7 +290,7 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
         Number(sessionUser.id),
         sessionUser,
         result.error,
-        { titulo, descricao, tipo, categoriaId, linkExterno }
+        { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco }
       );
     }
 
@@ -294,7 +303,7 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
         Number(sessionUser.id),
         sessionUser,
         "A imagem excede o limite permitido no upload. Envie um arquivo de até 3MB.",
-        { titulo: "", descricao: "", tipo: "produto", categoriaId: "", linkExterno: "" }
+        { titulo: "", descricao: "", tipo: "produto", categoriaId: "", linkExterno: "", modoPreco: "sob_consulta", preco: "" }
       );
     }
 
@@ -303,7 +312,7 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
       Number(sessionUser.id),
       sessionUser,
       "Não foi possível processar o upload da imagem. Tente novamente.",
-      { titulo: "", descricao: "", tipo: "produto", categoriaId: "", linkExterno: "" }
+      { titulo: "", descricao: "", tipo: "produto", categoriaId: "", linkExterno: "", modoPreco: "sob_consulta", preco: "" }
     );
   }
 }
@@ -416,7 +425,7 @@ async function renderEditarComErro(
   user: any,
   itemId: number,
   error: string,
-  form: { titulo: string; descricao: string; tipo: string; categoriaId: string; linkExterno: string }
+  form: { titulo: string; descricao: string; tipo: string; categoriaId: string; linkExterno: string; modoPreco?: string; preco?: string }
 ) {
   const [item, categorias, naoLidas] = await Promise.all([
     marketplaceRepo.findItemByIdDaEmpresa(itemId, Number(user.id)),
@@ -439,6 +448,8 @@ async function renderEditarComErro(
             tipo: form.tipo,
             categoria_id: form.categoriaId ? Number(form.categoriaId) : item.categoria_id,
             link_externo: form.linkExterno,
+            modo_preco: form.modoPreco ?? item.modo_preco,
+            preco: form.preco !== undefined && form.preco !== "" ? form.preco : item.preco,
           }
         : null,
       isRejeitado: item?.status_publicacao === "rejeitado",
@@ -458,6 +469,7 @@ export async function editarItemMarketplace(request: FastifyRequest, reply: Fast
   try {
     const data = await request.file();
     let titulo = "", descricao = "", tipo = "produto", categoriaId = "", linkExterno = "";
+    let modoPreco = "sob_consulta", preco = "";
     let removerImagem = false;
     let acao: "salvar" | "reenviar" = "salvar";
     let novaImagemUrl: string | undefined;
@@ -469,13 +481,15 @@ export async function editarItemMarketplace(request: FastifyRequest, reply: Fast
       tipo = fields.tipo?.value ?? "produto";
       categoriaId = fields.categoria_id?.value ?? "";
       linkExterno = fields.link_externo?.value ?? "";
+      modoPreco = fields.modo_preco?.value ?? "sob_consulta";
+      preco = fields.preco?.value ?? "";
       removerImagem = fields.remover_imagem?.value === "1";
       acao = fields.acao?.value === "reenviar" ? "reenviar" : "salvar";
 
       if (data.filename) {
         if (!ALLOWED_MIMES.includes(data.mimetype)) {
           data.file.resume();
-          return renderEditarComErro(reply, sessionUser, itemId, "Formato de imagem inválido. Use JPG, PNG ou WebP.", { titulo, descricao, tipo, categoriaId, linkExterno });
+          return renderEditarComErro(reply, sessionUser, itemId, "Formato de imagem inválido. Use JPG, PNG ou WebP.", { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco });
         }
 
         if (!fs.existsSync(MARKETPLACE_UPLOADS_DIR)) fs.mkdirSync(MARKETPLACE_UPLOADS_DIR, { recursive: true });
@@ -487,7 +501,7 @@ export async function editarItemMarketplace(request: FastifyRequest, reply: Fast
         const stats = fs.statSync(filepath);
         if (stats.size > MAX_SIZE) {
           fs.unlinkSync(filepath);
-          return renderEditarComErro(reply, sessionUser, itemId, "A imagem excede o limite de 3MB. Envie um arquivo menor.", { titulo, descricao, tipo, categoriaId, linkExterno });
+          return renderEditarComErro(reply, sessionUser, itemId, "A imagem excede o limite de 3MB. Envie um arquivo menor.", { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco });
         }
 
         novaImagemUrl = `/public/uploads/marketplace_itens/${filename}`;
@@ -499,6 +513,8 @@ export async function editarItemMarketplace(request: FastifyRequest, reply: Fast
       tipo = body?.tipo ?? "produto";
       categoriaId = body?.categoria_id ?? "";
       linkExterno = body?.link_externo ?? "";
+      modoPreco = body?.modo_preco ?? "sob_consulta";
+      preco = body?.preco ?? "";
       removerImagem = body?.remover_imagem === "1";
       acao = body?.acao === "reenviar" ? "reenviar" : "salvar";
     }
@@ -535,6 +551,8 @@ export async function editarItemMarketplace(request: FastifyRequest, reply: Fast
       imagemUrl,
       linkExterno: linkExterno || undefined,
       acao,
+      modoPreco,
+      preco: preco || undefined,
     });
 
     if (!result.ok) {
@@ -561,6 +579,8 @@ export async function editarItemMarketplace(request: FastifyRequest, reply: Fast
             categoria_id: categoriaId ? Number(categoriaId) : itemAtual.categoria_id,
             link_externo: linkExterno,
             imagem_url: itemAtual.imagem_url,
+            modo_preco: modoPreco,
+            preco: preco || itemAtual.preco,
           },
           isRejeitado: itemAtual.status_publicacao === "rejeitado",
           isRascunho: itemAtual.status_publicacao === "rascunho",

@@ -3,6 +3,14 @@ import { z } from "zod";
 import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
 
+function formatPrecoLabel(modoPreco: string, preco: any): string {
+  if (modoPreco === "gratuito") return "Gratuito";
+  if (modoPreco === "fixo" && preco != null) {
+    return `R$ ${Number(preco).toFixed(2).replace(".", ",")}`;
+  }
+  return "Sob consulta";
+}
+
 const cadastroSchema = z.object({
   nome_fantasia: z.string().min(2, "Nome fantasia obrigatorio"),
   razao_social: z.string().optional(),
@@ -91,6 +99,8 @@ export async function criarItemMarketplace(params: {
   categoriaId?: number;
   imagemUrl?: string;
   linkExterno?: string;
+  modoPreco?: "gratuito" | "fixo" | "sob_consulta";
+  preco?: number | null;
 }): Promise<{ ok: true; id: number } | { ok: false; error: string }> {
   const empresa = await empresaRepo.findEmpresaById(params.empresaId);
   if (!empresa) return { ok: false, error: "Empresa nao encontrada." };
@@ -109,6 +119,12 @@ export async function criarItemMarketplace(params: {
     ? params.tipo
     : "produto";
 
+  const modoPreco = params.modoPreco ?? "sob_consulta";
+  if (modoPreco === "fixo" && (params.preco == null || params.preco < 0)) {
+    return { ok: false, error: "Informe um valor valido para o preco fixo." };
+  }
+  const preco = modoPreco === "fixo" ? (params.preco ?? null) : null;
+
   const id = await marketplaceRepo.createItem({
     empresaId: params.empresaId,
     titulo,
@@ -118,6 +134,8 @@ export async function criarItemMarketplace(params: {
     imagemUrl: params.imagemUrl,
     linkExterno: params.linkExterno,
     statusPublicacao: "pendente",
+    modoPreco,
+    preco: preco ?? undefined,
   });
 
   return { ok: true, id };
@@ -133,6 +151,10 @@ export async function listarItensPublicos(categoriaId?: number, tipo?: string) {
     isBanner: i.tipo === "banner",
     isLink: i.tipo === "link",
     tipoLabel: ({ produto: "Produto", servico: "Servico", campanha: "Campanha", banner: "Institucional", link: "Link" } as Record<string, string>)[i.tipo] ?? i.tipo,
+    precoLabel: formatPrecoLabel(i.modo_preco ?? "sob_consulta", i.preco),
+    isGratuito: i.modo_preco === "gratuito",
+    isFixo: i.modo_preco === "fixo",
+    isSobConsulta: i.modo_preco === "sob_consulta" || !i.modo_preco,
   }));
 }
 
@@ -148,6 +170,10 @@ export async function listarItensEmpresa(empresaId: number) {
     isRascunho: i.status_publicacao === "rascunho",
     canDesativar: ["aprovado", "pendente", "rejeitado"].includes(i.status_publicacao),
     canReenviar: ["rejeitado", "rascunho"].includes(i.status_publicacao),
+    precoLabel: formatPrecoLabel(i.modo_preco ?? "sob_consulta", i.preco),
+    isGratuito: i.modo_preco === "gratuito",
+    isFixo: i.modo_preco === "fixo",
+    isSobConsulta: i.modo_preco === "sob_consulta" || !i.modo_preco,
   }));
 }
 
@@ -158,6 +184,15 @@ const editarItemSchema = z.object({
     errorMap: () => ({ message: "Tipo invalido." }),
   }),
   linkExterno: z.string().max(500, "Link muito longo.").optional(),
+  modoPreco: z.enum(["gratuito", "fixo", "sob_consulta"]).default("sob_consulta"),
+  preco: z.preprocess(
+    (v) => {
+      if (v === undefined || v === null || v === "") return null;
+      const n = parseFloat(String(v).replace(",", "."));
+      return isNaN(n) ? null : n;
+    },
+    z.number().min(0, "O valor nao pode ser negativo.").nullable().optional()
+  ),
 });
 
 export async function editarItemMarketplace(params: {
@@ -170,17 +205,27 @@ export async function editarItemMarketplace(params: {
   imagemUrl: string | null;
   linkExterno?: string;
   acao?: "salvar" | "reenviar";
+  modoPreco?: string;
+  preco?: string | number | null;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const parsed = editarItemSchema.safeParse({
     titulo: params.titulo,
     descricao: params.descricao,
     tipo: params.tipo,
     linkExterno: params.linkExterno || undefined,
+    modoPreco: params.modoPreco || "sob_consulta",
+    preco: params.preco,
   });
 
   if (!parsed.success) {
     return { ok: false, error: parsed.error.errors[0].message };
   }
+
+  const modoPreco = parsed.data.modoPreco;
+  if (modoPreco === "fixo" && (parsed.data.preco == null || parsed.data.preco < 0)) {
+    return { ok: false, error: "Informe um valor valido para o preco fixo." };
+  }
+  const preco = modoPreco === "fixo" ? (parsed.data.preco ?? null) : null;
 
   const item = await marketplaceRepo.findItemByIdDaEmpresa(params.itemId, params.empresaId);
   if (!item) return { ok: false, error: "Item nao encontrado." };
@@ -206,6 +251,8 @@ export async function editarItemMarketplace(params: {
     imagemUrl: params.imagemUrl,
     linkExterno: parsed.data.linkExterno ?? null,
     statusPublicacao: novoStatus,
+    modoPreco,
+    preco,
   });
   if (!updated) return { ok: false, error: "Nao foi possivel atualizar o item." };
 

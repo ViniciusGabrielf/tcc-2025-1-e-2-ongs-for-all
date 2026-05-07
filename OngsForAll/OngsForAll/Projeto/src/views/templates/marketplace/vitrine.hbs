@@ -70,6 +70,12 @@
           {{#if descricao}}
           <p class="text-xs text-slate-500 dark:text-white/50 mt-2 line-clamp-2">{{descricao}}</p>
           {{/if}}
+          {{#if precoLabel}}
+          <span class="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-semibold
+            {{#if isGratuito}}bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400{{else}}{{#if isFixo}}bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400{{else}}bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-white/50{{/if}}{{/if}}">
+            {{precoLabel}}
+          </span>
+          {{/if}}
         </div>
         <div class="absolute top-3 right-3">
           <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">Destaque</span>
@@ -108,6 +114,12 @@
             <span class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/60 capitalize">{{tipoLabel}}</span>
           </div>
           <p class="text-xs text-slate-400 dark:text-white/40">{{nome_empresa}}</p>
+          {{#if precoLabel}}
+          <span class="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold
+            {{#if isGratuito}}bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400{{else}}{{#if isFixo}}bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400{{else}}bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-white/50{{/if}}{{/if}}">
+            {{precoLabel}}
+          </span>
+          {{/if}}
         </div>
       </a>
       {{/each}}

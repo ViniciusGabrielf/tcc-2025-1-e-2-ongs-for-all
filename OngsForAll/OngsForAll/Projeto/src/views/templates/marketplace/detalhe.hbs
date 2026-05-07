@@ -1,66 +1,107 @@
-<div class="max-w-3xl mx-auto space-y-6">
+<div class="max-w-3xl mx-auto space-y-5">
 
-  <div>
-    <a href="/marketplace" class="inline-flex items-center gap-1.5 text-sm text-slate-400 dark:text-white/40 hover:text-violet-600 dark:hover:text-violet-400 transition mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-      </svg>
-      Voltar ao marketplace
-    </a>
-  </div>
+  <!-- Navegação -->
+  <a href="/marketplace"
+    class="inline-flex items-center gap-1.5 text-sm text-slate-400 dark:text-white/40 hover:text-[#2D4BA6] dark:hover:text-violet-400 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Voltar ao marketplace
+  </a>
 
+  <!-- Card principal do item -->
   <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
 
+    <!-- Hero: imagem ou placeholder -->
     {{#if item.imagem_url}}
-    <div class="h-64 overflow-hidden">
-      <img src="{{item.imagem_url}}" alt="Imagem do item {{item.titulo}}" class="w-full h-full object-cover" />
+    <div class="relative h-72 overflow-hidden">
+      <img src="{{item.imagem_url}}" alt="Imagem do item {{item.titulo}}"
+        class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+      {{#if item.destaque}}
+      <div class="absolute top-4 right-4">
+        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-400 text-white shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+          Destaque
+        </span>
+      </div>
+      {{/if}}
     </div>
     {{else}}
-    <div class="h-48 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10 flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-violet-200 dark:text-violet-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    <div class="relative h-52 bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900/20 dark:to-purple-900/20 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-violet-300 dark:text-violet-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
+      {{#if item.destaque}}
+      <div class="absolute top-4 right-4">
+        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-400 text-white shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+          Destaque
+        </span>
+      </div>
+      {{/if}}
     </div>
     {{/if}}
 
-    <div class="p-6 space-y-4">
+    <div class="p-6 space-y-5">
 
-      <!-- Titulo e tipo -->
-      <div class="flex items-start justify-between gap-4 flex-wrap">
-        <h1 class="text-xl font-bold text-[#2D4BA6] dark:text-white leading-snug">{{item.titulo}}</h1>
-        <span class="shrink-0 px-3 py-1.5 rounded-full text-xs font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 capitalize">
+      <!-- Chips: tipo + categoria -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">
           {{item.tipoLabel}}
         </span>
+        {{#if item.categoria_nome}}
+        <span class="px-3 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/50">
+          {{item.categoria_nome}}
+        </span>
+        {{/if}}
+        {{#if item.criado_em_formatado}}
+        <span class="ml-auto text-xs text-slate-400 dark:text-white/30">
+          Publicado em {{item.criado_em_formatado}}
+        </span>
+        {{/if}}
       </div>
 
-      <!-- Empresa -->
-      <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-        {{#if item.logo_empresa}}
-        <img src="{{item.logo_empresa}}" alt="Logo da empresa {{item.nome_empresa}}" class="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-white/10" />
-        {{else}}
-        <div class="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-300 font-bold text-sm">
-          {{item.nome_empresa.[0]}}
-        </div>
-        {{/if}}
-        <div>
-          <p class="text-sm font-semibold text-slate-800 dark:text-white">{{item.nome_empresa}}</p>
-          {{#if item.setor_empresa}}<p class="text-xs text-slate-400 dark:text-white/40">{{item.setor_empresa}}</p>{{/if}}
-        </div>
+      <!-- Título -->
+      <h1 class="text-2xl font-bold text-[#2D4BA6] dark:text-white leading-snug">{{item.titulo}}</h1>
+
+      <!-- Preço -->
+      {{#if item.isFixo}}
+      <div class="inline-flex items-baseline gap-1.5">
+        <span class="text-xs font-semibold text-slate-400 dark:text-white/40 uppercase tracking-wide">Valor</span>
+        <span class="text-2xl font-bold text-[#2D4BA6] dark:text-white">{{item.precoLabel}}</span>
       </div>
+      {{else if item.isGratuito}}
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/40">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="text-sm font-bold text-emerald-700 dark:text-emerald-300">Gratuito</span>
+      </div>
+      {{else}}
+      <p class="text-sm text-slate-400 dark:text-white/40 italic">Preço sob consulta</p>
+      {{/if}}
+
+      <!-- Divisor -->
+      <hr class="border-slate-100 dark:border-white/5" />
 
       <!-- Descrição -->
       {{#if item.descricao}}
       <div>
-        <h2 class="text-sm font-bold text-slate-700 dark:text-white/80 mb-2">Sobre este item</h2>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-3">Sobre este item</p>
         <p class="text-sm text-slate-600 dark:text-white/60 leading-relaxed whitespace-pre-line">{{item.descricao}}</p>
       </div>
       {{/if}}
 
-      <!-- Link externo -->
+      <!-- CTA -->
       {{#if item.link_externo}}
-      <div class="pt-2">
+      <div class="pt-1">
         <a href="{{item.link_externo}}" target="_blank" rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-bold shadow hover:opacity-90 transition">
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-bold shadow hover:opacity-90 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
@@ -70,6 +111,41 @@
       {{/if}}
 
     </div>
+  </div>
+
+  <!-- Card: empresa parceira -->
+  <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
+
+    <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-4">Empresa parceira</p>
+
+    <div class="flex items-start gap-4">
+      {{#if item.logo_empresa}}
+      <img src="{{item.logo_empresa}}" alt="Logo de {{item.nome_empresa}}"
+        class="w-14 h-14 rounded-xl object-cover border border-slate-200 dark:border-white/10 shrink-0 shadow-sm" />
+      {{else}}
+      <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[#4886D9] to-[#2D4BA6] flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-sm">
+        {{item.nome_empresa.[0]}}
+      </div>
+      {{/if}}
+
+      <div class="min-w-0 flex-1">
+        <p class="font-bold text-[#2D4BA6] dark:text-white text-base">{{item.nome_empresa}}</p>
+        {{#if item.setor_empresa}}
+        <p class="text-xs text-slate-400 dark:text-white/40 mt-0.5">{{item.setor_empresa}}</p>
+        {{/if}}
+        {{#if item.descricao_empresa}}
+        <p class="text-sm text-slate-500 dark:text-white/50 mt-2 leading-relaxed line-clamp-3">{{item.descricao_empresa}}</p>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-300 dark:text-white/20 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+      <p class="text-xs text-slate-400 dark:text-white/30">Empresa verificada e ativa no marketplace social ONGs For All</p>
+    </div>
+
   </div>
 
 </div>
