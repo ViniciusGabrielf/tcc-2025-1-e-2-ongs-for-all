@@ -2,7 +2,7 @@
 
   <!-- Cabeçalho -->
   <div>
-    <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Mensagens</h2>
+    <h2 class="text-2xl font-bold text-[#2F3E34] dark:text-white">Mensagens</h2>
     <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Conversas com pessoas que querem ajudar</p>
   </div>
 
@@ -10,21 +10,21 @@
   <div class="space-y-3">
     {{#each conversas}}
     <a href="/mensagens/{{id}}"
-      class="flex items-center gap-4 p-4 bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow-md hover:border-[#4886D9]/40 dark:hover:border-[#4886D9]/40 transition-all duration-200">
+      class="flex items-center gap-4 p-4 bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow-md hover:border-[#6B8F71]/40 dark:hover:border-[#6B8F71]/40 transition-all duration-200">
 
       <!-- Avatar usuário -->
-      <div class="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-[#4886D9] to-[#2D4BA6] flex items-center justify-center text-white font-bold text-sm shadow-sm">
+      <div class="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-[#6B8F71] to-[#2F3E34] flex items-center justify-center text-white font-bold text-sm shadow-sm">
         {{#if nome_usuario}}{{nome_usuario.[0]}}{{else}}U{{/if}}
       </div>
 
       <!-- Conteúdo -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-2">
-          <span class="font-semibold text-[#2D4BA6] dark:text-white truncate">{{nome_usuario}}</span>
+          <span class="font-semibold text-[#2F3E34] dark:text-white truncate">{{nome_usuario}}</span>
           <span class="text-xs text-slate-400 dark:text-white/40 shrink-0">{{ultima_em}}</span>
         </div>
         {{#if titulo_necessidade}}
-        <span class="inline-block text-xs text-[#4886D9] dark:text-[#4886D9] font-medium mt-0.5">
+        <span class="inline-block text-xs text-[#6B8F71] dark:text-[#6B8F71] font-medium mt-0.5">
           Sobre: {{titulo_necessidade}}
         </span>
         {{/if}}
@@ -35,7 +35,7 @@
 
       <!-- Badge não lidas -->
       {{#if temNaoLidas}}
-      <span class="shrink-0 w-2.5 h-2.5 rounded-full bg-[#4886D9]"></span>
+      <span class="shrink-0 w-2.5 h-2.5 rounded-full bg-[#6B8F71]"></span>
       {{/if}}
     </a>
     {{/each}}

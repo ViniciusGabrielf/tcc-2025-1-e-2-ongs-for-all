@@ -54,6 +54,7 @@ export async function renderPerfilPage(request: FastifyRequest, reply: FastifyRe
   return reply.view("/templates/perfil.hbs", {
     user: result.user,
     isOng,
+    isOngDashboard: isOng,
     naoLidas,
     backUrl: getBackUrl(session.tipo),
     success: (request.query as any)?.success === "1",
@@ -151,6 +152,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
       return reply.view("/templates/perfil.hbs", {
         user: current.ok ? current.user : { id: userId, nome, email },
         isOng,
+        isOngDashboard: isOng,
         naoLidas,
         backUrl: getBackUrl(session.tipo),
         message: result.error,
@@ -191,6 +193,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
     return reply.view("/templates/perfil.hbs", {
       user: current.ok ? current.user : { id: userId },
       isOng,
+      isOngDashboard: isOng,
       naoLidas,
       backUrl: getBackUrl(session.tipo),
       message: error.message || "Erro ao atualizar perfil",

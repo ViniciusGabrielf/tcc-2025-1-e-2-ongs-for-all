@@ -9,59 +9,60 @@ export async function getTotalPorOng() {
 export async function getDashboardData(userId: number, de?: string, ate?: string) {
   const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
-  function buildDateFilter(params: any[]): string {
+  function buildDateFilter(params: any[], col = "data"): string {
     let clause = "";
-    if (de) { clause += " AND data >= ?"; params.push(de); }
-    if (ate) { clause += " AND data <= ?"; params.push(ate); }
+    if (de) { clause += ` AND ${col} >= ?`; params.push(de); }
+    if (ate) { clause += ` AND ${col} <= ?`; params.push(ate); }
     return clause;
   }
 
-  // 1) Total doado por mês (R$)
+  // 1) Interesses demonstrados por mês
   const paramsMes: any[] = [userId];
-  const dateFilterMes = buildDateFilter(paramsMes);
-  const [rowsDoadoMes]: any = await pool.query(
+  const dateFilterMes = buildDateFilter(paramsMes, "i.criado_em");
+  const [rowsInteressesMes]: any = await pool.query(
     `
-    SELECT MONTH(data) AS mes, SUM(valor) AS total
-    FROM doacoes
-    WHERE usuario_id = ?${dateFilterMes}
-    GROUP BY MONTH(data)
+    SELECT MONTH(i.criado_em) AS mes, COUNT(*) AS total
+    FROM interesses_doacao i
+    WHERE i.usuario_id = ?${dateFilterMes}
+    GROUP BY MONTH(i.criado_em)
     ORDER BY mes
     `,
     paramsMes
   );
 
-  const labelsMes = rowsDoadoMes.map((r: any) => meses[r.mes - 1]);
-  const valoresDoadoMes = rowsDoadoMes.map((r: any) => Number(r.total || 0));
+  const labelsMes = rowsInteressesMes.map((r: any) => meses[r.mes - 1]);
+  const valoresInteressesMes = rowsInteressesMes.map((r: any) => Number(r.total || 0));
 
   // 2) ONGs apoiadas por mês (contagem distinta)
   const paramsOngs: any[] = [userId];
-  const dateFilterOngs = buildDateFilter(paramsOngs);
+  const dateFilterOngs = buildDateFilter(paramsOngs, "i.criado_em");
   const [rowsOngsMes]: any = await pool.query(
     `
-    SELECT MONTH(data) AS mes, COUNT(DISTINCT ong_id) AS total_ongs
-    FROM doacoes
-    WHERE usuario_id = ?${dateFilterOngs}
-    GROUP BY MONTH(data)
+    SELECT MONTH(i.criado_em) AS mes, COUNT(DISTINCT i.ong_id) AS total_ongs
+    FROM interesses_doacao i
+    WHERE i.usuario_id = ?${dateFilterOngs}
+    GROUP BY MONTH(i.criado_em)
     ORDER BY mes
     `,
     paramsOngs
   );
 
-  // garante alinhamento de labels com o gráfico de doado/mês
+  // garante alinhamento de labels com o gráfico de interesses/mês
   const ongsPorMesMap = new Map<number, number>();
   rowsOngsMes.forEach((r: any) => ongsPorMesMap.set(Number(r.mes), Number(r.total_ongs || 0)));
 
-  const valoresOngsMes = rowsDoadoMes.map((r: any) => ongsPorMesMap.get(Number(r.mes)) ?? 0);
+  const valoresOngsMes = rowsInteressesMes.map((r: any) => ongsPorMesMap.get(Number(r.mes)) ?? 0);
 
-  // 3) Doações por tipo (para doughnut)
+  // 3) Contribuições por tipo (para doughnut)
   const paramsTipo: any[] = [userId];
-  const dateFilterTipo = buildDateFilter(paramsTipo);
+  const dateFilterTipo = buildDateFilter(paramsTipo, "i.criado_em");
   const [rowsTipo]: any = await pool.query(
     `
-    SELECT tipo, SUM(valor) AS total
-    FROM doacoes
-    WHERE usuario_id = ?${dateFilterTipo}
-    GROUP BY tipo
+    SELECT n.tipo_necessidade AS tipo, COUNT(*) AS total
+    FROM interesses_doacao i
+    JOIN necessidades n ON n.id = i.necessidade_id
+    WHERE i.usuario_id = ?${dateFilterTipo}
+    GROUP BY n.tipo_necessidade
     ORDER BY tipo
     `,
     paramsTipo
@@ -70,10 +71,7 @@ export async function getDashboardData(userId: number, de?: string, ate?: string
   const labelsTipo = rowsTipo.map((r: any) => r.tipo);
   const valoresTipo = rowsTipo.map((r: any) => Number(r.total || 0));
 
-  // KPIs
-  const totalDoado = valoresDoadoMes.reduce((acc: number, v: number) => acc + v, 0).toFixed(2);
   const qtdTipos = labelsTipo.length;
-  const qtdMesesComDoacao = labelsMes.length;
 
   // Métricas de impacto
   const [necessidadesApoiadas, ongsApoiadas, interessesCriados, interessesRecebidos, atividadesRecentes] =
@@ -86,11 +84,11 @@ export async function getDashboardData(userId: number, de?: string, ate?: string
     ]);
 
   return {
-    totalDoado,
+    totalInteresses: interessesCriados,
     qtdTipos,
-    qtdMesesComDoacao,
+    qtdMesesComAtividade: labelsMes.length,
     labelsMes,
-    valoresDoadoMes,
+    valoresInteressesMes,
     valoresOngsMes,
     labelsTipo,
     valoresTipo,

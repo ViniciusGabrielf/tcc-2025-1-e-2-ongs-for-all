@@ -53,7 +53,7 @@ initViewEngine(server);
 registerAllRoutes(server);
 
 // (Opcional) Handler global pra você ver erro real ao invés de "Erro no servidor"
-server.setErrorHandler((error, request, reply) => {
+server.setErrorHandler((error: any, request, reply) => {
   console.error("[ERRO]", error.message);
   reply.status(500).send({ message: "Erro no servidor", error: error.message });
 });

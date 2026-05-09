@@ -7,7 +7,11 @@ export async function renderOngsPage(request: FastifyRequest, reply: FastifyRepl
   if (!session) return reply.redirect("/login");
 
   const { busca } = request.query as { busca?: string };
-  const ongs = await ongService.listOngs(busca);
+  const isOngDashboard = session.tipo === "ong";
+  const todasOngs = await ongService.listOngs(busca);
+  const ongs = isOngDashboard
+    ? todasOngs.filter((ong: any) => Number(ong.id) !== Number(session.id))
+    : todasOngs;
 
   const { naoLidas } = await notificacaoService.contarNaoLidas({
     tipoConta: session.tipo,
@@ -25,5 +29,6 @@ export async function renderOngsPage(request: FastifyRequest, reply: FastifyRepl
     totalOngs: ongs.length,
     user: session,
     naoLidas,
+    isOngDashboard,
   }, { layout });
 }

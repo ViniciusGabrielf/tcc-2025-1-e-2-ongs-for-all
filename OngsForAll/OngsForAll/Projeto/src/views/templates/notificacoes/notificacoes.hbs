@@ -1,4 +1,4 @@
-<section class="min-h-screen px-6 py-10">
+<section class="min-h-screen px-6 py-10" style="--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
     <div class="max-w-4xl mx-auto">
 
         <div class="flex items-center justify-between mb-8">
@@ -23,19 +23,19 @@
 
             {{#each notificacoes}}
             <div
-                class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1D3273]/20 shadow p-5 transition">
+                class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[var(--theme-accent)]/20 shadow p-5 transition">
 
                 <div class="flex items-start justify-between gap-4 mb-2">
                     <div class="flex items-center gap-3">
 
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg
-        {{#ifCond tipo 'novo_interesse'}}bg-blue-100 text-blue-700{{/ifCond}}
+        {{#ifCond tipo 'novo_interesse'}}bg-[var(--theme-soft)] text-[var(--theme-accent)]{{/ifCond}}
         {{#ifCond tipo 'interesse_aceito'}}bg-teal-100 text-teal-700{{/ifCond}}
         {{#ifCond tipo 'interesse_recebido'}}bg-green-100 text-green-700{{/ifCond}}
         {{#ifCond tipo 'interesse_confirmado'}}bg-green-100 text-green-700{{/ifCond}}
         {{#ifCond tipo 'interesse_cancelado'}}bg-red-100 text-red-700{{/ifCond}}
         {{#ifCond tipo 'meta_atingida'}}bg-yellow-100 text-yellow-700{{/ifCond}}
-        {{#ifCond tipo 'nova_necessidade'}}bg-purple-100 text-purple-700{{/ifCond}}
+        {{#ifCond tipo 'nova_necessidade'}}bg-[var(--theme-soft-2)] text-[var(--theme-accent)]{{/ifCond}}
       ">
                             {{#ifCond tipo 'novo_interesse'}}📦{{/ifCond}}
                             {{#ifCond tipo 'interesse_aceito'}}
@@ -65,7 +65,7 @@
                         Lida
                     </span>
                     {{else}}
-                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-[var(--theme-soft)] text-[var(--theme-accent)]">
                         Nova
                     </span>
                     {{/if}}
@@ -78,7 +78,7 @@
                 {{#unless lida}}
                 <form method="POST" action="/notificacoes/{{id}}/lida">
                     <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        class="bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                         Marcar como lida
                     </button>
                 </form>

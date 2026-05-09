@@ -17,11 +17,24 @@ export async function renderTransparenciaPage(
   const { id } = request.params as { id: string };
   const sessionUser = request.session.user;
   const naoLidas = sessionUser ? await getNaoLidas(sessionUser as any) : 0;
+  const isOngDashboard = sessionUser?.tipo === "ong";
+  const layout = isOngDashboard
+    ? "layouts/ongDashboardLayout"
+    : "layouts/dashboardLayout";
 
   const dados = await transparenciaRepo.buscarDadosTransparencia(Number(id));
 
   if (!dados) {
-    return reply.status(404).send({ message: "ONG não encontrada ou não aprovada." });
+    return reply.status(404).view(
+      "/templates/ong/transparencia-indisponivel.hbs",
+      {
+        title: "Transparência indisponível",
+        user: sessionUser,
+        naoLidas,
+        isOngDashboard,
+      },
+      { layout }
+    );
   }
 
   // Enriquecer necessidades com flags de tipo
@@ -39,10 +52,6 @@ export async function renderTransparenciaPage(
     ...a,
     tipoLabel: a.tipo_necessidade === "bem" ? "doação" : a.tipo_necessidade === "servico" ? "serviço" : "voluntariado",
   }));
-
-  const layout = sessionUser?.tipo === "ong"
-    ? "layouts/ongDashboardLayout"
-    : "layouts/dashboardLayout";
 
   return reply.view(
     "/templates/ong/transparencia.hbs",

@@ -22,8 +22,6 @@ export async function renderDashBoardPage(
       dashboardService.getDashboardData(Number(sessionUser.id), de, ate),
       gamificacaoService.getDadosGamificacao(Number(sessionUser.id)),
     ]);
-    const totalDoadoNumber = Number(data.totalDoado ?? 0);
-
     if (process.env.NODE_ENV === "test") {
       return reply.send({ user: sessionUser, ...data });
     }
@@ -41,13 +39,13 @@ export async function renderDashBoardPage(
         gamificacao,
 
         // cards
-        totalDoado: totalDoadoNumber.toFixed(2),
+        totalInteresses: data.totalInteresses ?? 0,
         qtdTipos: data.qtdTipos ?? 0,
-        qtdMesesComDoacao: data.qtdMesesComDoacao ?? 0,
+        qtdMesesComAtividade: data.qtdMesesComAtividade ?? 0,
 
         // gráficos
         labelsMes: JSON.stringify(data.labelsMes ?? []),
-        valoresDoadoMes: JSON.stringify(data.valoresDoadoMes ?? []),
+        valoresInteressesMes: JSON.stringify(data.valoresInteressesMes ?? []),
         valoresOngsMes: JSON.stringify(data.valoresOngsMes ?? []),
 
         labelsTipo: JSON.stringify(data.labelsTipo ?? []),

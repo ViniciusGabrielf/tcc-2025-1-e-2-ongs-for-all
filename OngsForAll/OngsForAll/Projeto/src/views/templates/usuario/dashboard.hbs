@@ -62,18 +62,18 @@
     <!-- KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#4886D9] hover:shadow-md transition-shadow duration-200">
-        <p class="text-sm text-slate-500 dark:text-white/60">Total doado</p>
-        <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">R$ {{totalDoado}}</p>
+        <p class="text-sm text-slate-500 dark:text-white/60">Interesses criados</p>
+        <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">{{totalInteresses}}</p>
       </div>
 
       <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#2D4BA6] hover:shadow-md transition-shadow duration-200">
-        <p class="text-sm text-slate-500 dark:text-white/60">Tipos de doação</p>
+        <p class="text-sm text-slate-500 dark:text-white/60">Categorias apoiadas</p>
         <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">{{qtdTipos}}</p>
       </div>
 
       <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-pink-500 hover:shadow-md transition-shadow duration-200">
-        <p class="text-sm text-slate-500 dark:text-white/60">Meses com doação</p>
-        <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">{{qtdMesesComDoacao}}</p>
+        <p class="text-sm text-slate-500 dark:text-white/60">Meses com atividade</p>
+        <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">{{qtdMesesComAtividade}}</p>
       </div>
     </div>
 
@@ -207,14 +207,14 @@
       </div>
 
       <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Total doado (R$)</h2>
+        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Interesses por mês</h2>
         <div class="h-64">
-          <canvas id="graficoDoacoesMes"></canvas>
+          <canvas id="graficoInteressesMes"></canvas>
         </div>
       </div>
 
       <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Doações por tipo</h2>
+        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Contribuições por tipo</h2>
         <div class="h-64">
           <canvas id="categoriasChart"></canvas>
         </div>
@@ -230,13 +230,6 @@
         {{#each atividadesRecentes}}
         <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:shadow-sm transition-all duration-200">
           <div class="shrink-0 mt-0.5">
-            {{#ifCond this.tipo_atividade '==' 'doacao'}}
-            <div class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            {{/ifCond}}
             {{#ifCond this.tipo_atividade '==' 'interesse_pendente'}}
             <div class="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -352,7 +345,7 @@
         const toast = document.createElement('div');
         toast.id = 'toast';
         toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
-        toast.textContent = 'Doação realizada com sucesso!';
+        toast.textContent = 'Interesse registrado com sucesso!';
         document.body.appendChild(toast);
 
         setTimeout(() => {
@@ -366,13 +359,13 @@
 
     // Dados vindos do servidor
     const labelsMes = {{{ labelsMes }}};
-    const valoresDoadoMes = {{{ valoresDoadoMes }}};
+    const valoresInteressesMes = {{{ valoresInteressesMes }}};
     const valoresOngsMes = {{{ valoresOngsMes }}};
     const labelsTipo = {{{ labelsTipo }}};
     const valoresTipo = {{{ valoresTipo }}};
 
     const hasData =
-      (Array.isArray(valoresDoadoMes) && valoresDoadoMes.length > 0 && valoresDoadoMes.some(v => Number(v) > 0)) ||
+      (Array.isArray(valoresInteressesMes) && valoresInteressesMes.length > 0 && valoresInteressesMes.some(v => Number(v) > 0)) ||
       (Array.isArray(valoresTipo) && valoresTipo.length > 0 && valoresTipo.some(v => Number(v) > 0));
 
     const html = document.documentElement;
@@ -426,7 +419,7 @@
             ticks: {
               color: getTextColor(),
               stepSize: 10,
-              callback: (value) => 'R$ ' + Number(value).toFixed(0)
+              callback: (value) => Number(value).toFixed(0)
             },
             grid: { color: getGridColor() }
           }
@@ -437,7 +430,7 @@
             callbacks: {
               label: (ctx) => {
                 const v = Number(ctx.raw || 0);
-                return 'Total doado: R$ ' + v.toFixed(2);
+                return 'Interesses: ' + v;
               }
             }
           }
@@ -445,7 +438,7 @@
       };
 
       const ongsCanvas = document.getElementById('ongsChart');
-      const barrasCanvas = document.getElementById('graficoDoacoesMes');
+      const barrasCanvas = document.getElementById('graficoInteressesMes');
       const tiposCanvas = document.getElementById('categoriasChart');
 
       if (!ongsCanvas || !barrasCanvas || !tiposCanvas) return;
@@ -471,8 +464,8 @@
         data: {
           labels: labelsMes,
           datasets: [{
-            label: 'Total doado (R$)',
-            data: valoresDoadoMes,
+            label: 'Interesses por mês',
+            data: valoresInteressesMes,
             backgroundColor: '#2D4BA6',
             borderRadius: 8
           }]
@@ -504,8 +497,8 @@
           wrap.innerHTML =
             '<div class="md:col-span-3 bg-white dark:bg-white/5 p-8 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm text-center">' +
             '<h2 class="text-xl font-bold mb-2">Sem dados ainda</h2>' +
-            '<p class="text-slate-400 dark:text-white/50 mb-6">Faça sua primeira doação para começar a acompanhar seu impacto.</p>' +
-            '<a href="/doacoes/nova" class="inline-block bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white font-bold px-6 py-3 rounded-xl shadow hover:opacity-90 transition">Fazer uma Doação</a>' +
+            '<p class="text-slate-400 dark:text-white/50 mb-6">Demonstre interesse em uma necessidade para começar a acompanhar seu impacto.</p>' +
+            '<a href="/necessidades" class="inline-block bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white font-bold px-6 py-3 rounded-xl shadow hover:opacity-90 transition">Explorar necessidades</a>' +
             '</div>';
         }
         return;

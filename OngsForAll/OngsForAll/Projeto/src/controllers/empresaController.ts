@@ -70,6 +70,56 @@ export async function renderDashboardEmpresa(request: FastifyRequest, reply: Fas
 // ----------------------------------------------------------
 // Apoios — ver necessidades e apoiar
 // ----------------------------------------------------------
+export async function renderPlanosEmpresaPage(request: FastifyRequest, reply: FastifyReply) {
+  const sessionUser = request.session.user;
+  if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const [empresa, totalItensNoLimite, totalItensCadastrados, naoLidas] = await Promise.all([
+    empresaRepo.findEmpresaById(Number(sessionUser.id)),
+    marketplaceRepo.contarItensNoLimiteDaEmpresa(Number(sessionUser.id)),
+    marketplaceRepo.contarItensDaEmpresa(Number(sessionUser.id)),
+    getNaoLidas(Number(sessionUser.id)),
+  ]);
+
+  const planos = empresaService.listarPlanos(empresa?.plano).map((plano) => ({
+    ...plano,
+    canSelecionar: totalItensNoLimite <= plano.limite,
+    bloqueadoPorLimite: totalItensNoLimite > plano.limite,
+  }));
+
+  return reply.view(
+    "/templates/empresa/planos.hbs",
+    {
+      user: sessionUser,
+      naoLidas,
+      empresa,
+      planos,
+      totalItens: totalItensNoLimite,
+      totalItensCadastrados,
+      success: (request.query as any)?.sucesso === "1",
+      erro: (request.query as any)?.erro || "",
+    },
+    { layout: "layouts/empresaDashboardLayout" }
+  );
+}
+
+export async function alterarPlanoEmpresa(request: FastifyRequest, reply: FastifyReply) {
+  const sessionUser = request.session.user;
+  if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const { plano } = request.body as { plano?: string };
+  const result = await empresaService.alterarPlanoEmpresa({
+    empresaId: Number(sessionUser.id),
+    plano: plano ?? "",
+  });
+
+  if (!result.ok) {
+    return reply.redirect(`/empresa/plano?erro=${encodeURIComponent(result.error)}`);
+  }
+
+  return reply.redirect("/empresa/plano?sucesso=1");
+}
+
 export async function renderNecessidadesParaApoiar(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");

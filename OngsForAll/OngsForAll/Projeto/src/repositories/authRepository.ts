@@ -70,7 +70,7 @@ export async function findOngByEmail(email: string) {
 
 export async function findEmpresaByEmailAuth(email: string) {
   const [rows]: any = await pool.query(
-    "SELECT id, nome_fantasia AS nome, email, senha, logo FROM empresas WHERE email = ? LIMIT 1",
+    "SELECT id, nome_fantasia AS nome, email, senha, logo, plano, plano_valido_ate FROM empresas WHERE email = ? LIMIT 1",
     [email]
   );
   return rows?.[0] ?? null;

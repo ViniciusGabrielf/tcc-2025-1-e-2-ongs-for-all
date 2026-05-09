@@ -3,6 +3,8 @@ import {
   renderCadastroEmpresaPage,
   cadastrarEmpresa,
   renderDashboardEmpresa,
+  renderPlanosEmpresaPage,
+  alterarPlanoEmpresa,
   renderNecessidadesParaApoiar,
   apoiarNecessidade,
   renderVitrineEmpresa,
@@ -26,6 +28,10 @@ export async function empresaRoutes(fastify: FastifyInstance) {
 
   // Dashboard
   fastify.get("/empresa/dashboard", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderDashboardEmpresa);
+
+  // Planos
+  fastify.get("/empresa/plano", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderPlanosEmpresaPage);
+  fastify.post("/empresa/plano", { preHandler: [ensureAuthenticated, ensureEmpresa] }, alterarPlanoEmpresa);
 
   // Necessidades para apoiar
   fastify.get("/empresa/necessidades", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderNecessidadesParaApoiar);

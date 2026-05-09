@@ -139,54 +139,40 @@ export async function getDoacoesPorTipoOng(ongId: number, de?: string, ate?: str
 // ==========================================
 
 export async function getNecessidadesApoiadasUsuario(userId: number, de?: string, ate?: string) {
-  const params: any[] = [userId, userId];
-  let dateFilterDoacoes = "";
+  const params: any[] = [userId];
   let dateFilterInteresses = "";
   if (de) {
-    dateFilterDoacoes += " AND d.data >= ?";
     dateFilterInteresses += " AND i.criado_em >= ?";
-    params.push(de, de);
+    params.push(de);
   }
   if (ate) {
-    dateFilterDoacoes += " AND d.data <= ?";
     dateFilterInteresses += " AND i.criado_em <= ?";
-    params.push(ate, ate);
+    params.push(ate);
   }
   const [rows]: any = await pool.query(
-    `SELECT COUNT(DISTINCT necessidade_id) AS total FROM (
-       SELECT d.necessidade_id FROM doacoes d
-       WHERE d.usuario_id = ? AND d.necessidade_id IS NOT NULL${dateFilterDoacoes}
-       UNION
-       SELECT i.necessidade_id FROM interesses_doacao i
-       WHERE i.usuario_id = ? AND i.status IN ('aceito','recebido')${dateFilterInteresses}
-     ) AS apoiadas`,
+    `SELECT COUNT(DISTINCT i.necessidade_id) AS total
+     FROM interesses_doacao i
+     WHERE i.usuario_id = ? AND i.status IN ('aceito','recebido')${dateFilterInteresses}`,
     params
   );
   return Number(rows[0]?.total ?? 0);
 }
 
 export async function getOngsApoiadasUsuario(userId: number, de?: string, ate?: string) {
-  const params: any[] = [userId, userId];
-  let dateFilterDoacoes = "";
+  const params: any[] = [userId];
   let dateFilterInteresses = "";
   if (de) {
-    dateFilterDoacoes += " AND d.data >= ?";
     dateFilterInteresses += " AND i.criado_em >= ?";
-    params.push(de, de);
+    params.push(de);
   }
   if (ate) {
-    dateFilterDoacoes += " AND d.data <= ?";
     dateFilterInteresses += " AND i.criado_em <= ?";
-    params.push(ate, ate);
+    params.push(ate);
   }
   const [rows]: any = await pool.query(
-    `SELECT COUNT(DISTINCT ong_id) AS total FROM (
-       SELECT d.ong_id FROM doacoes d
-       WHERE d.usuario_id = ?${dateFilterDoacoes}
-       UNION
-       SELECT i.ong_id FROM interesses_doacao i
-       WHERE i.usuario_id = ?${dateFilterInteresses}
-     ) AS ongs_apoiadas`,
+    `SELECT COUNT(DISTINCT i.ong_id) AS total
+     FROM interesses_doacao i
+     WHERE i.usuario_id = ?${dateFilterInteresses}`,
     params
   );
   return Number(rows[0]?.total ?? 0);
@@ -213,33 +199,19 @@ export async function getInteressesRecebidosUsuario(userId: number, de?: string,
 }
 
 export async function getAtividadesRecentesUsuario(userId: number, de?: string, ate?: string, limite = 10) {
-  const params: any[] = [userId, userId];
-  let dateFilterDoacoes = "";
+  const params: any[] = [userId];
   let dateFilterInteresses = "";
   if (de) {
-    dateFilterDoacoes += " AND d.data >= ?";
     dateFilterInteresses += " AND i.criado_em >= ?";
-    params.push(de, de);
+    params.push(de);
   }
   if (ate) {
-    dateFilterDoacoes += " AND d.data <= ?";
     dateFilterInteresses += " AND i.criado_em <= ?";
-    params.push(ate, ate);
+    params.push(ate);
   }
   params.push(limite);
   const [rows]: any = await pool.query(
-    `SELECT * FROM (
-       SELECT
-         'doacao' AS tipo_atividade,
-         CONCAT('Doou R$ ', FORMAT(d.valor, 2, 'pt_BR'), ' para ', o.nome) AS descricao,
-         d.data AS data_atividade
-       FROM doacoes d
-       JOIN ongs o ON d.ong_id = o.ong_id
-       WHERE d.usuario_id = ?${dateFilterDoacoes}
-
-       UNION ALL
-
-       SELECT
+    `SELECT
          CASE i.status
            WHEN 'pendente' THEN 'interesse_pendente'
            WHEN 'aceito' THEN 'interesse_aceito'
@@ -256,7 +228,6 @@ export async function getAtividadesRecentesUsuario(userId: number, de?: string, 
        FROM interesses_doacao i
        JOIN necessidades n ON i.necessidade_id = n.id
        WHERE i.usuario_id = ?${dateFilterInteresses}
-     ) AS atividades
      ORDER BY data_atividade DESC
      LIMIT ?`,
     params

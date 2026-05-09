@@ -3,12 +3,75 @@ import { z } from "zod";
 import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
 
+const PLANOS = {
+  starter: {
+    label: "Starter",
+    preco: "Gratis",
+    limite: 3,
+    limiteLabel: "3 itens",
+    beneficio: "Cadastro, apoio a necessidades e vitrine basica",
+  },
+  parceiro: {
+    label: "Parceiro",
+    preco: "R$ 149/mes",
+    limite: 15,
+    limiteLabel: "15 itens",
+    beneficio: "Selo Parceiro Verificado, destaque na vitrine e relatorio ESG mensal",
+  },
+  premium: {
+    label: "Premium",
+    preco: "R$ 399/mes",
+    limite: 999,
+    limiteLabel: "Ilimitado",
+    beneficio: "Selo Premium, banner na home e relatorio ESG detalhado",
+  },
+} as const;
+
+type PlanoEmpresa = keyof typeof PLANOS;
+
+function getPlanoInfo(plano?: string | null) {
+  const codigo = (plano && plano in PLANOS ? plano : "starter") as PlanoEmpresa;
+  return {
+    codigo,
+    ...PLANOS[codigo],
+  };
+}
+
+export function listarPlanos(planoAtual?: string | null) {
+  const atual = getPlanoInfo(planoAtual).codigo;
+  return (Object.keys(PLANOS) as PlanoEmpresa[]).map((codigo) => ({
+    codigo,
+    ...PLANOS[codigo],
+    isAtual: codigo === atual,
+    isStarter: codigo === "starter",
+    isParceiro: codigo === "parceiro",
+    isPremium: codigo === "premium",
+  }));
+}
+
 function formatPrecoLabel(modoPreco: string, preco: any): string {
   if (modoPreco === "gratuito") return "Gratuito";
   if (modoPreco === "fixo" && preco != null) {
     return `R$ ${Number(preco).toFixed(2).replace(".", ",")}`;
   }
   return "Sob consulta";
+}
+
+async function validarLimitePlano(empresaId: number): Promise<{ ok: true } | { ok: false; error: string }> {
+  const empresa = await empresaRepo.findEmpresaById(empresaId);
+  if (!empresa) return { ok: false, error: "Empresa nao encontrada." };
+
+  const planoInfo = getPlanoInfo(empresa.plano);
+  const totalItensNoLimite = await marketplaceRepo.contarItensNoLimiteDaEmpresa(empresaId);
+
+  if (totalItensNoLimite >= planoInfo.limite) {
+    return {
+      ok: false,
+      error: `Limite de ${planoInfo.limiteLabel} atingido. Faca upgrade do plano para publicar mais itens.`,
+    };
+  }
+
+  return { ok: true };
 }
 
 const cadastroSchema = z.object({
@@ -43,16 +106,26 @@ export async function cadastrarEmpresa(body: Record<string, string>) {
 }
 
 export async function getDashboardData(empresaId: number) {
-  const [empresa, metricas, apoios] = await Promise.all([
+  const [empresa, metricas, apoios, totalItensMarketplace] = await Promise.all([
     empresaRepo.findEmpresaById(empresaId),
     empresaRepo.getMetricas(empresaId),
     empresaRepo.listarApoiosDaEmpresa(empresaId),
+    marketplaceRepo.contarItensNoLimiteDaEmpresa(empresaId),
   ]);
+
+  if (!empresa) throw new Error("Empresa nao encontrada.");
 
   const isBloqueada = empresa.status_marketplace === "bloqueada";
   const isElegivel = empresa.status_marketplace === "elegivel";
   const isAtiva = empresa.status_marketplace === "ativa";
   const podePubilcar = isElegivel || isAtiva;
+  const planoInfo = getPlanoInfo(empresa.plano);
+  const itensRestantesPlano =
+    planoInfo.codigo === "premium" ? null : Math.max(0, planoInfo.limite - totalItensMarketplace);
+  const usoLimitePlano =
+    planoInfo.codigo === "premium"
+      ? 100
+      : Math.min(100, Math.round((totalItensMarketplace / planoInfo.limite) * 100));
 
   const META_APOIOS = 3;
   const progressoMeta = Math.min(100, Math.round((Number(metricas.total_apoios) / META_APOIOS) * 100));
@@ -73,6 +146,14 @@ export async function getDashboardData(empresaId: number) {
     progressoMeta,
     faltam,
     META_APOIOS,
+    plano: {
+      ...planoInfo,
+      validoAte: empresa.plano_valido_ate,
+      totalItens: totalItensMarketplace,
+      itensRestantes: itensRestantesPlano,
+      usoLimite: usoLimitePlano,
+      isPremium: planoInfo.codigo === "premium",
+    },
   };
 }
 
@@ -88,6 +169,28 @@ export async function apoiarNecessidade(params: {
   await empresaRepo.createApoio(params);
   await empresaRepo.verificarElegibilidade(params.empresaId);
 
+  return { ok: true };
+}
+
+export async function alterarPlanoEmpresa(params: {
+  empresaId: number;
+  plano: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!(params.plano in PLANOS)) {
+    return { ok: false, error: "Plano invalido." };
+  }
+
+  const planoInfo = getPlanoInfo(params.plano);
+  const totalItens = await marketplaceRepo.contarItensNoLimiteDaEmpresa(params.empresaId);
+
+  if (totalItens > planoInfo.limite) {
+    return {
+      ok: false,
+      error: `Sua empresa possui ${totalItens} itens ativos no limite. O plano ${planoInfo.label} permite ${planoInfo.limiteLabel}.`,
+    };
+  }
+
+  await empresaRepo.updatePlanoEmpresa(params.empresaId, planoInfo.codigo);
   return { ok: true };
 }
 
@@ -108,6 +211,9 @@ export async function criarItemMarketplace(params: {
   if (empresa.status_marketplace === "bloqueada") {
     return { ok: false, error: "Sua empresa precisa apoiar pelo menos 3 necessidades para publicar na vitrine." };
   }
+
+  const limitePlano = await validarLimitePlano(params.empresaId);
+  if (!limitePlano.ok) return limitePlano;
 
   const titulo = params.titulo.trim();
   const descricao = params.descricao.trim();
@@ -241,6 +347,11 @@ export async function editarItemMarketplace(params: {
     novoStatus = "rejeitado";
   }
 
+  if (["rascunho", "rejeitado"].includes(item.status_publicacao) && novoStatus === "pendente") {
+    const limitePlano = await validarLimitePlano(params.empresaId);
+    if (!limitePlano.ok) return limitePlano;
+  }
+
   const updated = await marketplaceRepo.updateItemDaEmpresa({
     id: params.itemId,
     empresaId: params.empresaId,
@@ -281,6 +392,9 @@ export async function reenviarItemMarketplace(params: {
   if (!["rejeitado", "rascunho"].includes(item.status_publicacao)) {
     return { ok: false, error: "Somente itens rejeitados ou em rascunho podem ser reenviados." };
   }
+
+  const limitePlano = await validarLimitePlano(params.empresaId);
+  if (!limitePlano.ok) return limitePlano;
 
   const updated = await marketplaceRepo.atualizarStatusItemDaEmpresa(params.itemId, params.empresaId, "pendente");
   if (!updated) return { ok: false, error: "Nao foi possivel reenviar o item." };

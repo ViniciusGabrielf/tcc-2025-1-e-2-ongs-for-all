@@ -10,7 +10,7 @@
 
             <div class="flex gap-3 items-center">
                 <select onchange="window.location.href='/ong/necessidades?status=' + this.value"
-                    class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
+                    class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
                     <option value="todos" {{#ifCond filtroAtual 'todos'}}selected{{/ifCond}}>Todas</option>
                     <option value="aberta" {{#ifCond filtroAtual 'aberta'}}selected{{/ifCond}}>Abertas</option>
                     <option value="em_andamento" {{#ifCond filtroAtual 'em_andamento'}}selected{{/ifCond}}>Em andamento</option>
@@ -39,7 +39,7 @@
             {{#each necessidades}}
 
             <div
-                class="bg-white dark:bg-[#1D3273]/20 border border-slate-200 dark:border-white/20 rounded-xl p-5 shadow">
+                class="bg-white dark:bg-[#3F5F45]/20 border border-slate-200 dark:border-white/20 rounded-xl p-5 shadow">
 
                 <div class="flex justify-between items-start mb-3">
 
@@ -57,9 +57,9 @@
                         {{#if isVoluntariado}}
                         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">Voluntariado</span>
                         {{else if isServico}}
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">Serviço</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#DDEADB] dark:bg-[#6B8F71]/20 text-[#3F5F45] dark:text-[#DDEADB]">Serviço</span>
                         {{else}}
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">Bem</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#EAF3EC] dark:bg-[#6B8F71]/20 text-[#3F5F45] dark:text-[#DDEADB]">Bem</span>
                         {{/if}}
                         <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white/70">
                             {{status}}
@@ -115,7 +115,7 @@
 
                 <form method="POST" action="/necessidades/{{id}}/status" class="flex gap-2 items-center flex-wrap mt-4">
                     <select name="status"
-                        class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
+                        class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
                         <option value="aberta">Aberta</option>
                         <option value="em_andamento">Em andamento</option>
                         <option value="concluida">Concluída</option>
@@ -123,7 +123,7 @@
                     </select>
 
                     <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        class="bg-[#3F5F45] hover:bg-[#2F3E34] text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                         Atualizar
                     </button>
                 </form>

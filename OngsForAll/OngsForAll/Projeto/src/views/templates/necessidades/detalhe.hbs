@@ -1,4 +1,4 @@
-<section class="min-h-screen px-6 py-10">
+<section class="min-h-screen px-6 py-10" style="--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
   <div class="max-w-3xl mx-auto">
 
     <!-- Badges de status -->
@@ -9,11 +9,11 @@
         Voluntariado
       </span>
       {{else if necessidade.isServico}}
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--theme-soft-2)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
         Serviço
       </span>
       {{else}}
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--theme-soft)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
         Doação de bem
       </span>
       {{/if}}
@@ -28,7 +28,7 @@
 
     <h1 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">{{necessidade.titulo}}</h1>
 
-    <div class="bg-white dark:bg-[#1D3273]/20 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+    <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
 
       <p class="mb-6 text-slate-700 dark:text-white/80 leading-relaxed">{{necessidade.descricao}}</p>
 
@@ -98,7 +98,7 @@
           <span class="font-semibold text-slate-700 dark:text-white/70">{{necessidade.percentual}}%</span>
         </div>
         <div class="w-full bg-slate-100 dark:bg-white/10 rounded-full h-3 overflow-hidden">
-          <div class="{{#if necessidade.isVoluntariado}}bg-emerald-500{{else if necessidade.isServico}}bg-purple-500{{else}}bg-blue-500{{/if}} h-3 rounded-full transition-all duration-500" style="width: {{necessidade.percentual}}%;"></div>
+          <div class="{{#if necessidade.isVoluntariado}}bg-emerald-500{{else if necessidade.isServico}}bg-[var(--theme-accent)]{{else}}bg-[var(--theme-primary)]{{/if}} h-3 rounded-full transition-all duration-500" style="width: {{necessidade.percentual}}%;"></div>
         </div>
         <p class="text-xs mt-1.5 text-slate-500 dark:text-white/50">
           {{#if necessidade.isVoluntariado}}
@@ -110,7 +110,19 @@
       </div>
 
       <!-- CTAs -->
-      {{#if user}}
+      {{#if isPropriaOng}}
+      <div class="border-t border-slate-100 dark:border-white/10 pt-5">
+        <div class="rounded-xl bg-[var(--theme-soft)] dark:bg-[var(--theme-primary)]/15 border border-[var(--theme-primary)]/20 dark:border-[var(--theme-primary)]/30 px-4 py-3">
+          <p class="text-sm font-semibold text-[var(--theme-strong)] dark:text-[var(--theme-soft)]">
+            Esta necessidade pertence à sua ONG.
+          </p>
+          <p class="text-xs text-slate-600 dark:text-white/70 mt-1">
+            Para gerenciar recebimentos e status, use a tela Minhas necessidades.
+          </p>
+        </div>
+      </div>
+      {{else}}
+      {{#if canRegistrarInteresse}}
       <div class="flex gap-3 flex-wrap border-t border-slate-100 dark:border-white/10 pt-5">
         {{#if necessidade.isVoluntariado}}
         <a href="/interesses/nova?necessidade_id={{necessidade.id}}"
@@ -120,7 +132,7 @@
         </a>
         {{else}}
         <a href="/interesses/nova?necessidade_id={{necessidade.id}}"
-          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition">
+          class="inline-flex items-center gap-2 bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] text-white px-5 py-3 rounded-xl font-medium transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
           {{#if necessidade.isServico}}Quero oferecer este serviço{{else}}Quero entregar este item{{/if}}
         </a>
@@ -141,6 +153,7 @@
         </form>
         {{/ifCond}}
       </div>
+      {{/if}}
       {{/if}}
 
     </div>

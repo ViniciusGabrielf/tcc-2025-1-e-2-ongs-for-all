@@ -29,6 +29,7 @@ export async function renderNotificacoesPage(
       sessionUser.tipo === "ong"
         ? "layouts/ongDashboardLayout"
         : "layouts/dashboardLayout";
+    const isOngDashboard = sessionUser.tipo === "ong";
 
     return reply.view(
       "/templates/notificacoes/notificacoes.hbs",
@@ -36,6 +37,7 @@ export async function renderNotificacoesPage(
         user: sessionUser,
         notificacoes,
         naoLidas,
+        isOngDashboard,
       },
       { layout }
     );
@@ -52,7 +54,6 @@ const TIPOS_FEED = [
   { value: "interesse_aceito", label: "Interesse aceito" },
   { value: "interesse_recebido", label: "Interesse recebido" },
   { value: "interesse_cancelado", label: "Interesse cancelado" },
-  { value: "doacao_realizada", label: "Doação realizada" },
   { value: "meta_atingida", label: "Meta atingida" },
 ];
 
@@ -122,6 +123,7 @@ export async function renderFeedPage(
       sessionUser.tipo === "ong"
         ? "layouts/ongDashboardLayout"
         : "layouts/dashboardLayout";
+    const isOngDashboard = sessionUser.tipo === "ong";
 
     return reply.view(
       "/templates/notificacoes/feed.hbs",
@@ -136,6 +138,7 @@ export async function renderFeedPage(
         filtroAte: filtroAte ?? "",
         temFiltro,
         erroPeriodo,
+        isOngDashboard,
       },
       { layout }
     );

@@ -1,121 +1,18 @@
 <div class="max-w-xl mx-auto space-y-6">
-
   <div>
-    <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Nova doação</h2>
-    <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Preencha os dados abaixo para realizar sua doação</p>
+    <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Fluxo financeiro desativado</h2>
+    <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">
+      Pessoas físicas agora participam demonstrando interesse em necessidades, serviços e voluntariado.
+    </p>
   </div>
 
-  {{#if error}}
-  <div class="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm font-medium">
-    {{error}}
+  <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+    <p class="text-sm text-slate-600 dark:text-white/70">
+      Para apoiar uma ONG, acesse a lista de necessidades e registre seu interesse na contribuição que você pode oferecer.
+    </p>
+    <a href="/necessidades"
+      class="mt-5 inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white text-sm font-bold shadow hover:opacity-90 transition">
+      Explorar necessidades
+    </a>
   </div>
-  {{/if}}
-
-  {{#if necessidade}}
-  <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
-    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-3">Doando para a necessidade</p>
-    <div class="space-y-1.5">
-      <p class="text-sm text-slate-700 dark:text-white"><span class="font-semibold">Título:</span> {{necessidade.titulo}}</p>
-      <p class="text-sm text-slate-700 dark:text-white"><span class="font-semibold">ONG:</span> {{necessidade.nome_ong}}</p>
-      <p class="text-sm text-slate-700 dark:text-white"><span class="font-semibold">Categoria:</span> {{necessidade.categoria}}</p>
-      <p class="text-sm text-slate-700 dark:text-white"><span class="font-semibold">Quantidade:</span> {{necessidade.quantidade}}</p>
-    </div>
-  </div>
-  {{/if}}
-
-  <form action="/doacoes" method="POST" id="formDoacao"
-    class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm space-y-5">
-
-    <input type="hidden" name="necessidade_id" value="{{formData.necessidade_id}}" />
-
-    <!-- Valor -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Valor (R$) *</label>
-      <input type="text" id="valor" required placeholder="R$ 0,00" value="{{formData.valor}}"
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#4886D9]" />
-      <input type="hidden" name="valor" id="valor_real" value="{{formData.valor}}" />
-      <p id="valorErro" class="mt-1 text-xs text-red-600 dark:text-red-400 hidden">
-        Por favor, insira um valor maior que zero.
-      </p>
-    </div>
-
-    <!-- Categoria -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Categoria *</label>
-      <select name="tipo" id="tipo" required
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
-        <option value="">Selecione uma categoria</option>
-        <option value="Educação">Educação</option>
-        <option value="Saúde">Saúde</option>
-        <option value="Meio ambiente">Meio ambiente</option>
-        <option value="Animais">Animais</option>
-      </select>
-    </div>
-
-    <!-- ONG -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">ONG *</label>
-      <select name="ong_id" id="ong_id" required
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
-        <option value="">Selecione uma ONG</option>
-        {{#each ongs}}
-        <option value="{{this.ong_id}}">{{this.nome}}</option>
-        {{/each}}
-      </select>
-    </div>
-
-    <!-- Botões -->
-    <div class="flex gap-3 pt-2">
-      <button type="submit" id="btnSubmit"
-        class="flex-1 py-3 rounded-2xl bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white font-bold text-sm shadow hover:opacity-90 transition flex items-center justify-center gap-2">
-        <span id="btnText">Enviar doação</span>
-        <svg id="btnSpinner" class="w-4 h-4 animate-spin hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-        </svg>
-      </button>
-      <a href="/dashboard"
-        class="px-5 py-3 rounded-2xl border border-slate-200 dark:border-white/15 text-slate-600 dark:text-white/70 text-sm font-semibold hover:opacity-80 transition">
-        Cancelar
-      </a>
-    </div>
-  </form>
-
 </div>
-
-<script>
-  (function () {
-    var valorInput = document.getElementById('valor');
-    var valorRealInput = document.getElementById('valor_real');
-    var valorErro = document.getElementById('valorErro');
-    var valorNumerico = '';
-
-    if (valorInput.value) {
-      var valorInicial = Number(valorInput.value);
-      if (!isNaN(valorInicial) && valorInicial > 0) {
-        valorNumerico = String(Math.round(valorInicial * 100));
-        valorInput.value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(valorInicial);
-      }
-    }
-
-    valorInput.addEventListener('input', function (e) {
-      var raw = e.target.value.replace(/\D/g, '');
-      valorNumerico = raw;
-      e.target.value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 }).format(Number(raw || 0) / 100);
-      valorRealInput.value = Number(raw || 0) / 100;
-      valorErro.classList.add('hidden');
-    });
-
-    document.getElementById('formDoacao').addEventListener('submit', function (e) {
-      var numericValue = parseFloat(valorNumerico || '0') / 100;
-      if (isNaN(numericValue) || numericValue <= 0) {
-        e.preventDefault();
-        valorErro.classList.remove('hidden');
-        return;
-      }
-      document.getElementById('btnText').textContent = 'Enviando...';
-      document.getElementById('btnSpinner').classList.remove('hidden');
-      document.getElementById('btnSubmit').disabled = true;
-    });
-  })();
-</script>

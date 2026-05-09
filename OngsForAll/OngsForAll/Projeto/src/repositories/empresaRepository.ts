@@ -5,7 +5,7 @@ import { pool } from "../config/ds";
 // ----------------------------------------------------------
 export async function findEmpresaByEmail(email: string) {
   const [rows]: any = await pool.query(
-    `SELECT id, nome_fantasia AS nome, email, senha, logo, status_marketplace FROM empresas WHERE email = ? LIMIT 1`,
+    `SELECT id, nome_fantasia AS nome, email, senha, logo, status_marketplace, plano, plano_valido_ate FROM empresas WHERE email = ? LIMIT 1`,
     [email]
   );
   return rows[0] ?? null;
@@ -44,6 +44,7 @@ export async function createEmpresa(params: {
 export async function findEmpresaById(id: number) {
   const [rows]: any = await pool.query(
     `SELECT id, nome_fantasia, razao_social, email, cnpj, telefone, descricao, setor, logo, status_marketplace,
+            plano, DATE_FORMAT(plano_valido_ate, '%d/%m/%Y') AS plano_valido_ate,
             DATE_FORMAT(criado_em, '%d/%m/%Y') AS criado_em
      FROM empresas WHERE id = ? LIMIT 1`,
     [id]
@@ -62,6 +63,16 @@ export async function updateEmpresaPerfil(
   await pool.query(
     `UPDATE empresas SET nome_fantasia = ?, razao_social = ?, telefone = ?, descricao = ?, setor = ? WHERE id = ?`,
     [params.nome_fantasia, params.razao_social ?? null, params.telefone ?? null, params.descricao ?? null, params.setor ?? null, id]
+  );
+}
+
+export async function updatePlanoEmpresa(id: number, plano: "starter" | "parceiro" | "premium") {
+  await pool.query(
+    `UPDATE empresas
+     SET plano = ?,
+         plano_valido_ate = CASE WHEN ? = 'starter' THEN NULL ELSE DATE_ADD(CURDATE(), INTERVAL 30 DAY) END
+     WHERE id = ?`,
+    [plano, plano, id]
   );
 }
 
@@ -178,6 +189,7 @@ export async function findNecessidadeOngId(necessidadeId: number): Promise<numbe
 export async function listarEmpresasParaAdmin() {
   const [rows]: any = await pool.query(
     `SELECT e.id, e.nome_fantasia, e.razao_social, e.email, e.cnpj, e.setor, e.status_marketplace,
+            e.plano, DATE_FORMAT(e.plano_valido_ate, '%d/%m/%Y') AS plano_valido_ate,
             DATE_FORMAT(e.criado_em, '%d/%m/%Y') AS criado_em,
             (SELECT COUNT(*) FROM empresa_apoios WHERE empresa_id = e.id) AS total_apoios
      FROM empresas e

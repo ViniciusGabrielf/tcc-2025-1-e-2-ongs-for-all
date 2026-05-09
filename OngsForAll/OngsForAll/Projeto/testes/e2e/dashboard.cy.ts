@@ -49,15 +49,15 @@ beforeEach(() => {
 
     // Verifica títulos das seções de gráficos
     cy.contains('h2', 'ONGs apoiadas (por mês)').should('be.visible');
-    cy.contains('h2', 'Total doado (R$)').should('be.visible');
-    cy.contains('h2', 'Doações por tipo').should('be.visible');
+    cy.contains('h2', 'Interesses por mês').should('be.visible');
+    cy.contains('h2', 'Contribuições por tipo').should('be.visible');
 
     // Verifica título da seção "Seus dados"
     cy.contains('h2', 'Seus dados').should('be.visible');
     cy.get('a[href="/perfil/editar"]').should('be.visible').and('contain.text', 'Editar perfil');
 
     // Verifica botões de ação principais
-    cy.contains('a', 'Fazer uma Doação').should('be.visible');
+    cy.contains('a', 'Explorar necessidades').should('be.visible');
     cy.contains('a', 'Ver Histórico').should('be.visible');
     cy.contains('a', 'Total por ONG').should('be.visible');
   });
@@ -71,7 +71,7 @@ beforeEach(() => {
   it('Deve renderizar os placeholders (canvas) dos gráficos', () => {
     cy.log('Verificando a presença dos canvas dos gráficos');
     cy.get('canvas#ongsChart').should('be.visible');
-    cy.get('canvas#graficoDoacoesMes').should('be.visible');
+    cy.get('canvas#graficoInteressesMes').should('be.visible');
     cy.get('canvas#categoriasChart').should('be.visible');
   });
 
@@ -106,12 +106,12 @@ beforeEach(() => {
     });
   });
 
-  it('Deve exibir a mensagem de sucesso de doação se o parâmetro "sucesso=1" estiver na URL', () => {
-    cy.log('Testando toast de sucesso de doação');
+  it('Deve exibir a mensagem de sucesso de interesse se o parâmetro "sucesso=1" estiver na URL', () => {
+    cy.log('Testando toast de sucesso de interesse');
     cy.visit('/dashboard?sucesso=1'); // Visita a URL com o parâmetro
     cy.get('#toast', { timeout: 10000 }) // Aumenta o timeout para o toast aparecer
       .should('be.visible')
-      .and('contain.text', 'Doação realizada com sucesso!');
+      .and('contain.text', 'Interesse registrado com sucesso!');
     
     cy.wait(3500); // Espera o setTimeout do script do toast (3000ms + margem)
     cy.get('#toast').should('not.exist');

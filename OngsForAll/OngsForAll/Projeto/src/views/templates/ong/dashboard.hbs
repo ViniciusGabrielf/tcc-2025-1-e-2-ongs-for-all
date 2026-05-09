@@ -2,7 +2,7 @@
   <div class="max-w-7xl mx-auto space-y-10">
 
     <!-- Hero -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#4886D9] to-pink-500 p-8 sm:p-10 shadow-lg">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] p-8 sm:p-10 shadow-lg">
       <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
       <div class="relative">
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
@@ -17,7 +17,7 @@
     <!-- Filtro por período -->
     <div>
       <button type="button" id="btn-toggle-filtro"
-        class="inline-flex items-center gap-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full px-5 py-2.5 shadow-sm text-sm font-semibold text-[#2D4BA6] dark:text-white hover:shadow-md transition-all duration-200">
+        class="inline-flex items-center gap-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full px-5 py-2.5 shadow-sm text-sm font-semibold text-[#2F3E34] dark:text-white hover:shadow-md transition-all duration-200">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
         </svg>
@@ -32,16 +32,16 @@
         <div class="flex flex-col flex-1 min-w-0">
           <label class="text-sm font-semibold mb-1 text-slate-600 dark:text-white/70">De</label>
           <input type="date" name="de" value="{{filtroDe}}"
-            class="border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9] w-full" />
+            class="border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71] w-full" />
         </div>
         <div class="flex flex-col flex-1 min-w-0">
           <label class="text-sm font-semibold mb-1 text-slate-600 dark:text-white/70">Até</label>
           <input type="date" name="ate" value="{{filtroAte}}"
-            class="border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9] w-full" />
+            class="border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71] w-full" />
         </div>
         <div class="flex gap-2">
           <button type="submit"
-            class="bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-sm">
+            class="bg-gradient-to-r from-[#6B8F71] to-[#2F3E34] text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-sm">
             Filtrar
           </button>
           <a href="/dashboard/ong"
@@ -54,85 +54,85 @@
 
     <!-- Cards financeiros -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#4886D9] hover:shadow-md transition-shadow duration-200">
+      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#6B8F71] hover:shadow-md transition-shadow duration-200">
         <p class="text-sm text-slate-500 dark:text-white/60">Total recebido</p>
-        <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">R$ {{totalRecebido}}</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white mt-1">R$ {{totalRecebido}}</p>
       </div>
 
-      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#2D4BA6] hover:shadow-md transition-shadow duration-200">
+      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#2F3E34] hover:shadow-md transition-shadow duration-200">
         <p class="text-sm text-slate-500 dark:text-white/60">Quantidade de doações</p>
-        <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">{{qtdDoacoes}}</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white mt-1">{{qtdDoacoes}}</p>
       </div>
 
-      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-pink-500 hover:shadow-md transition-shadow duration-200">
+      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#DDEADB] hover:shadow-md transition-shadow duration-200">
         <p class="text-sm text-slate-500 dark:text-white/60">Doadores únicos</p>
-        <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white mt-1">{{qtdDoadores}}</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white mt-1">{{qtdDoadores}}</p>
       </div>
     </div>
 
     <!-- Métricas de Impacto -->
     <div>
-      <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#2D4BA6] to-[#4886D9] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Impacto da ONG</h2>
+      <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#2F3E34] to-[#6B8F71] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Impacto da ONG</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
         <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-200">
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#4886D9]/20 to-[#2D4BA6]/10 dark:from-[#4886D9]/30 dark:to-[#2D4BA6]/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2D4BA6] dark:text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#6B8F71]/20 to-[#2F3E34]/10 dark:from-[#6B8F71]/30 dark:to-[#2F3E34]/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2F3E34] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
             <p class="text-sm font-semibold text-slate-500 dark:text-white/60">Necessidades criadas</p>
           </div>
-          <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white">{{necessidadesCriadas}}</p>
+          <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{necessidadesCriadas}}</p>
         </div>
 
         <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-200">
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#4886D9]/20 to-[#2D4BA6]/10 dark:from-[#4886D9]/30 dark:to-[#2D4BA6]/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2D4BA6] dark:text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#6B8F71]/20 to-[#2F3E34]/10 dark:from-[#6B8F71]/30 dark:to-[#2F3E34]/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2F3E34] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <p class="text-sm font-semibold text-slate-500 dark:text-white/60">Necessidades concluídas</p>
           </div>
-          <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white">{{necessidadesConcluidas}}</p>
+          <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{necessidadesConcluidas}}</p>
         </div>
 
         <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-200">
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#4886D9]/20 to-[#2D4BA6]/10 dark:from-[#4886D9]/30 dark:to-[#2D4BA6]/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2D4BA6] dark:text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#6B8F71]/20 to-[#2F3E34]/10 dark:from-[#6B8F71]/30 dark:to-[#2F3E34]/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2F3E34] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
             <p class="text-sm font-semibold text-slate-500 dark:text-white/60">Taxa de conclusão</p>
           </div>
-          <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white">{{taxaConclusao}}%</p>
+          <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{taxaConclusao}}%</p>
         </div>
 
         <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-200">
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-200/50 to-amber-100 dark:from-amber-500/30 dark:to-amber-500/10 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#EAF3EC] to-[#DDEADB] dark:from-[#6B8F71]/30 dark:to-[#6B8F71]/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#DDEADB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <p class="text-sm font-semibold text-slate-500 dark:text-white/60">Interesses pendentes</p>
           </div>
-          <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white">{{interessesPendentes}}</p>
+          <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{interessesPendentes}}</p>
         </div>
 
         <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-200">
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#4886D9]/20 to-[#2D4BA6]/10 dark:from-[#4886D9]/30 dark:to-[#2D4BA6]/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2D4BA6] dark:text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#6B8F71]/20 to-[#2F3E34]/10 dark:from-[#6B8F71]/30 dark:to-[#2F3E34]/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2F3E34] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
               </svg>
             </div>
             <p class="text-sm font-semibold text-slate-500 dark:text-white/60">Interesses aceitos</p>
           </div>
-          <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white">{{interessesAceitos}}</p>
+          <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{interessesAceitos}}</p>
         </div>
 
         <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-200">
@@ -144,7 +144,7 @@
             </div>
             <p class="text-sm font-semibold text-slate-500 dark:text-white/60">Entregas recebidas</p>
           </div>
-          <p class="text-3xl font-extrabold text-[#2D4BA6] dark:text-white">{{interessesRecebidos}}</p>
+          <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{interessesRecebidos}}</p>
         </div>
 
       </div>
@@ -152,7 +152,7 @@
 
     <!-- Necessidade mais avançada -->
     {{#if necessidadeMaisAvancada}}
-    <div class="bg-gradient-to-r from-[#4886D9] to-pink-500 p-6 rounded-2xl shadow-lg text-white">
+    <div class="bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] p-6 rounded-2xl shadow-lg text-white">
       <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
           <p class="text-sm font-semibold opacity-80">Necessidade mais avançada</p>
@@ -175,7 +175,7 @@
     <!-- Necessidades quase completas -->
     {{#if necessidadesQuaseCompletas.length}}
     <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-      <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#2D4BA6] to-[#4886D9] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Quase completas</h2>
+      <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#2F3E34] to-[#6B8F71] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Quase completas</h2>
       <div class="space-y-3">
         {{#each necessidadesQuaseCompletas}}
         <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:shadow-sm transition-all duration-200">
@@ -187,9 +187,9 @@
           </div>
           <div class="flex items-center gap-3 ml-4">
             <div class="w-24 bg-slate-200 dark:bg-white/10 rounded-full h-2.5">
-              <div class="bg-gradient-to-r from-[#4886D9] to-pink-500 rounded-full h-2.5 transition-all" style="width: {{this.percentual}}%"></div>
+              <div class="bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] rounded-full h-2.5 transition-all" style="width: {{this.percentual}}%"></div>
             </div>
-            <span class="text-sm font-bold whitespace-nowrap text-[#2D4BA6] dark:text-white">{{this.percentual}}%</span>
+            <span class="text-sm font-bold whitespace-nowrap text-[#2F3E34] dark:text-white">{{this.percentual}}%</span>
           </div>
         </div>
         {{/each}}
@@ -216,7 +216,7 @@
 
     <!-- Últimas doações -->
     <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-      <h2 class="text-2xl font-bold bg-gradient-to-r from-[#2D4BA6] to-[#4886D9] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Últimas doações</h2>
+      <h2 class="text-2xl font-bold bg-gradient-to-r from-[#2F3E34] to-[#6B8F71] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Últimas doações</h2>
 
       <div class="mt-6 overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -235,7 +235,7 @@
                   <td class="py-3 pr-4 whitespace-nowrap text-slate-700 dark:text-white">{{this.data}}</td>
                   <td class="py-3 pr-4 text-slate-700 dark:text-white">{{this.doador}}</td>
                   <td class="py-3 pr-4 text-slate-700 dark:text-white">{{this.tipo}}</td>
-                  <td class="py-3 pr-4 text-right font-semibold text-[#2D4BA6] dark:text-white">R$ {{this.valor}}</td>
+                  <td class="py-3 pr-4 text-right font-semibold text-[#2F3E34] dark:text-white">R$ {{this.valor}}</td>
                 </tr>
               {{/each}}
             {{else}}
@@ -252,7 +252,7 @@
 
     <!-- Atividades Recentes -->
     <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-      <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#2D4BA6] to-[#4886D9] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Atividades recentes</h2>
+      <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#2F3E34] to-[#6B8F71] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Atividades recentes</h2>
 
       {{#if atividadesRecentes.length}}
       <div class="space-y-3">
@@ -260,15 +260,15 @@
         <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:shadow-sm transition-all duration-200">
           <div class="shrink-0 mt-0.5">
             {{#ifCond this.tipo_atividade '==' 'interesse_pendente'}}
-            <div class="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-9 h-9 rounded-full bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#3F5F45] dark:text-[#DDEADB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             {{/ifCond}}
             {{#ifCond this.tipo_atividade '==' 'interesse_aceito'}}
-            <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#2D4BA6] dark:text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-9 h-9 rounded-full bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#2F3E34] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
               </svg>
             </div>
@@ -288,8 +288,8 @@
             </div>
             {{/ifCond}}
             {{#ifCond this.tipo_atividade '==' 'necessidade_concluida'}}
-            <div class="w-9 h-9 rounded-full bg-[#2D4BA6]/10 dark:bg-[#4886D9]/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#2D4BA6] dark:text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-9 h-9 rounded-full bg-[#2F3E34]/10 dark:bg-[#6B8F71]/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#2F3E34] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
             </div>
@@ -387,8 +387,8 @@
 
       const html = document.documentElement;
 
-      const getTextColor = () => (html.classList.contains('dark') ? '#FFFFFF' : '#2D4BA6');
-      const getGridColor = () => (html.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(45,75,166,0.1)');
+      const getTextColor = () => (html.classList.contains('dark') ? '#FFFFFF' : '#2F3E34');
+      const getGridColor = () => (html.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(146,64,14,0.12)');
 
       const hasDataMes = Array.isArray(valoresMes) && valoresMes.length > 0 && valoresMes.some(v => Number(v) > 0);
       const hasDataTipo = Array.isArray(valoresTipo) && valoresTipo.length > 0 && valoresTipo.some(v => Number(v) > 0);
@@ -441,7 +441,7 @@
               datasets: [{
                 label: 'Total recebido (R$)',
                 data: valoresMes,
-                backgroundColor: '#2D4BA6',
+                backgroundColor: '#6B8F71',
                 borderRadius: 8
               }]
             },
@@ -457,7 +457,7 @@
               labels: labelsTipo,
               datasets: [{
                 data: valoresTipo,
-                backgroundColor: ['#4886D9', '#E83FBA', '#2D4BA6', '#F59E0B']
+                backgroundColor: ['#6B8F71', '#DDEADB', '#2F3E34', '#EAF3EC']
               }]
             },
             options: {

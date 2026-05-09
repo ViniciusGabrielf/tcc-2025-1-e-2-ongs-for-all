@@ -1,22 +1,22 @@
-<section class="min-h-screen">
+<section class="min-h-screen" style="--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
   <div class="max-w-3xl mx-auto space-y-6">
 
     <!-- Cabeçalho compacto da página -->
     <div class="flex items-start justify-between gap-4 pb-5 border-b border-slate-200 dark:border-white/10">
       <div class="flex items-center gap-4">
-        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#4886D9] to-[#2D4BA6] flex items-center justify-center shadow-md shrink-0">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[var(--theme-primary)] to-[var(--theme-strong)] flex items-center justify-center shadow-md shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
         <div>
-          <h1 class="text-xl font-extrabold text-[#2D4BA6] dark:text-white tracking-tight">Feed de Atividades</h1>
+          <h1 class="text-xl font-extrabold text-[var(--theme-strong)] dark:text-white tracking-tight">Feed de Atividades</h1>
           <p class="text-sm text-slate-500 dark:text-white/50 mt-0.5">Acompanhe o que está acontecendo na plataforma</p>
         </div>
       </div>
 
       <div class="shrink-0 mt-1">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#2D4BA6]/10 dark:bg-[#4886D9]/20 text-[#2D4BA6] dark:text-[#4886D9] text-xs font-bold">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--theme-strong)]/10 dark:bg-[var(--theme-primary)]/20 text-[var(--theme-strong)] dark:text-[var(--theme-primary)] text-xs font-bold">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
@@ -30,7 +30,7 @@
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div class="flex items-center gap-2.5 flex-wrap">
           <button type="button" id="btn-toggle-filtro"
-            class="inline-flex items-center gap-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full px-4 py-2 shadow-sm text-sm font-semibold text-[#2D4BA6] dark:text-white hover:shadow-md transition-all duration-200">
+            class="inline-flex items-center gap-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full px-4 py-2 shadow-sm text-sm font-semibold text-[var(--theme-strong)] dark:text-white hover:shadow-md transition-all duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
@@ -41,8 +41,8 @@
           </button>
 
           {{#if temFiltro}}
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#4886D9]/12 dark:bg-[#4886D9]/20 text-[#2D4BA6] dark:text-[#4886D9] text-xs font-semibold">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#4886D9] dark:bg-[#4886D9]"></span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--theme-primary)]/12 dark:bg-[var(--theme-primary)]/20 text-[var(--theme-strong)] dark:text-[var(--theme-primary)] text-xs font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-[var(--theme-primary)] dark:bg-[var(--theme-primary)]"></span>
             Filtros ativos
           </span>
           {{/if}}
@@ -77,7 +77,7 @@
             <div class="flex flex-col gap-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">ONG</label>
               <select name="ong"
-                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]/50 w-full">
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]/50 w-full">
                 <option value="">Todas as ONGs</option>
                 {{#each filtroOngOptions}}
                 <option value="{{id}}" {{#if selected}}selected{{/if}}>{{nome}}</option>
@@ -89,7 +89,7 @@
             <div class="flex flex-col gap-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">Tipo</label>
               <select name="tipo"
-                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]/50 w-full">
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]/50 w-full">
                 {{#each filtroTipoOptions}}
                 <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
                 {{/each}}
@@ -100,14 +100,14 @@
             <div class="flex flex-col gap-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">De</label>
               <input type="date" name="de" id="filtro-de" value="{{filtroDe}}"
-                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]/50 w-full" />
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]/50 w-full" />
             </div>
 
             <!-- Até -->
             <div class="flex flex-col gap-1.5">
               <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">Até</label>
               <input type="date" name="ate" id="filtro-ate" value="{{filtroAte}}"
-                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]/50 w-full" />
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 dark:[color-scheme:dark] text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]/50 w-full" />
             </div>
 
           </div>
@@ -118,7 +118,7 @@
               Limpar
             </a>
             <button type="submit"
-              class="bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-sm">
+              class="bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-strong)] text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-sm">
               Aplicar filtros
             </button>
           </div>
@@ -146,8 +146,7 @@
         {{#if isInteresseAceito}}border-l-[3px] border-l-green-500{{/if}}
         {{#if isInteresseRecebido}}border-l-[3px] border-l-purple-500{{/if}}
         {{#if isInteresseCancelado}}border-l-[3px] border-l-red-500{{/if}}
-        {{#if isDoacaoRealizada}}border-l-[3px] border-l-yellow-500{{/if}}
-        {{#if isMetaAtingida}}border-l-[3px] border-l-amber-500{{/if}}
+        {{#if isMetaAtingida}}border-l-[3px] border-l-yellow-500{{/if}}
       ">
         <div class="flex items-start gap-4 p-4 sm:p-5">
 
@@ -188,13 +187,6 @@
               </svg>
             </div>
             {{/if}}
-            {{#if isDoacaoRealizada}}
-            <div class="w-10 h-10 rounded-xl bg-yellow-100 dark:bg-yellow-500/15 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            {{/if}}
             {{#if isMetaAtingida}}
             <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -214,7 +206,6 @@
               {{#if isInteresseAceito}}text-green-600 dark:text-green-400{{/if}}
               {{#if isInteresseRecebido}}text-purple-600 dark:text-purple-400{{/if}}
               {{#if isInteresseCancelado}}text-red-600 dark:text-red-400{{/if}}
-              {{#if isDoacaoRealizada}}text-yellow-600 dark:text-yellow-400{{/if}}
               {{#if isMetaAtingida}}text-amber-600 dark:text-amber-400{{/if}}
             ">{{tipoLabel}}</p>
 
@@ -241,7 +232,7 @@
               <div class="flex items-center gap-3 shrink-0">
                 {{#if necessidade_id}}
                 <a href="/necessidades/{{necessidade_id}}"
-                  class="inline-flex items-center gap-1 text-xs font-semibold text-[#4886D9] dark:text-[#4886D9] hover:underline">
+                  class="inline-flex items-center gap-1 text-xs font-semibold text-[var(--theme-primary)] dark:text-[var(--theme-primary)] hover:underline">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>

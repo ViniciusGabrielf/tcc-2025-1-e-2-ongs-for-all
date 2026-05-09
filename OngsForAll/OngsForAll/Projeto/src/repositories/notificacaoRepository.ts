@@ -206,23 +206,6 @@ export async function getFeedGlobal(params: {
       UNION ALL
 
       SELECT
-        d.id AS event_id,
-        'doacao_realizada' AS tipo,
-        CONCAT('Doação para ', o.nome) AS titulo,
-        CONCAT(u.nome, ' realizou uma doação', IF(n.titulo IS NOT NULL, CONCAT(' para "', n.titulo, '"'), '')) AS mensagem,
-        d.data AS data_evento,
-        o.nome AS nome_ong,
-        o.logo AS logo_ong,
-        d.necessidade_id AS necessidade_id,
-        d.ong_id AS ong_id
-      FROM doacoes d
-      INNER JOIN ongs o ON o.ong_id = d.ong_id
-      INNER JOIN usuarios u ON u.id = d.usuario_id
-      LEFT JOIN necessidades n ON n.id = d.necessidade_id
-
-      UNION ALL
-
-      SELECT
         nt.id AS event_id,
         nt.tipo,
         nt.titulo,

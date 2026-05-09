@@ -82,7 +82,6 @@ const TIPO_META: Record<string, { label: string }> = {
     interesse_aceito:    { label: "Interesse aceito"    },
     interesse_recebido:  { label: "Interesse recebido"  },
     interesse_cancelado: { label: "Interesse cancelado" },
-    doacao_realizada:    { label: "Doação realizada"    },
     meta_atingida:       { label: "Meta atingida"       },
 };
 
@@ -149,7 +148,6 @@ export async function listarFeed(params?: {
             isInteresseAceito:    e.tipo === "interesse_aceito",
             isInteresseRecebido:  e.tipo === "interesse_recebido",
             isInteresseCancelado: e.tipo === "interesse_cancelado",
-            isDoacaoRealizada:    e.tipo === "doacao_realizada",
             isMetaAtingida:       e.tipo === "meta_atingida",
         };
     });

@@ -2,7 +2,7 @@
   <div class="max-w-xl mx-auto">
 
     <div class="flex items-center gap-3 mb-8">
-      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#4886D9] to-[#2D4BA6] flex items-center justify-center shadow">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#6B8F71] to-[#2F3E34] flex items-center justify-center shadow">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
@@ -22,21 +22,21 @@
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Título</label>
         <input type="text" name="titulo" value="{{form.titulo}}" required
-          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9]"
+          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6B8F71]"
           placeholder="Ex.: Relatório de impacto — Campanha do Agasalho 2025" />
       </div>
 
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Resumo / Descrição</label>
         <textarea name="descricao" rows="5" required
-          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9]"
+          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6B8F71]"
           placeholder="Descreva o impacto gerado, o que foi feito, quem foi atendido...">{{form.descricao}}</textarea>
       </div>
 
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Necessidade vinculada <span class="font-normal text-slate-400 dark:text-white/40">(opcional)</span></label>
         <select name="necessidade_id"
-          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
+          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
           <option value="">Sem vínculo específico</option>
           {{#each necessidades}}
           <option value="{{id}}">{{titulo}}</option>
@@ -48,31 +48,31 @@
         <div>
           <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Pessoas beneficiadas <span class="font-normal text-slate-400 dark:text-white/40">(opcional)</span></label>
           <input type="number" name="pessoas_beneficiadas" value="{{form.pessoas_beneficiadas}}" min="0"
-            class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9]"
+            class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6B8F71]"
             placeholder="0" />
         </div>
         <div>
           <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Data de publicação</label>
           <input type="date" name="data_publicacao" value="{{form.data_publicacao}}" required
-            class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]" />
+            class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]" />
         </div>
       </div>
 
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-2">Imagem / Anexo <span class="font-normal text-slate-400 dark:text-white/40">(opcional, máx. 3MB)</span></label>
         <input type="file" name="file" accept="image/jpeg,image/png,image/webp"
-          class="w-full text-sm text-slate-600 dark:text-white/70 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#2D4BA6]/10 file:text-[#2D4BA6] dark:file:text-white/80 dark:file:bg-white/10 file:font-medium hover:file:opacity-80 cursor-pointer" />
+          class="w-full text-sm text-slate-600 dark:text-white/70 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#2F3E34]/10 file:text-[#2F3E34] dark:file:text-white/80 dark:file:bg-white/10 file:font-medium hover:file:opacity-80 cursor-pointer" />
       </div>
 
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-2">Status</label>
         <div class="flex gap-3">
           <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="status" value="rascunho" class="accent-[#4886D9]" {{#ifCond form.status 'publicado'}}{{else}}checked{{/ifCond}} />
+            <input type="radio" name="status" value="rascunho" class="accent-[#6B8F71]" {{#ifCond form.status 'publicado'}}{{else}}checked{{/ifCond}} />
             <span class="text-sm text-slate-700 dark:text-white/80">Salvar como rascunho</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="status" value="publicado" class="accent-[#4886D9]" {{#ifCond form.status 'publicado'}}checked{{/ifCond}} />
+            <input type="radio" name="status" value="publicado" class="accent-[#6B8F71]" {{#ifCond form.status 'publicado'}}checked{{/ifCond}} />
             <span class="text-sm text-slate-700 dark:text-white/80">Publicar</span>
           </label>
         </div>
@@ -84,7 +84,7 @@
           Cancelar
         </a>
         <button type="submit"
-          class="flex-1 bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] hover:opacity-90 text-white py-3 rounded-xl font-semibold transition shadow text-sm">
+          class="flex-1 bg-gradient-to-r from-[#6B8F71] to-[#2F3E34] hover:opacity-90 text-white py-3 rounded-xl font-semibold transition shadow text-sm">
           Salvar relatório
         </button>
       </div>

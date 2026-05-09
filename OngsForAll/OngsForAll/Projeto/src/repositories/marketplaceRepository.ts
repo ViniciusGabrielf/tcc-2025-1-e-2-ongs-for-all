@@ -53,6 +53,27 @@ export async function listarItensDaEmpresa(empresaId: number) {
   return rows as any[];
 }
 
+export async function contarItensDaEmpresa(empresaId: number): Promise<number> {
+  const [rows]: any = await pool.query(
+    `SELECT COUNT(*) AS total
+     FROM marketplace_itens
+     WHERE empresa_id = ?`,
+    [empresaId]
+  );
+  return Number(rows[0]?.total ?? 0);
+}
+
+export async function contarItensNoLimiteDaEmpresa(empresaId: number): Promise<number> {
+  const [rows]: any = await pool.query(
+    `SELECT COUNT(*) AS total
+     FROM marketplace_itens
+     WHERE empresa_id = ?
+       AND status_publicacao IN ('pendente', 'aprovado')`,
+    [empresaId]
+  );
+  return Number(rows[0]?.total ?? 0);
+}
+
 export async function findItemById(id: number) {
   const [rows]: any = await pool.query(
     `SELECT mi.*, mc.nome AS categoria_nome,

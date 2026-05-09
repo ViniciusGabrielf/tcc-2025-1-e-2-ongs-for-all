@@ -28,6 +28,8 @@ export async function renderListaNecessidadesPage(
 
   const user = request.session.user;
   const naoLidas = user ? await getNaoLidas(user as any) : 0;
+  const isOngDashboard = user?.tipo === "ong";
+  const layout = isOngDashboard ? "layouts/ongDashboardLayout" : "layouts/dashboardLayout";
 
   // Se filtrou por ONG, pega o nome da primeira necessidade para mostrar no título
   const nomeOngFiltrada = filtroOngId && result.necessidades.length > 0
@@ -46,8 +48,9 @@ export async function renderListaNecessidadesPage(
       filtroBem: filtroTipo === "bem",
       filtroServico: filtroTipo === "servico",
       filtroVoluntariado: filtroTipo === "voluntariado",
+      isOngDashboard,
     },
-    { layout: "layouts/dashboardLayout" }
+    { layout }
   );
 }
 
@@ -183,6 +186,10 @@ export async function renderDetalheNecessidadePage(
 
   const user = request.session.user;
   const naoLidas = user ? await getNaoLidas(user as any) : 0;
+  const isOngDashboard = user?.tipo === "ong";
+  const layout = isOngDashboard ? "layouts/ongDashboardLayout" : "layouts/dashboardLayout";
+  const isPropriaOng = isOngDashboard && Number(user?.id) === Number(result.necessidade.ong_id);
+  const canRegistrarInteresse = user?.tipo === "usuario";
 
   return reply.view(
     "/templates/necessidades/detalhe.hbs",
@@ -190,8 +197,11 @@ export async function renderDetalheNecessidadePage(
       user,
       naoLidas,
       necessidade: result.necessidade,
+      isOngDashboard,
+      isPropriaOng,
+      canRegistrarInteresse,
     },
-    { layout: "layouts/dashboardLayout" }
+    { layout }
   );
 }
 

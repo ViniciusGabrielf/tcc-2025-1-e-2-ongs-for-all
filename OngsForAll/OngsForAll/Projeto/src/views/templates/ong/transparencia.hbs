@@ -1,7 +1,7 @@
 <div class="max-w-4xl mx-auto space-y-8">
 
   <!-- Hero da ONG -->
-  <div class="relative bg-gradient-to-br from-[#2D4BA6] to-[#4886D9] rounded-3xl p-8 text-white overflow-hidden shadow-lg">
+  <div class="relative bg-gradient-to-br from-[#2F3E34] to-[#6B8F71] rounded-3xl p-8 text-white overflow-hidden shadow-lg">
     <div class="absolute inset-0 opacity-10">
       <div class="absolute -top-8 -right-8 w-48 h-48 rounded-full bg-white"></div>
       <div class="absolute -bottom-12 -left-8 w-64 h-64 rounded-full bg-white"></div>
@@ -40,7 +40,7 @@
         class="flex-1 bg-white/20 border border-white/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/40"
       />
       <button type="submit"
-        class="shrink-0 px-4 py-2.5 rounded-xl bg-white text-[#2D4BA6] font-semibold text-sm hover:opacity-90 transition shadow">
+        class="shrink-0 px-4 py-2.5 rounded-xl bg-white text-[#2F3E34] font-semibold text-sm hover:opacity-90 transition shadow">
         Enviar
       </button>
     </form>
@@ -51,7 +51,7 @@
   <!-- Indicadores -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 text-center shadow-sm">
-      <p class="text-3xl font-bold text-[#2D4BA6] dark:text-white">{{stats.totalNecessidades}}</p>
+      <p class="text-3xl font-bold text-[#2F3E34] dark:text-white">{{stats.totalNecessidades}}</p>
       <p class="text-xs text-slate-500 dark:text-white/50 mt-1 font-medium">Necessidades criadas</p>
     </div>
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 text-center shadow-sm">
@@ -59,11 +59,11 @@
       <p class="text-xs text-slate-500 dark:text-white/50 mt-1 font-medium">Concluídas</p>
     </div>
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 text-center shadow-sm">
-      <p class="text-3xl font-bold text-[#4886D9]">{{stats.totalApoios}}</p>
+      <p class="text-3xl font-bold text-[#6B8F71]">{{stats.totalApoios}}</p>
       <p class="text-xs text-slate-500 dark:text-white/50 mt-1 font-medium">Apoios recebidos</p>
     </div>
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 text-center shadow-sm">
-      <p class="text-3xl font-bold text-amber-500">{{stats.pessoasBeneficiadas}}</p>
+      <p class="text-3xl font-bold text-[#6B8F71]">{{stats.pessoasBeneficiadas}}</p>
       <p class="text-xs text-slate-500 dark:text-white/50 mt-1 font-medium">Pessoas beneficiadas</p>
     </div>
   </div>
@@ -71,16 +71,16 @@
   <!-- Necessidades abertas -->
   {{#if temNecessidades}}
   <section>
-    <h2 class="text-lg font-bold text-[#2D4BA6] dark:text-white mb-4">Necessidades abertas</h2>
+    <h2 class="text-lg font-bold text-[#2F3E34] dark:text-white mb-4">Necessidades abertas</h2>
     <div class="grid sm:grid-cols-2 gap-4">
       {{#each necessidades}}
       <a href="/necessidades/{{id}}"
-        class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#4886D9]/40 dark:hover:border-[#4886D9]/40 transition-all duration-200 block">
+        class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#6B8F71]/40 dark:hover:border-[#6B8F71]/40 transition-all duration-200 block">
         <div class="flex items-start justify-between gap-3 mb-3">
-          <p class="font-semibold text-[#2D4BA6] dark:text-white text-sm leading-snug">{{titulo}}</p>
+          <p class="font-semibold text-[#2F3E34] dark:text-white text-sm leading-snug">{{titulo}}</p>
           <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold
-            {{#if isBem}}bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300{{/if}}
-            {{#if isServico}}bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300{{/if}}
+            {{#if isBem}}bg-[#EAF3EC] text-[#3F5F45] dark:bg-[#6B8F71]/20 dark:text-[#DDEADB]{{/if}}
+            {{#if isServico}}bg-[#DDEADB] text-[#3F5F45] dark:bg-[#6B8F71]/20 dark:text-[#DDEADB]{{/if}}
             {{#if isVoluntariado}}bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300{{/if}}">
             {{tipoLabel}}
           </span>
@@ -92,7 +92,7 @@
             <span>{{progresso}}%</span>
           </div>
           <div class="h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] rounded-full transition-all duration-500"
+            <div class="h-full bg-gradient-to-r from-[#6B8F71] to-[#2F3E34] rounded-full transition-all duration-500"
               style="width: {{progresso}}%"></div>
           </div>
         </div>
@@ -106,11 +106,11 @@
   <!-- Relatórios de impacto -->
   {{#if temRelatorios}}
   <section>
-    <h2 class="text-lg font-bold text-[#2D4BA6] dark:text-white mb-4">Relatórios de impacto</h2>
+    <h2 class="text-lg font-bold text-[#2F3E34] dark:text-white mb-4">Relatórios de impacto</h2>
     <div class="space-y-4">
       {{#each relatorios}}
       <a href="/relatorios/{{id}}"
-        class="flex gap-5 bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#4886D9]/40 dark:hover:border-[#4886D9]/40 transition-all duration-200">
+        class="flex gap-5 bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#6B8F71]/40 dark:hover:border-[#6B8F71]/40 transition-all duration-200">
         {{#if imagem_url}}
         <img src="{{imagem_url}}" alt="{{titulo}}"
           class="w-20 h-20 rounded-xl object-cover shrink-0 border border-slate-200 dark:border-white/10" />
@@ -122,11 +122,11 @@
         </div>
         {{/if}}
         <div class="min-w-0 flex-1">
-          <p class="font-semibold text-[#2D4BA6] dark:text-white text-sm">{{titulo}}</p>
+          <p class="font-semibold text-[#2F3E34] dark:text-white text-sm">{{titulo}}</p>
           <p class="text-xs text-slate-500 dark:text-white/50 mt-0.5">{{data_publicacao}}</p>
           <p class="text-sm text-slate-600 dark:text-white/70 mt-2 line-clamp-2">{{descricao}}</p>
           {{#if pessoas_beneficiadas}}
-          <p class="text-xs text-amber-600 dark:text-amber-400 font-medium mt-2">
+          <p class="text-xs text-[#3F5F45] dark:text-[#DDEADB] font-medium mt-2">
             {{pessoas_beneficiadas}} pessoas beneficiadas
           </p>
           {{/if}}
@@ -140,14 +140,14 @@
   <!-- Atividades recentes -->
   {{#if temAtividades}}
   <section>
-    <h2 class="text-lg font-bold text-[#2D4BA6] dark:text-white mb-4">Atividades recentes</h2>
+    <h2 class="text-lg font-bold text-[#2F3E34] dark:text-white mb-4">Atividades recentes</h2>
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl divide-y divide-slate-100 dark:divide-white/5 shadow-sm">
       {{#each atividades}}
       <div class="px-5 py-4 flex items-center gap-3">
-        <div class="w-2 h-2 rounded-full bg-[#4886D9] shrink-0"></div>
+        <div class="w-2 h-2 rounded-full bg-[#6B8F71] shrink-0"></div>
         <p class="text-sm text-slate-700 dark:text-white/80 flex-1">
           Recebeu apoio de {{tipoLabel}} na necessidade
-          <span class="font-semibold text-[#2D4BA6] dark:text-white">{{titulo_necessidade}}</span>
+          <span class="font-semibold text-[#2F3E34] dark:text-white">{{titulo_necessidade}}</span>
         </p>
         <span class="text-xs text-slate-400 dark:text-white/30 shrink-0">{{criado_em}}</span>
       </div>

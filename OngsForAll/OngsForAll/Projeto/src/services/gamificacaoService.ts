@@ -42,7 +42,7 @@ async function verificarEConcederSelos(usuarioId: number) {
   // Primeiro interesse
   if (totalInteresses >= 1) await gamRepo.concederSelo(usuarioId, "primeiro_interesse");
 
-  // Primeira doação confirmada
+  // Primeira entrega confirmada (código legado do selo mantido para compatibilidade)
   if (totalConfirmados >= 1) await gamRepo.concederSelo(usuarioId, "primeira_doacao");
 
   // Voluntariado

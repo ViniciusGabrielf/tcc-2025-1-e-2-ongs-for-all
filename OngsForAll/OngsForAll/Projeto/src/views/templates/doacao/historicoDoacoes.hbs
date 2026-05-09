@@ -1,58 +1,18 @@
 <div class="max-w-4xl mx-auto space-y-6">
+  <div>
+    <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Histórico financeiro legado</h2>
+    <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">
+      O apoio de pessoas físicas agora acontece por interesses, necessidades acompanhadas e voluntariado.
+    </p>
+  </div>
 
-  <div class="flex items-center justify-between flex-wrap gap-3">
-    <div>
-      <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Minhas doações</h2>
-      <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Acompanhe todas as doações que você realizou</p>
-    </div>
-    <a href="/doacoes/nova"
-      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white text-sm font-bold shadow hover:opacity-90 transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-      </svg>
-      Fazer uma doação
+  <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm text-center">
+    <p class="text-slate-500 dark:text-white/50 font-medium">
+      Este fluxo foi desativado para novas participações.
+    </p>
+    <a href="/necessidades"
+      class="mt-5 inline-block px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white text-sm font-bold shadow hover:opacity-90 transition">
+      Explorar necessidades
     </a>
   </div>
-
-  <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm overflow-hidden">
-    {{#if doacoes.length}}
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
-            <th class="px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">Data</th>
-            <th class="px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">Valor</th>
-            <th class="px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">Categoria</th>
-            <th class="px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">ONG</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-white/5">
-          {{#each doacoes}}
-          <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-150">
-            <td class="px-5 py-4 text-sm text-slate-600 dark:text-white/70 whitespace-nowrap">{{this.data}}</td>
-            <td class="px-5 py-4 text-sm font-semibold text-[#2D4BA6] dark:text-[#4886D9]">R$ {{this.valor}}</td>
-            <td class="px-5 py-4 text-sm text-slate-700 dark:text-white">{{this.tipo}}</td>
-            <td class="px-5 py-4 text-sm text-slate-700 dark:text-white">{{this.nome_ong}}</td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
-    {{else}}
-    <div class="p-16 text-center">
-      <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-slate-300 dark:text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
-      <p class="text-slate-500 dark:text-white/50 font-medium">Nenhuma doação realizada ainda</p>
-      <p class="text-sm text-slate-400 dark:text-white/30 mt-1">Suas doações aparecerão aqui após serem registradas.</p>
-      <a href="/doacoes/nova"
-        class="mt-5 inline-block px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white text-sm font-bold shadow hover:opacity-90 transition">
-        Fazer uma doação
-      </a>
-    </div>
-    {{/if}}
-  </div>
-
 </div>
