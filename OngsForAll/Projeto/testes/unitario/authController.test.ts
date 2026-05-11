@@ -78,7 +78,7 @@ describe('authController', () => {
         session: createMockSession(),
       }
 
-      queryMock.mockResolvedValue(undefined)
+      queryMock.mockResolvedValueOnce([[]]).mockResolvedValueOnce(undefined)
 
       await authController.registerUser(mockRequest as FastifyRequest, mockReply as any)
 
@@ -99,7 +99,7 @@ describe('authController', () => {
         session: createMockSession(),
       }
 
-      queryMock.mockResolvedValue(undefined)
+      queryMock.mockResolvedValueOnce([[]]).mockResolvedValueOnce(undefined)
 
       await authController.registerUser(mockRequest as FastifyRequest, mockReply as any)
 
@@ -170,7 +170,40 @@ describe('authController', () => {
       await authController.registerUser(mockRequest as FastifyRequest, mockReply as any)
 
       expect(mockReply.status).toHaveBeenCalledWith(400)
-      expect(mockReply.send).toHaveBeenCalledWith({ message: 'CPF já cadastrado.' })
+      expect(mockReply.view).toHaveBeenCalledWith(
+        '/templates/auth/register.hbs',
+        expect.objectContaining({ error: 'CPF já cadastrado.', activeTab: '#tab1' }),
+        { layout: 'layouts/authLayout' }
+      )
+    })
+
+    it('deve bloquear cadastro quando cpf ja existir antes do insert', async () => {
+      mockRequest = {
+        body: {
+          nome: 'Maria',
+          email: 'maria@example.com',
+          password: 'senha123',
+          cpf: '123.456.789-01',
+          telefone: '(11) 98888-7777',
+        },
+        session: createMockSession(),
+      }
+
+      queryMock.mockResolvedValueOnce([[{ id: 1 }]])
+
+      await authController.registerUser(mockRequest as FastifyRequest, mockReply as any)
+
+      expect(mockReply.status).toHaveBeenCalledWith(400)
+      expect(mockReply.view).toHaveBeenCalledWith(
+        '/templates/auth/register.hbs',
+        expect.objectContaining({ error: 'CPF já cadastrado.', activeTab: '#tab1' }),
+        { layout: 'layouts/authLayout' }
+      )
+      expect(bcrypt.hash).not.toHaveBeenCalled()
+      expect(queryMock).not.toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO usuarios'),
+        expect.any(Array)
+      )
     })
   })
 
@@ -322,7 +355,7 @@ describe('authController', () => {
           session: createMockSession(),
         }
 
-        queryMock.mockResolvedValue(undefined)
+        queryMock.mockResolvedValueOnce([[]]).mockResolvedValueOnce(undefined)
 
         await authController.registerONG(mockRequest as FastifyRequest, mockReply as any)
 
@@ -370,7 +403,41 @@ describe('authController', () => {
         await authController.registerONG(mockRequest as FastifyRequest, mockReply as any)
 
         expect(mockReply.status).toHaveBeenCalledWith(400)
-        expect(mockReply.send).toHaveBeenCalled()
+        expect(mockReply.view).toHaveBeenCalledWith(
+          '/templates/auth/register.hbs',
+          expect.objectContaining({ activeTab: '#tab2' }),
+          { layout: 'layouts/authLayout' }
+        )
+      })
+
+      it('deve bloquear cadastro quando cnpj da ONG ja existir antes do insert', async () => {
+        mockRequest = {
+          body: {
+            nomeong: 'ONG Teste',
+            emailong: 'ong@example.com',
+            passwordong: 'senha123',
+            cnpj_ong: '12.345.678/0001-99',
+            areadeatuacao: 'EducaÃ§Ã£o',
+            telefoneong: '11999999999',
+          },
+          session: createMockSession(),
+        }
+
+        queryMock.mockResolvedValueOnce([[{ ong_id: 1 }]])
+
+        await authController.registerONG(mockRequest as FastifyRequest, mockReply as any)
+
+        expect(mockReply.status).toHaveBeenCalledWith(400)
+        expect(mockReply.view).toHaveBeenCalledWith(
+          '/templates/auth/register.hbs',
+          expect.objectContaining({ error: 'CNPJ da ONG já cadastrado.', activeTab: '#tab2' }),
+          { layout: 'layouts/authLayout' }
+        )
+        expect(bcrypt.hash).not.toHaveBeenCalled()
+        expect(queryMock).not.toHaveBeenCalledWith(
+          expect.stringContaining('INSERT INTO ongs'),
+          expect.any(Array)
+        )
       })
 
       it('deve lidar com erro genérico ao cadastrar ONG', async () => {

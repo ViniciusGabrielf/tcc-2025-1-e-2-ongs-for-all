@@ -2,13 +2,13 @@
   "numFailedTestSuites": 0,
   "numFailedTests": 0,
   "numPassedTestSuites": 1,
-  "numPassedTests": 3,
+  "numPassedTests": 5,
   "numPendingTestSuites": 0,
-  "numPendingTests": 0,
+  "numPendingTests": 22,
   "numRuntimeErrorTestSuites": 0,
   "numTodoTests": 0,
   "numTotalTestSuites": 1,
-  "numTotalTests": 3,
+  "numTotalTests": 27,
   "openHandles": [],
   "snapshot": {
     "added": 0,
@@ -26,21 +26,21 @@
     "unmatched": 0,
     "updated": 0
   },
-  "startTime": 1778463095021,
+  "startTime": 1778530216406,
   "success": false,
   "testResults": [
     {
       "leaks": false,
       "numFailingTests": 0,
-      "numPassingTests": 3,
-      "numPendingTests": 0,
+      "numPassingTests": 5,
+      "numPendingTests": 22,
       "numTodoTests": 0,
       "openHandles": [],
       "perfStats": {
-        "end": 1778463100418,
-        "runtime": 4754,
+        "end": 1778530221039,
+        "runtime": 4278,
         "slow": false,
-        "start": 1778463095664
+        "start": 1778530216761
       },
       "skipped": false,
       "snapshot": {
@@ -52,55 +52,452 @@
         "unmatched": 0,
         "updated": 0
       },
-      "testFilePath": "C:\\Users\\Milena\\tcc-2025-1-e-2-ongs-for-all\\OngsForAll\\OngsForAll\\Projeto\\testes\\unitario\\empresaService.test.ts",
+      "testFilePath": "D:\\Documentos\\Faculdade\\TCC\\aplicacao\\tcc-2025-1-e-2-ongs-for-all\\OngsForAll\\Projeto\\testes\\unitario\\authController.test.ts",
       "testResults": [
         {
           "ancestorTitles": [
-            "empresaService",
-            "cadastrarEmpresa"
+            "authController",
+            "registerUser"
           ],
-          "duration": 10,
+          "duration": null,
           "failureDetails": [],
           "failureMessages": [],
-          "fullName": "empresaService cadastrarEmpresa permite cadastro com CNPJ invalido e marca a empresa com restricao",
+          "fullName": "authController registerUser deve registrar usuário com sucesso",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve registrar usuário com sucesso"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "registerUser"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController registerUser deve normalizar cpf, telefone e campos textuais antes de salvar",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve normalizar cpf, telefone e campos textuais antes de salvar"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "registerUser"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController registerUser deve retornar erro de validação",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve retornar erro de validação"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "registerUser"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController registerUser deve retornar erro genérico no banco",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve retornar erro genérico no banco"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "registerUser"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController registerUser deve retornar mensagem específica quando cpf já existir",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve retornar mensagem específica quando cpf já existir"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "registerUser"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController registerUser deve bloquear cadastro quando cpf ja existir antes do insert",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve bloquear cadastro quando cpf ja existir antes do insert"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "handleForgotPassword"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController handleForgotPassword redireciona para redefinir senha se usuário encontrado",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "redireciona para redefinir senha se usuário encontrado"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "handleForgotPassword"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController handleForgotPassword exibe erro se usuário não encontrado",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "exibe erro se usuário não encontrado"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "handleForgotPassword"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController handleForgotPassword deve lidar com erro no banco",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve lidar com erro no banco"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "handleResetPassword"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController handleResetPassword retorna erro se senha inválida",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "retorna erro se senha inválida"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "handleResetPassword"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController handleResetPassword atualiza senha com sucesso",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "atualiza senha com sucesso"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "handleResetPassword"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController handleResetPassword deve lidar com erro no banco ao atualizar senha",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve lidar com erro no banco ao atualizar senha"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "loginUser"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController loginUser deve fazer login com sucesso e setar sessão",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve fazer login com sucesso e setar sessão"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "logoutUser"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController logoutUser deve destruir a sessão e redirecionar para login",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve destruir a sessão e redirecionar para login"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "registerONG"
+          ],
+          "duration": 8,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController registerONG deve registrar ONG com sucesso",
           "invocations": 1,
           "location": null,
           "numPassingAsserts": 3,
           "retryReasons": [],
           "status": "passed",
-          "title": "permite cadastro com CNPJ invalido e marca a empresa com restricao"
+          "title": "deve registrar ONG com sucesso"
         },
         {
           "ancestorTitles": [
-            "empresaService",
-            "cadastrarEmpresa"
+            "authController",
+            "Cobertura adicional authController",
+            "registerONG"
           ],
-          "duration": 3,
+          "duration": 67,
           "failureDetails": [],
           "failureMessages": [],
-          "fullName": "empresaService cadastrarEmpresa mantem a razao social oficial e status validado quando o CNPJ passa na consulta",
+          "fullName": "authController Cobertura adicional authController registerONG deve retornar erro de validação ao cadastrar ONG",
           "invocations": 1,
           "location": null,
           "numPassingAsserts": 3,
           "retryReasons": [],
           "status": "passed",
-          "title": "mantem a razao social oficial e status validado quando o CNPJ passa na consulta"
+          "title": "deve retornar erro de validação ao cadastrar ONG"
         },
         {
           "ancestorTitles": [
-            "empresaService",
-            "atualizarPerfilEmpresa"
+            "authController",
+            "Cobertura adicional authController",
+            "registerONG"
+          ],
+          "duration": 6,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController registerONG deve retornar erro duplicidade no banco ao cadastrar ONG",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "status": "passed",
+          "title": "deve retornar erro duplicidade no banco ao cadastrar ONG"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "registerONG"
+          ],
+          "duration": 2,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController registerONG deve bloquear cadastro quando cnpj da ONG ja existir antes do insert",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "status": "passed",
+          "title": "deve bloquear cadastro quando cnpj da ONG ja existir antes do insert"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "registerONG"
           ],
           "duration": 4,
           "failureDetails": [],
           "failureMessages": [],
-          "fullName": "empresaService atualizarPerfilEmpresa altera o email imediatamente e cria solicitacao pendente para um novo CNPJ valido",
+          "fullName": "authController Cobertura adicional authController registerONG deve lidar com erro genérico ao cadastrar ONG",
           "invocations": 1,
           "location": null,
-          "numPassingAsserts": 3,
+          "numPassingAsserts": 2,
           "retryReasons": [],
           "status": "passed",
-          "title": "altera o email imediatamente e cria solicitacao pendente para um novo CNPJ valido"
+          "title": "deve lidar com erro genérico ao cadastrar ONG"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "render pages"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController render pages renderAuthLoginPage deve renderizar login com logoutSuccess true",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "renderAuthLoginPage deve renderizar login com logoutSuccess true"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "render pages"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController render pages renderAuthLoginPage deve renderizar login com logoutSuccess false",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "renderAuthLoginPage deve renderizar login com logoutSuccess false"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "render pages"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController render pages renderAuthRegisterPage deve renderizar página de registro",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "renderAuthRegisterPage deve renderizar página de registro"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "render pages"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController render pages renderForgotPasswordPage deve renderizar página de esqueci senha",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "renderForgotPasswordPage deve renderizar página de esqueci senha"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "render pages"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController render pages renderResetPasswordPage deve renderizar página de redefinir senha",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "renderResetPasswordPage deve renderizar página de redefinir senha"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "handleForgotPassword erros"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController handleForgotPassword erros deve retornar erro 500 ao falhar na consulta",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve retornar erro 500 ao falhar na consulta"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "handleResetPassword erros"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController handleResetPassword erros deve retornar erro 500 ao falhar na atualização",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve retornar erro 500 ao falhar na atualização"
+        },
+        {
+          "ancestorTitles": [
+            "authController",
+            "Cobertura adicional authController",
+            "logoutUser erros"
+          ],
+          "duration": null,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "authController Cobertura adicional authController logoutUser erros deve lidar com erro ao destruir sessão",
+          "invocations": 1,
+          "location": null,
+          "numPassingAsserts": 0,
+          "retryReasons": [],
+          "status": "pending",
+          "title": "deve lidar com erro ao destruir sessão"
         }
       ],
       "failureMessage": null

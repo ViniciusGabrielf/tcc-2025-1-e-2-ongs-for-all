@@ -47,6 +47,22 @@ function getDuplicateFieldMessage(error: any, fields: Record<string, string>, fa
   return fallback;
 }
 
+function renderRegisterUserError(reply: FastifyReply, error: string, form?: Record<string, string>) {
+  return reply.status(400).view(
+    "/templates/auth/register.hbs",
+    { error, form, activeTab: "#tab1" },
+    { layout: "layouts/authLayout" }
+  );
+}
+
+function renderRegisterOngError(reply: FastifyReply, error: string, form?: Record<string, string>) {
+  return reply.status(400).view(
+    "/templates/auth/register.hbs",
+    { error, form, activeTab: "#tab2" },
+    { layout: "layouts/authLayout" }
+  );
+}
+
 // =======================
 // Pages
 // =======================
@@ -83,6 +99,19 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       cpf: normalizeDigits(rawBody.cpf),
       telefone: normalizeDigits(rawBody.telefone),
     });
+
+    const [cpfRows]: any = await pool.query(
+      `SELECT id
+       FROM usuarios
+       WHERE REPLACE(REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', ''), '/', '') = ?
+       LIMIT 1`,
+      [body.cpf]
+    );
+
+    if (cpfRows?.length) {
+      return renderRegisterUserError(reply, "CPF já cadastrado.", rawBody);
+    }
+
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
     await pool.query(
@@ -109,7 +138,7 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
         "Usuário já cadastrado."
       );
 
-      return reply.status(400).send({ message });
+      return renderRegisterUserError(reply, message, request.body as Record<string, string>);
     }
 
     return reply.status(500).send({ message: "Erro no banco", error });
@@ -135,6 +164,18 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
       area_atuacao: normalizeText(body.areadeatuacao),
       telefone: normalizeDigits(body.telefoneong),
     });
+
+    const [cnpjRows]: any = await pool.query(
+      `SELECT ong_id
+       FROM ongs
+       WHERE REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '-', ''), ' ', ''), '/', '') = ?
+       LIMIT 1`,
+      [ong.cnpj]
+    );
+
+    if (cnpjRows?.length) {
+      return renderRegisterOngError(reply, "CNPJ da ONG já cadastrado.", body as any);
+    }
 
     const hashedPassword = await bcrypt.hash(ong.password, 10);
 
@@ -162,7 +203,7 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
         "ONG já cadastrada."
       );
 
-      return reply.status(400).send({ message });
+      return renderRegisterOngError(reply, message, request.body as Record<string, string>);
     }
 
     return reply.status(500).send({ message: "Erro ao cadastrar ONG", error });
