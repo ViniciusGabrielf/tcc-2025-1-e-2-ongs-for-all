@@ -20,6 +20,31 @@
     </div>
   </div>
 
+  {{#if cnpjStatus.mensagem}}
+  <div class="rounded-2xl border p-5 shadow-sm
+    {{#if cnpjStatus.bloqueiaAtividades}}bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800{{else}}bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800{{/if}}">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <p class="text-sm font-bold {{#if cnpjStatus.bloqueiaAtividades}}text-red-700 dark:text-red-300{{else}}text-amber-700 dark:text-amber-300{{/if}}">
+          Situacao do CNPJ
+        </p>
+        <p class="mt-1 text-sm {{#if cnpjStatus.bloqueiaAtividades}}text-red-600 dark:text-red-200{{else}}text-amber-700 dark:text-amber-200{{/if}}">
+          {{cnpjStatus.mensagem}}
+        </p>
+        {{#if cnpjStatus.observacaoAdmin}}
+        <p class="mt-2 text-xs font-semibold {{#if cnpjStatus.bloqueiaAtividades}}text-red-600 dark:text-red-200{{else}}text-amber-700 dark:text-amber-200{{/if}}">
+          Observacao do admin: {{cnpjStatus.observacaoAdmin}}
+        </p>
+        {{/if}}
+      </div>
+      <a href="/empresa/perfil"
+        class="px-4 py-2 rounded-xl bg-white dark:bg-white/10 text-sm font-bold {{#if cnpjStatus.bloqueiaAtividades}}text-red-700 dark:text-red-200{{else}}text-amber-700 dark:text-amber-200{{/if}} shadow-sm">
+        Ir para o perfil
+      </a>
+    </div>
+  </div>
+  {{/if}}
+
   <!-- Plano atual -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
@@ -81,10 +106,12 @@
         {{/if}}
       </div>
       {{#if podePubilcar}}
+      {{#unless cnpjStatus.bloqueiaAtividades}}
       <a href="/empresa/vitrine/novo"
         class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-bold shadow hover:opacity-90 transition">
         + Publicar item
       </a>
+      {{/unless}}
       {{/if}}
     </div>
 
@@ -149,10 +176,17 @@
   {{else}}
   <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm text-center">
     <p class="text-slate-500 dark:text-white/50 font-medium">Nenhum apoio registrado ainda</p>
+    {{#if cnpjStatus.bloqueiaAtividades}}
+    <a href="/empresa/perfil"
+      class="mt-4 inline-block px-5 py-2.5 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-bold shadow hover:opacity-90 transition">
+      Regularizar CNPJ
+    </a>
+    {{else}}
     <a href="/empresa/necessidades"
       class="mt-4 inline-block px-5 py-2.5 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-bold shadow hover:opacity-90 transition">
       Explorar necessidades
     </a>
+    {{/if}}
   </div>
   {{/if}}
 

@@ -87,6 +87,28 @@ describe('authController', () => {
       expect(mockReply.redirect).toHaveBeenCalledWith('/login')
     })
 
+    it('deve normalizar cpf, telefone e campos textuais antes de salvar', async () => {
+      mockRequest = {
+        body: {
+          nome: '  João da Silva  ',
+          email: '  joao@example.com  ',
+          password: '123456',
+          cpf: '123.456.789-01',
+          telefone: '(11) 99999-9999',
+        },
+        session: createMockSession(),
+      }
+
+      queryMock.mockResolvedValue(undefined)
+
+      await authController.registerUser(mockRequest as FastifyRequest, mockReply as any)
+
+      expect(queryMock).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO usuarios'),
+        ['João da Silva', 'joao@example.com', 'hashed-password', '12345678901', '11999999999']
+      )
+    })
+
     it('deve retornar erro de validação', async () => {
       mockRequest = {
         body: {
@@ -126,6 +148,29 @@ describe('authController', () => {
 
       expect(mockReply.status).toHaveBeenCalledWith(500)
       expect(mockReply.send).toHaveBeenCalled()
+    })
+
+    it('deve retornar mensagem específica quando cpf já existir', async () => {
+      mockRequest = {
+        body: {
+          nome: 'Maria',
+          email: 'maria@example.com',
+          password: 'senha123',
+          cpf: '123.456.789-01',
+          telefone: '(11) 98888-7777',
+        },
+        session: createMockSession(),
+      }
+
+      queryMock.mockRejectedValueOnce({
+        code: 'ER_DUP_ENTRY',
+        sqlMessage: "Duplicate entry '12345678901' for key 'usuarios.cpf'",
+      })
+
+      await authController.registerUser(mockRequest as FastifyRequest, mockReply as any)
+
+      expect(mockReply.status).toHaveBeenCalledWith(400)
+      expect(mockReply.send).toHaveBeenCalledWith({ message: 'CPF já cadastrado.' })
     })
   })
 
@@ -380,7 +425,7 @@ describe('authController', () => {
         await authController.renderAuthRegisterPage(mockRequest as FastifyRequest, mockReply as any)
         expect(mockReply.view).toHaveBeenCalledWith(
           '/templates/auth/register.hbs',
-          {},
+          { activeTab: '#tab1' },
           { layout: 'layouts/authLayout' }
         )
       })

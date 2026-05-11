@@ -89,7 +89,7 @@
                 <canvas id="test-suites-canvas" width="100" height="100"></canvas>
                 <h2>Test Suites</h2>
                 <div class="list-group">
-                    <p id="test-suites-results" class="list-group-item list-group-item-action">13 passed, 13 total</p>
+                    <p id="test-suites-results" class="list-group-item list-group-item-action">1 passed, 1 total</p>
                 </div>
             </div>
             <!-- /.col-lg-4 -->
@@ -97,7 +97,7 @@
                 <canvas id="tests-canvas" width="100" height="100"></canvas>
                 <h2>Tests</h2>
                 <div class="list-group">
-                    <p id="tests-results" class="list-group-item list-group-item-action">60 passed, 60 total</p>
+                    <p id="tests-results" class="list-group-item list-group-item-action">3 passed, 3 total</p>
                 </div>
             </div>
             <!-- /.col-lg-4 -->
@@ -129,14 +129,14 @@
             <div class="d-none" id="test-results">{
   &quot;numFailedTestSuites&quot;: 0,
   &quot;numFailedTests&quot;: 0,
-  &quot;numPassedTestSuites&quot;: 13,
-  &quot;numPassedTests&quot;: 60,
+  &quot;numPassedTestSuites&quot;: 1,
+  &quot;numPassedTests&quot;: 3,
   &quot;numPendingTestSuites&quot;: 0,
   &quot;numPendingTests&quot;: 0,
   &quot;numRuntimeErrorTestSuites&quot;: 0,
   &quot;numTodoTests&quot;: 0,
-  &quot;numTotalTestSuites&quot;: 13,
-  &quot;numTotalTests&quot;: 60,
+  &quot;numTotalTestSuites&quot;: 1,
+  &quot;numTotalTests&quot;: 3,
   &quot;openHandles&quot;: [],
   &quot;snapshot&quot;: {
     &quot;added&quot;: 0,
@@ -154,21 +154,21 @@
     &quot;unmatched&quot;: 0,
     &quot;updated&quot;: 0
   },
-  &quot;startTime&quot;: 1748493026322,
+  &quot;startTime&quot;: 1778463095021,
   &quot;success&quot;: false,
   &quot;testResults&quot;: [
     {
       &quot;leaks&quot;: false,
       &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 23,
+      &quot;numPassingTests&quot;: 3,
       &quot;numPendingTests&quot;: 0,
       &quot;numTodoTests&quot;: 0,
       &quot;openHandles&quot;: [],
       &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493033800,
-        &quot;runtime&quot;: 6170,
-        &quot;slow&quot;: true,
-        &quot;start&quot;: 1748493027630
+        &quot;end&quot;: 1778463100418,
+        &quot;runtime&quot;: 4754,
+        &quot;slow&quot;: false,
+        &quot;start&quot;: 1778463095664
       },
       &quot;skipped&quot;: false,
       &quot;snapshot&quot;: {
@@ -180,1278 +180,55 @@
         &quot;unmatched&quot;: 0,
         &quot;updated&quot;: 0
       },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\unitario\\authController.test.ts&quot;,
+      &quot;testFilePath&quot;: &quot;C:\\Users\\Milena\\tcc-2025-1-e-2-ongs-for-all\\OngsForAll\\OngsForAll\\Projeto\\testes\\unitario\\empresaService.test.ts&quot;,
       &quot;testResults&quot;: [
         {
           &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;registerUser&quot;
-          ],
-          &quot;duration&quot;: 43,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController registerUser deve registrar usuário com sucesso&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve registrar usuário com sucesso&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;registerUser&quot;
-          ],
-          &quot;duration&quot;: 59,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController registerUser deve retornar erro de validação&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 4,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro de validação&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;registerUser&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController registerUser deve retornar erro genérico no banco&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro genérico no banco&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;handleForgotPassword&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController handleForgotPassword redireciona para redefinir senha se usuário encontrado&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;redireciona para redefinir senha se usuário encontrado&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;handleForgotPassword&quot;
+            &quot;empresaService&quot;,
+            &quot;cadastrarEmpresa&quot;
           ],
           &quot;duration&quot;: 10,
           &quot;failureDetails&quot;: [],
           &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController handleForgotPassword exibe erro se usuário não encontrado&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;exibe erro se usuário não encontrado&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;handleForgotPassword&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController handleForgotPassword deve lidar com erro no banco&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve lidar com erro no banco&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;handleResetPassword&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController handleResetPassword retorna erro se senha inválida&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;retorna erro se senha inválida&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;handleResetPassword&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController handleResetPassword atualiza senha com sucesso&quot;,
+          &quot;fullName&quot;: &quot;empresaService cadastrarEmpresa permite cadastro com CNPJ invalido e marca a empresa com restricao&quot;,
           &quot;invocations&quot;: 1,
           &quot;location&quot;: null,
           &quot;numPassingAsserts&quot;: 3,
           &quot;retryReasons&quot;: [],
           &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;atualiza senha com sucesso&quot;
+          &quot;title&quot;: &quot;permite cadastro com CNPJ invalido e marca a empresa com restricao&quot;
         },
         {
           &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;handleResetPassword&quot;
-          ],
-          &quot;duration&quot;: 6,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController handleResetPassword deve lidar com erro no banco ao atualizar senha&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve lidar com erro no banco ao atualizar senha&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;loginUser&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController loginUser deve fazer login com sucesso e setar sessão&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve fazer login com sucesso e setar sessão&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;logoutUser&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController logoutUser deve destruir a sessão e redirecionar para login&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve destruir a sessão e redirecionar para login&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;registerONG&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController registerONG deve registrar ONG com sucesso&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve registrar ONG com sucesso&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;registerONG&quot;
-          ],
-          &quot;duration&quot;: 7,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController registerONG deve retornar erro de validação ao cadastrar ONG&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro de validação ao cadastrar ONG&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;registerONG&quot;
+            &quot;empresaService&quot;,
+            &quot;cadastrarEmpresa&quot;
           ],
           &quot;duration&quot;: 3,
           &quot;failureDetails&quot;: [],
           &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController registerONG deve retornar erro duplicidade no banco ao cadastrar ONG&quot;,
+          &quot;fullName&quot;: &quot;empresaService cadastrarEmpresa mantem a razao social oficial e status validado quando o CNPJ passa na consulta&quot;,
           &quot;invocations&quot;: 1,
           &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
+          &quot;numPassingAsserts&quot;: 3,
           &quot;retryReasons&quot;: [],
           &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro duplicidade no banco ao cadastrar ONG&quot;
+          &quot;title&quot;: &quot;mantem a razao social oficial e status validado quando o CNPJ passa na consulta&quot;
         },
         {
           &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;registerONG&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController registerONG deve lidar com erro genérico ao cadastrar ONG&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve lidar com erro genérico ao cadastrar ONG&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;render pages&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController render pages renderAuthLoginPage deve renderizar login com logoutSuccess true&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;renderAuthLoginPage deve renderizar login com logoutSuccess true&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;render pages&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController render pages renderAuthLoginPage deve renderizar login com logoutSuccess false&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;renderAuthLoginPage deve renderizar login com logoutSuccess false&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;render pages&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController render pages renderAuthRegisterPage deve renderizar página de registro&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;renderAuthRegisterPage deve renderizar página de registro&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;render pages&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController render pages renderForgotPasswordPage deve renderizar página de esqueci senha&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;renderForgotPasswordPage deve renderizar página de esqueci senha&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;render pages&quot;
-          ],
-          &quot;duration&quot;: 0,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController render pages renderResetPasswordPage deve renderizar página de redefinir senha&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;renderResetPasswordPage deve renderizar página de redefinir senha&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;handleForgotPassword erros&quot;
+            &quot;empresaService&quot;,
+            &quot;atualizarPerfilEmpresa&quot;
           ],
           &quot;duration&quot;: 4,
           &quot;failureDetails&quot;: [],
           &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController handleForgotPassword erros deve retornar erro 500 ao falhar na consulta&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro 500 ao falhar na consulta&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;handleResetPassword erros&quot;
-          ],
-          &quot;duration&quot;: 4,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController handleResetPassword erros deve retornar erro 500 ao falhar na atualização&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro 500 ao falhar na atualização&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;authController&quot;,
-            &quot;Cobertura adicional authController&quot;,
-            &quot;logoutUser erros&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;authController Cobertura adicional authController logoutUser erros deve lidar com erro ao destruir sessão&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve lidar com erro ao destruir sessão&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 2,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493035297,
-        &quot;runtime&quot;: 7673,
-        &quot;slow&quot;: true,
-        &quot;start&quot;: 1748493027624
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\integrado\\authLogin.int.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - loginUser&quot;
-          ],
-          &quot;duration&quot;: 159,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - loginUser Deve logar com sucesso e redirecionar para &#x2F;dashboard&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;Deve logar com sucesso e redirecionar para &#x2F;dashboard&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - loginUser&quot;
-          ],
-          &quot;duration&quot;: 97,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - loginUser Deve retornar erro com senha incorreta&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;Deve retornar erro com senha incorreta&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 3,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493035386,
-        &quot;runtime&quot;: 7752,
-        &quot;slow&quot;: true,
-        &quot;start&quot;: 1748493027634
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\integrado\\authController.int.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - registerUser&quot;
-          ],
-          &quot;duration&quot;: 235,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - registerUser Deve cadastrar um novo usuário com sucesso e redirecionar para &#x2F;login&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;Deve cadastrar um novo usuário com sucesso e redirecionar para &#x2F;login&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - registerUser&quot;
-          ],
-          &quot;duration&quot;: 61,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - registerUser Deve retornar erro 400 para dados inválidos&quot;,
+          &quot;fullName&quot;: &quot;empresaService atualizarPerfilEmpresa altera o email imediatamente e cria solicitacao pendente para um novo CNPJ valido&quot;,
           &quot;invocations&quot;: 1,
           &quot;location&quot;: null,
           &quot;numPassingAsserts&quot;: 3,
           &quot;retryReasons&quot;: [],
           &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;Deve retornar erro 400 para dados inválidos&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - registerUser&quot;
-          ],
-          &quot;duration&quot;: 127,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - registerUser Deve retornar erro 400 ao tentar cadastrar usuário já existente (simulando erro do banco)&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;Deve retornar erro 400 ao tentar cadastrar usuário já existente (simulando erro do banco)&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 3,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493035992,
-        &quot;runtime&quot;: 1928,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493034064
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\integrado\\doacaoController.int.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - DoacaoController&quot;
-          ],
-          &quot;duration&quot;: 70,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - DoacaoController criarDoacao → deve criar e redirecionar&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 6,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;criarDoacao → deve criar e redirecionar&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - DoacaoController&quot;
-          ],
-          &quot;duration&quot;: 8,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - DoacaoController renderNovaDoacaoPage → deve exibir formulário com lista de ONGs&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;renderNovaDoacaoPage → deve exibir formulário com lista de ONGs&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - DoacaoController&quot;
-          ],
-          &quot;duration&quot;: 7,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - DoacaoController listarHistoricoDoacoes → deve exibir doações do usuário&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 4,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;listarHistoricoDoacoes → deve exibir doações do usuário&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 5,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036182,
-        &quot;runtime&quot;: 150,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493036032
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\unitario\\authLogin.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;loginUser&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;loginUser deve realizar login com sucesso&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve realizar login com sucesso&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;loginUser&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;loginUser deve exibir erro se a senha estiver incorreta&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve exibir erro se a senha estiver incorreta&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;loginUser&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;loginUser deve exibir erro se usuário não existir&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve exibir erro se usuário não existir&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;handleResetPassword&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;handleResetPassword deve atualizar a senha com sucesso&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve atualizar a senha com sucesso&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;handleResetPassword&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;handleResetPassword deve retornar erro se senha for curta&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro se senha for curta&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 1,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036214,
-        &quot;runtime&quot;: 691,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493035523
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\integrado\\dashboardController.int.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - renderDashBoardPage&quot;
-          ],
-          &quot;duration&quot;: 19,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - renderDashBoardPage Deve retornar o dashboard com os dados dos gráficos&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 5,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;Deve retornar o dashboard com os dados dos gráficos&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 3,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036365,
-        &quot;runtime&quot;: 979,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493035386
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\integrado\\perfilController.int.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Teste integrado - perfilController&quot;
-          ],
-          &quot;duration&quot;: 278,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Teste integrado - perfilController deve atualizar o perfil com sucesso&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 5,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve atualizar o perfil com sucesso&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Teste integrado - perfilController&quot;
-          ],
-          &quot;duration&quot;: 50,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Teste integrado - perfilController deve exibir mensagem de erro com senha inválida&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve exibir mensagem de erro com senha inválida&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Teste integrado - perfilController&quot;
-          ],
-          &quot;duration&quot;: 7,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Teste integrado - perfilController deve renderizar a página de editar perfil com dados da sessão&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve renderizar a página de editar perfil com dados da sessão&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 4,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036544,
-        &quot;runtime&quot;: 281,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493036263
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\unitario\\ds.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Database Connection (ds.ts)&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Database Connection (ds.ts) should create the pool object correctly&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;should create the pool object correctly&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Database Connection (ds.ts)&quot;
-          ],
-          &quot;duration&quot;: 41,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Database Connection (ds.ts) should successfully connect to the database and run a simple query&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 4,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;should successfully connect to the database and run a simple query&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Database Connection (ds.ts)&quot;
-          ],
-          &quot;duration&quot;: 6,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Database Connection (ds.ts) testarConexao function should run without throwing an error&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;testarConexao function should run without throwing an error&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Database Connection (ds.ts)&quot;
-          ],
-          &quot;duration&quot;: 11,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Database Connection (ds.ts) should handle invalid queries gracefully (throw an error)&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;should handle invalid queries gracefully (throw an error)&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 3,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036683,
-        &quot;runtime&quot;: 265,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493036418
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\unitario\\perfilController.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;formataNome&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;formataNome deve formatar corretamente um nome simples&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve formatar corretamente um nome simples&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;formataNome&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;formataNome deve lidar com múltiplos espaços&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve lidar com múltiplos espaços&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;formataNome&quot;
-          ],
-          &quot;duration&quot;: 0,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;formataNome deve retornar string vazia se receber string vazia&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar string vazia se receber string vazia&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 1,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036801,
-        &quot;runtime&quot;: 579,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493036222
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\integrado\\homeController.int.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;Integração - HomeController&quot;
-          ],
-          &quot;duration&quot;: 35,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;Integração - HomeController Deve renderizar a página inicial com sucesso&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;Deve renderizar a página inicial com sucesso&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 4,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036812,
-        &quot;runtime&quot;: 217,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493036595
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\unitario\\dashboardController.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;renderDashBoardPage&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;renderDashBoardPage deve redirecionar para login se não houver usuário na sessão&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve redirecionar para login se não houver usuário na sessão&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;renderDashBoardPage&quot;
-          ],
-          &quot;duration&quot;: 2,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;renderDashBoardPage deve consultar dados e renderizar o dashboard&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve consultar dados e renderizar o dashboard&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;totalDoacoesPorOng&quot;
-          ],
-          &quot;duration&quot;: 3,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;totalDoacoesPorOng deve renderizar total de doações por ONG&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve renderizar total de doações por ONG&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;totalDoacoesPorOng&quot;
-          ],
-          &quot;duration&quot;: 15,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;totalDoacoesPorOng deve retornar erro 500 se a consulta falhar&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro 500 se a consulta falhar&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 1,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036908,
-        &quot;runtime&quot;: 164,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493036744
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\unitario\\homeController.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;renderHomePage&quot;
-          ],
-          &quot;duration&quot;: 5,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;renderHomePage deve renderizar a página inicial com o título correto&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve renderizar a página inicial com o título correto&quot;
-        }
-      ],
-      &quot;failureMessage&quot;: null
-    },
-    {
-      &quot;leaks&quot;: false,
-      &quot;numFailingTests&quot;: 0,
-      &quot;numPassingTests&quot;: 7,
-      &quot;numPendingTests&quot;: 0,
-      &quot;numTodoTests&quot;: 0,
-      &quot;openHandles&quot;: [],
-      &quot;perfStats&quot;: {
-        &quot;end&quot;: 1748493036992,
-        &quot;runtime&quot;: 148,
-        &quot;slow&quot;: false,
-        &quot;start&quot;: 1748493036844
-      },
-      &quot;skipped&quot;: false,
-      &quot;snapshot&quot;: {
-        &quot;added&quot;: 0,
-        &quot;fileDeleted&quot;: false,
-        &quot;matched&quot;: 0,
-        &quot;unchecked&quot;: 0,
-        &quot;uncheckedKeys&quot;: [],
-        &quot;unmatched&quot;: 0,
-        &quot;updated&quot;: 0
-      },
-      &quot;testFilePath&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\testes\\unitario\\doacaoController.test.ts&quot;,
-      &quot;testResults&quot;: [
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;renderNovaDoacaoPage&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;renderNovaDoacaoPage deve redirecionar para login se não houver sessão&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve redirecionar para login se não houver sessão&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;renderNovaDoacaoPage&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;renderNovaDoacaoPage deve retornar os dados com sucesso (modo teste)&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar os dados com sucesso (modo teste)&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;criarDoacao&quot;
-          ],
-          &quot;duration&quot;: 0,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;criarDoacao deve redirecionar para login se o usuário não estiver autenticado&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 1,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve redirecionar para login se o usuário não estiver autenticado&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;criarDoacao&quot;
-          ],
-          &quot;duration&quot;: 0,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;criarDoacao deve recusar doação se usuário for inválido&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve recusar doação se usuário for inválido&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;criarDoacao&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;criarDoacao deve registrar a doação com sucesso&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 3,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve registrar a doação com sucesso&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;totalDoacoesPorOng&quot;
-          ],
-          &quot;duration&quot;: 1,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;totalDoacoesPorOng deve retornar os dados corretamente em ambiente de teste&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar os dados corretamente em ambiente de teste&quot;
-        },
-        {
-          &quot;ancestorTitles&quot;: [
-            &quot;totalDoacoesPorOng&quot;
-          ],
-          &quot;duration&quot;: 11,
-          &quot;failureDetails&quot;: [],
-          &quot;failureMessages&quot;: [],
-          &quot;fullName&quot;: &quot;totalDoacoesPorOng deve retornar erro 500 se a consulta falhar&quot;,
-          &quot;invocations&quot;: 1,
-          &quot;location&quot;: null,
-          &quot;numPassingAsserts&quot;: 2,
-          &quot;retryReasons&quot;: [],
-          &quot;status&quot;: &quot;passed&quot;,
-          &quot;title&quot;: &quot;deve retornar erro 500 se a consulta falhar&quot;
+          &quot;title&quot;: &quot;altera o email imediatamente e cria solicitacao pendente para um novo CNPJ valido&quot;
         }
       ],
       &quot;failureMessage&quot;: null
@@ -1464,9 +241,9 @@
   &quot;bail&quot;: 0,
   &quot;changedFilesWithAncestor&quot;: false,
   &quot;ci&quot;: false,
-  &quot;collectCoverage&quot;: true,
+  &quot;collectCoverage&quot;: false,
   &quot;collectCoverageFrom&quot;: [],
-  &quot;coverageDirectory&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\coverage&quot;,
+  &quot;coverageDirectory&quot;: &quot;C:\\Users\\Milena\\tcc-2025-1-e-2-ongs-for-all\\OngsForAll\\OngsForAll\\Projeto\\coverage&quot;,
   &quot;coverageProvider&quot;: &quot;babel&quot;,
   &quot;coverageReporters&quot;: [
     &quot;json&quot;,
@@ -1485,9 +262,11 @@
   &quot;listTests&quot;: false,
   &quot;logHeapUsage&quot;: false,
   &quot;maxConcurrency&quot;: 5,
-  &quot;maxWorkers&quot;: 3,
+  &quot;maxWorkers&quot;: 1,
   &quot;noStackTrace&quot;: false,
-  &quot;nonFlagArgs&quot;: [],
+  &quot;nonFlagArgs&quot;: [
+    &quot;testes&#x2F;unitario&#x2F;empresaService.test.ts&quot;
+  ],
   &quot;notify&quot;: false,
   &quot;notifyMode&quot;: &quot;failure-change&quot;,
   &quot;onlyChanged&quot;: false,
@@ -1501,7 +280,7 @@
       {}
     ],
     [
-      &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\node_modules\\jest-stare\\lib\\index.js&quot;,
+      &quot;C:\\Users\\Milena\\tcc-2025-1-e-2-ongs-for-all\\OngsForAll\\OngsForAll\\Projeto\\node_modules\\jest-stare\\lib\\index.js&quot;,
       {
         &quot;resultDir&quot;: &quot;jest-stare&#x2F;&quot;,
         &quot;reportTitle&quot;: &quot;Relatório de Testes&quot;,
@@ -1512,19 +291,20 @@
       }
     ]
   ],
-  &quot;rootDir&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto&quot;,
+  &quot;rootDir&quot;: &quot;C:\\Users\\Milena\\tcc-2025-1-e-2-ongs-for-all\\OngsForAll\\OngsForAll\\Projeto&quot;,
   &quot;runTestsByPath&quot;: false,
-  &quot;seed&quot;: 1952009444,
+  &quot;seed&quot;: 1738431431,
   &quot;skipFilter&quot;: false,
   &quot;snapshotFormat&quot;: {
     &quot;escapeString&quot;: false,
     &quot;printBasicPrototype&quot;: false
   },
   &quot;testFailureExitCode&quot;: 1,
-  &quot;testPathPattern&quot;: &quot;&quot;,
-  &quot;testSequencer&quot;: &quot;C:\\Users\\vinic\\.vscode\\projetos-pi-grupo-l\\PI6\\Projeto\\node_modules\\@jest\\test-sequencer\\build\\index.js&quot;,
+  &quot;testPathPattern&quot;: &quot;testes\\\\unitario\\\\empresaService.test.ts&quot;,
+  &quot;testSequencer&quot;: &quot;C:\\Users\\Milena\\tcc-2025-1-e-2-ongs-for-all\\OngsForAll\\OngsForAll\\Projeto\\node_modules\\@jest\\test-sequencer\\build\\index.js&quot;,
   &quot;updateSnapshot&quot;: &quot;new&quot;,
   &quot;useStderr&quot;: false,
+  &quot;verbose&quot;: true,
   &quot;watch&quot;: false,
   &quot;watchAll&quot;: false,
   &quot;watchman&quot;: true,

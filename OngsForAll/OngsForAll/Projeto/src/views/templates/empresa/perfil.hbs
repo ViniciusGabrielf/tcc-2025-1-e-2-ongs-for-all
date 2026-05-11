@@ -2,8 +2,14 @@
 
   <div>
     <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Perfil da empresa</h2>
-    <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Atualize as informações da sua empresa</p>
+    <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Atualize os dados da sua empresa e acompanhe a situacao do CNPJ.</p>
   </div>
+
+  {{#if error}}
+  <div class="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm font-medium">
+    {{error}}
+  </div>
+  {{/if}}
 
   {{#if success}}
   <div class="px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm font-medium">
@@ -11,10 +17,25 @@
   </div>
   {{/if}}
 
+  {{#if cnpjPendingNotice}}
+  <div class="px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-sm font-medium">
+    A alteracao do CNPJ foi enviada para aprovacao do admin.
+  </div>
+  {{/if}}
+
+  {{#if cnpjStatus.mensagem}}
+  <div class="px-4 py-3 rounded-xl border text-sm font-medium
+    {{#if cnpjStatus.bloqueiaAtividades}}bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300{{else}}bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300{{/if}}">
+    {{cnpjStatus.mensagem}}
+    {{#if cnpjStatus.observacaoAdmin}}
+    <p class="mt-2 text-xs font-semibold">Observacao do admin: {{cnpjStatus.observacaoAdmin}}</p>
+    {{/if}}
+  </div>
+  {{/if}}
+
   <form method="POST" action="/empresa/perfil" enctype="multipart/form-data"
     class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm space-y-5">
 
-    <!-- Logo atual -->
     <div class="flex items-center gap-5">
       {{#if empresa.logo}}
       <img src="{{empresa.logo}}" class="w-20 h-20 rounded-2xl object-cover border border-slate-200 dark:border-white/10 shadow-sm" />
@@ -27,63 +48,109 @@
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Logo da empresa</label>
         <input type="file" name="file" accept="image/jpeg,image/png,image/webp"
           class="w-full text-sm text-slate-500 dark:text-white/50 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-100 dark:file:bg-violet-900/30 file:text-violet-700 dark:file:text-violet-300 hover:file:opacity-80" />
-        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">JPG, PNG ou WebP · máx. 3MB</p>
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">JPG, PNG ou WebP · max. 3MB</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Nome fantasia *</label>
-        <input type="text" name="nome_fantasia" value="{{empresa.nome_fantasia}}" required maxlength="255"
+        <input type="text" name="nome_fantasia" value="{{form.nome_fantasia}}" required maxlength="255"
           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
       </div>
       <div>
-        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Razão social</label>
-        <input type="text" name="razao_social" value="{{empresa.razao_social}}" maxlength="255"
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Razao social</label>
+        <input type="text" name="razao_social" value="{{form.razao_social}}" maxlength="255"
           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
       </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Telefone</label>
-        <input type="tel" name="telefone" value="{{empresa.telefone}}" maxlength="20"
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">E-mail *</label>
+        <input type="email" name="email" value="{{form.email}}" required maxlength="255"
           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">A alteracao do e-mail e aplicada imediatamente.</p>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Setor de atuação</label>
-        <input type="text" name="setor" value="{{empresa.setor}}" maxlength="100" placeholder="Ex: Tecnologia, Saúde..."
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Telefone</label>
+        <input type="tel" name="telefone" id="telefone_empresa_perfil" value="{{form.telefone}}" maxlength="20"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CNPJ *</label>
+        <input type="text" name="cnpj" id="cnpj_empresa_perfil" value="{{form.cnpj}}" required maxlength="18"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Alteracoes de CNPJ ficam pendentes para aprovacao do admin.</p>
+        {{#if cnpjStatus.cnpjPendente}}
+        <p class="text-xs text-amber-600 dark:text-amber-300 mt-1">Solicitacao pendente: {{cnpjStatus.cnpjPendente}}</p>
+        {{/if}}
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Setor de atuacao</label>
+        <input type="text" name="setor" value="{{form.setor}}" maxlength="100" placeholder="Ex: Tecnologia, Saude..."
           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
       </div>
     </div>
 
     <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Descrição</label>
+      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Descricao</label>
       <textarea name="descricao" rows="4" maxlength="1000" placeholder="Conte um pouco sobre sua empresa..."
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none">{{empresa.descricao}}</textarea>
+        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none">{{form.descricao}}</textarea>
     </div>
 
-    <!-- Email (somente leitura) -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">E-mail</label>
-      <input type="email" value="{{empresa.email}}" disabled
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/40 text-sm cursor-not-allowed" />
-      <p class="text-xs text-slate-400 dark:text-white/30 mt-1">O e-mail não pode ser alterado.</p>
-    </div>
-
-    <!-- CNPJ (somente leitura) -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CNPJ</label>
-      <input type="text" value="{{empresa.cnpj}}" disabled
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/40 text-sm cursor-not-allowed" />
+    <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4 space-y-1">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">CNPJ atual em uso</p>
+      <p class="text-sm font-bold text-slate-800 dark:text-white">{{empresa.cnpj}}</p>
+      <p class="text-xs text-slate-500 dark:text-white/50">
+        {{#if cnpjStatus.bloqueiaAtividades}}
+        As atividades da empresa permanecem bloqueadas ate a validacao do CNPJ.
+        {{else}}
+        Este e o CNPJ atualmente aprovado para operacao.
+        {{/if}}
+      </p>
     </div>
 
     <div class="flex gap-3 pt-2">
       <button type="submit"
         class="flex-1 py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white font-bold text-sm shadow hover:opacity-90 transition">
-        Salvar alterações
+        Salvar alteracoes
       </button>
     </div>
   </form>
 
 </div>
+
+<script>
+  const cnpjEmpresaPerfilInput = document.getElementById('cnpj_empresa_perfil');
+  if (cnpjEmpresaPerfilInput) {
+    cnpjEmpresaPerfilInput.addEventListener('input', function (e) {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 14);
+      v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+      v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+      v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+      v = v.replace(/(\d{4})(\d)/, '$1-$2');
+      e.target.value = v;
+    });
+  }
+
+  const telefoneEmpresaPerfilInput = document.getElementById('telefone_empresa_perfil');
+  if (telefoneEmpresaPerfilInput) {
+    telefoneEmpresaPerfilInput.addEventListener('input', function (e) {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 10) {
+        v = v.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (v.length > 6) {
+        v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (v.length > 2) {
+        v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+      } else if (v.length > 0) {
+        v = v.replace(/^(\d*)/, '($1');
+      }
+      e.target.value = v;
+    });
+  }
+</script>

@@ -11,6 +11,10 @@ import {
   findEmpresaByEmailAuth,
 } from "../repositories/authRepository";
 
+function normalizeDigits(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
 export function hashResetToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
@@ -57,7 +61,7 @@ export async function login(email: string, password: string, ip: string) {
 }
 
 export async function requestPasswordReset(nome: string, email: string, cpf: string) {
-  const userId = await findUserIdByNomeEmailCpf(nome, email, cpf);
+  const userId = await findUserIdByNomeEmailCpf(nome.trim(), email.trim(), normalizeDigits(cpf));
   if (!userId) return { ok: false as const };
 
   const { token, tokenHash } = generateResetToken();

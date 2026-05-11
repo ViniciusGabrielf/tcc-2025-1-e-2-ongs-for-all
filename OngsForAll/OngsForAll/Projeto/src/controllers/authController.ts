@@ -14,18 +14,38 @@ const registerUserSchema = z.object({
   nome: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
-  cpf: z.string().min(11),
-  telefone: z.string().min(8),
+  cpf: z.string().length(11),
+  telefone: z.string().min(10).max(11),
 });
 
 const ongSchema = z.object({
   nome: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
-  cnpj: z.string().min(14).max(18),
+  cnpj: z.string().length(14),
   area_atuacao: z.string().min(1),
-  telefone: z.string().min(8),
+  telefone: z.string().min(10).max(11),
 });
+
+function normalizeDigits(value: string | undefined): string {
+  return (value ?? "").replace(/\D/g, "");
+}
+
+function normalizeText(value: string | undefined): string {
+  return (value ?? "").trim();
+}
+
+function getDuplicateFieldMessage(error: any, fields: Record<string, string>, fallback: string): string {
+  const rawMessage = `${error?.sqlMessage ?? ""} ${error?.message ?? ""}`.toLowerCase();
+
+  for (const [field, message] of Object.entries(fields)) {
+    if (rawMessage.includes(field.toLowerCase())) {
+      return message;
+    }
+  }
+
+  return fallback;
+}
 
 // =======================
 // Pages
@@ -41,7 +61,13 @@ export async function renderAuthLoginPage(request: FastifyRequest, reply: Fastif
 }
 
 export async function renderAuthRegisterPage(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-  return reply.view("/templates/auth/register.hbs", {}, { layout: "layouts/authLayout" });
+  const tab = (request.query as any)?.tab;
+  const activeTab =
+    tab === "empresa" ? "#tab3" :
+    tab === "ong" ? "#tab2" :
+    "#tab1";
+
+  return reply.view("/templates/auth/register.hbs", { activeTab }, { layout: "layouts/authLayout" });
 }
 
 // =======================
@@ -49,7 +75,14 @@ export async function renderAuthRegisterPage(request: FastifyRequest, reply: Fas
 // =======================
 export async function registerUser(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const body = registerUserSchema.parse(request.body);
+    const rawBody = request.body as Record<string, string>;
+    const body = registerUserSchema.parse({
+      nome: normalizeText(rawBody.nome),
+      email: normalizeText(rawBody.email),
+      password: rawBody.password,
+      cpf: normalizeDigits(rawBody.cpf),
+      telefone: normalizeDigits(rawBody.telefone),
+    });
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
     await pool.query(
@@ -67,7 +100,16 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
     }
 
     if (error?.code === "ER_DUP_ENTRY") {
-      return reply.status(400).send({ message: "Email já cadastrado." });
+      const message = getDuplicateFieldMessage(
+        error,
+        {
+          email: "Email já cadastrado.",
+          cpf: "CPF já cadastrado.",
+        },
+        "Usuário já cadastrado."
+      );
+
+      return reply.status(400).send({ message });
     }
 
     return reply.status(500).send({ message: "Erro no banco", error });
@@ -86,12 +128,12 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
     };
 
     const ong = ongSchema.parse({
-      nome: body.nomeong,
-      email: body.emailong,
+      nome: normalizeText(body.nomeong),
+      email: normalizeText(body.emailong),
       password: body.passwordong,
-      cnpj: body.cnpj_ong,
-      area_atuacao: body.areadeatuacao,
-      telefone: body.telefoneong,
+      cnpj: normalizeDigits(body.cnpj_ong),
+      area_atuacao: normalizeText(body.areadeatuacao),
+      telefone: normalizeDigits(body.telefoneong),
     });
 
     const hashedPassword = await bcrypt.hash(ong.password, 10);
@@ -111,7 +153,16 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
     }
 
     if (error?.code === "ER_DUP_ENTRY") {
-      return reply.status(400).send({ message: "Email da ONG já cadastrado." });
+      const message = getDuplicateFieldMessage(
+        error,
+        {
+          email: "Email da ONG já cadastrado.",
+          cnpj: "CNPJ da ONG já cadastrado.",
+        },
+        "ONG já cadastrada."
+      );
+
+      return reply.status(400).send({ message });
     }
 
     return reply.status(500).send({ message: "Erro ao cadastrar ONG", error });

@@ -16,11 +16,20 @@ async function getNaoLidas(empresaId: number): Promise<number> {
   return marketplaceRepo.contarItensRevisados(empresaId);
 }
 
+async function redirectIfEmpresaComAtividadesBloqueadas(reply: FastifyReply, empresaId: number) {
+  const cnpjStatus = await empresaService.getEmpresaCnpjStatus(empresaId);
+  if (cnpjStatus.bloqueiaAtividades) {
+    return reply.redirect("/empresa/dashboard");
+  }
+
+  return null;
+}
+
 // ----------------------------------------------------------
 // Auth: cadastro
 // ----------------------------------------------------------
 export async function renderCadastroEmpresaPage(request: FastifyRequest, reply: FastifyReply) {
-  return reply.view("/templates/empresa/cadastro.hbs", {}, { layout: "layouts/authLayout" });
+  return reply.redirect("/register?tab=empresa");
 }
 
 export async function cadastrarEmpresa(request: FastifyRequest, reply: FastifyReply) {
@@ -39,8 +48,8 @@ export async function cadastrarEmpresa(request: FastifyRequest, reply: FastifyRe
 
   if (!result.ok) {
     return reply.view(
-      "/templates/empresa/cadastro.hbs",
-      { error: result.error, form: body },
+      "/templates/auth/register.hbs",
+      { error: result.error, form: body, activeTab: "#tab3" },
       { layout: "layouts/authLayout" }
     );
   }
@@ -124,6 +133,9 @@ export async function renderNecessidadesParaApoiar(request: FastifyRequest, repl
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
+
   const { tipo } = request.query as { tipo?: string };
 
   const rows = await empresaRepo.listarNecessidadesAbertas(Number(sessionUser.id), tipo);
@@ -163,6 +175,9 @@ export async function apoiarNecessidade(request: FastifyRequest, reply: FastifyR
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
+
   const { id } = request.params as { id: string };
   const { observacao } = request.body as { observacao?: string };
 
@@ -189,6 +204,9 @@ export async function apoiarNecessidade(request: FastifyRequest, reply: FastifyR
 export async function renderVitrineEmpresa(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
 
   const [empresa, naoLidas] = await Promise.all([
     empresaRepo.findEmpresaById(Number(sessionUser.id)),
@@ -222,6 +240,9 @@ export async function renderVitrineEmpresa(request: FastifyRequest, reply: Fasti
 export async function renderNovoItemPage(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
 
   const empresa = await empresaRepo.findEmpresaById(Number(sessionUser.id));
   if (empresa?.status_marketplace === "bloqueada") return reply.redirect("/empresa/vitrine");
@@ -260,6 +281,9 @@ async function renderNovoItemComErro(
 export async function criarItemMarketplace(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
 
   try {
     const data = await request.file();
@@ -374,14 +398,31 @@ export async function renderPerfilEmpresaPage(request: FastifyRequest, reply: Fa
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
-  const [empresa, naoLidas] = await Promise.all([
+  const [empresa, naoLidas, cnpjStatus] = await Promise.all([
     empresaRepo.findEmpresaById(Number(sessionUser.id)),
     getNaoLidas(Number(sessionUser.id)),
+    empresaService.getEmpresaCnpjStatus(Number(sessionUser.id)),
   ]);
 
   return reply.view(
     "/templates/empresa/perfil.hbs",
-    { user: sessionUser, naoLidas, empresa, success: (request.query as any)?.sucesso === "1" },
+    {
+      user: sessionUser,
+      naoLidas,
+      empresa,
+      form: {
+        nome_fantasia: empresa?.nome_fantasia ?? "",
+        razao_social: empresa?.razao_social ?? "",
+        email: empresa?.email ?? "",
+        telefone: empresa?.telefone ?? "",
+        setor: empresa?.setor ?? "",
+        descricao: empresa?.descricao ?? "",
+        cnpj: empresa?.cnpj ?? "",
+      },
+      cnpjStatus,
+      success: (request.query as any)?.sucesso === "1",
+      cnpjPendingNotice: (request.query as any)?.cnpj === "pendente",
+    },
     { layout: "layouts/empresaDashboardLayout" }
   );
 }
@@ -392,13 +433,15 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
 
   try {
     const data = await request.file();
-    let nome_fantasia = "", razao_social = "", telefone = "", descricao = "", setor = "";
+    let nome_fantasia = "", razao_social = "", email = "", cnpj = "", telefone = "", descricao = "", setor = "";
     let logoUrl: string | undefined;
 
     if (data) {
       const fields = data.fields as Record<string, any>;
       nome_fantasia = fields.nome_fantasia?.value ?? "";
       razao_social = fields.razao_social?.value ?? "";
+      email = fields.email?.value ?? "";
+      cnpj = fields.cnpj?.value ?? "";
       telefone = fields.telefone?.value ?? "";
       descricao = fields.descricao?.value ?? "";
       setor = fields.setor?.value ?? "";
@@ -412,8 +455,6 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
         const stats = fs.statSync(filepath);
         if (stats.size <= MAX_SIZE) {
           logoUrl = `/public/uploads/empresa_logos/${filename}`;
-          await empresaRepo.updateEmpresaLogo(Number(sessionUser.id), logoUrl);
-          (request.session.user as any).logo = logoUrl;
         } else {
           fs.unlinkSync(filepath);
         }
@@ -422,15 +463,68 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
       const body = request.body as any;
       nome_fantasia = body.nome_fantasia ?? "";
       razao_social = body.razao_social ?? "";
+      email = body.email ?? "";
+      cnpj = body.cnpj ?? "";
       telefone = body.telefone ?? "";
       descricao = body.descricao ?? "";
       setor = body.setor ?? "";
     }
 
-    await empresaRepo.updateEmpresaPerfil(Number(sessionUser.id), { nome_fantasia, razao_social, telefone, descricao, setor });
-    (request.session.user as any).nome = nome_fantasia;
+    const result = await empresaService.atualizarPerfilEmpresa(Number(sessionUser.id), {
+      nome_fantasia,
+      razao_social,
+      email,
+      cnpj,
+      telefone,
+      descricao,
+      setor,
+    });
 
-    return reply.redirect("/empresa/perfil?sucesso=1");
+    if (!result.ok) {
+      if (logoUrl) {
+        const logoPath = path.join(__dirname, "..", "..", logoUrl.replace(/^\//, ""));
+        if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
+      }
+
+      const [empresa, naoLidas, cnpjStatus] = await Promise.all([
+        empresaRepo.findEmpresaById(Number(sessionUser.id)),
+        getNaoLidas(Number(sessionUser.id)),
+        empresaService.getEmpresaCnpjStatus(Number(sessionUser.id)),
+      ]);
+
+      return reply.view(
+        "/templates/empresa/perfil.hbs",
+        {
+          user: sessionUser,
+          naoLidas,
+          empresa,
+          form: {
+            nome_fantasia,
+            razao_social,
+            email,
+            telefone,
+            descricao,
+            setor,
+            cnpj,
+          },
+          cnpjStatus,
+          error: result.error,
+          success: false,
+          cnpjPendingNotice: false,
+        },
+        { layout: "layouts/empresaDashboardLayout" }
+      );
+    }
+
+    if (logoUrl) {
+      await empresaRepo.updateEmpresaLogo(Number(sessionUser.id), logoUrl);
+      (request.session.user as any).logo = logoUrl;
+    }
+
+    (request.session.user as any).nome = nome_fantasia;
+    (request.session.user as any).email = email;
+
+    return reply.redirect(`/empresa/perfil?sucesso=1${result.cnpjSolicitacaoCriada ? "&cnpj=pendente" : ""}`);
   } catch (err) {
     console.error("Erro ao atualizar perfil:", err);
     return reply.redirect("/empresa/perfil");
@@ -443,6 +537,9 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
 export async function renderEditarItemPage(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
 
   const { id } = request.params as { id: string };
 
@@ -512,6 +609,9 @@ async function renderEditarComErro(
 export async function editarItemMarketplace(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
 
   const { id } = request.params as { id: string };
   const itemId = Number(id);
@@ -663,6 +763,9 @@ export async function desativarItemMarketplace(request: FastifyRequest, reply: F
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
+
   const { id } = request.params as { id: string };
   const result = await empresaService.desativarItemMarketplace({
     empresaId: Number(sessionUser.id),
@@ -678,6 +781,9 @@ export async function desativarItemMarketplace(request: FastifyRequest, reply: F
 export async function reenviarItemMarketplace(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
+  if (bloqueio) return bloqueio;
 
   const { id } = request.params as { id: string };
   const result = await empresaService.reenviarItemMarketplace({

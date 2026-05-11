@@ -1,11 +1,16 @@
 <div class="max-w-5xl mx-auto space-y-8">
 
   <div>
-    <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Moderação — Marketplace</h2>
+    <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Moderacao - Marketplace</h2>
     <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Revise itens enviados e gerencie empresas parceiras</p>
   </div>
 
-  <!-- Itens para moderação -->
+  {{#if error}}
+  <div class="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm font-medium">
+    {{error}}
+  </div>
+  {{/if}}
+
   <div>
     <h3 class="text-base font-bold text-slate-700 dark:text-white mb-3">Itens enviados ({{itens.length}})</h3>
 
@@ -54,7 +59,7 @@
             </button>
           </form>
           <form method="POST" action="/admin/marketplace/itens/{{id}}/rejeitar" class="flex gap-2 flex-1">
-            <input type="text" name="observacao" placeholder="Motivo da rejeição (opcional)"
+            <input type="text" name="observacao" placeholder="Motivo da rejeicao (opcional)"
               class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-red-400" />
             <button type="submit"
               class="px-4 py-2 rounded-xl bg-red-500 text-white text-xs font-bold hover:opacity-90 transition shadow-sm shrink-0">
@@ -67,58 +72,103 @@
       {{/each}}
     </div>
     {{else}}
-    {{> emptyState message="Nenhum item aguardando moderação"}}
+    {{> emptyState message="Nenhum item aguardando moderacao"}}
     {{/if}}
   </div>
 
-  <!-- Empresas parceiras -->
   <div>
     <h3 class="text-base font-bold text-slate-700 dark:text-white mb-3">Empresas parceiras ({{empresas.length}})</h3>
 
     {{#if empresas.length}}
     <div class="space-y-3">
       {{#each empresas}}
-      <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm flex items-center gap-4 flex-wrap">
+      <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center gap-4 flex-wrap">
+          {{#if logo}}
+          <img src="{{logo}}" alt="Logo da empresa {{nome_fantasia}}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-200 dark:border-white/10" />
+          {{else}}
+          <div class="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0 text-violet-600 dark:text-violet-300 font-bold text-lg">
+            {{nome_fantasia.[0]}}
+          </div>
+          {{/if}}
 
-        {{#if logo}}
-        <img src="{{logo}}" alt="Logo da empresa {{nome_fantasia}}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-200 dark:border-white/10" />
-        {{else}}
-        <div class="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0 text-violet-600 dark:text-violet-300 font-bold text-lg">
-          {{nome_fantasia.[0]}}
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-slate-800 dark:text-white text-sm truncate">{{nome_fantasia}}</p>
+            <p class="text-xs text-slate-400 dark:text-white/40">{{email}} · CNPJ atual: {{cnpj}}</p>
+            {{#if setor}}<p class="text-xs text-slate-400 dark:text-white/40">{{setor}}</p>{{/if}}
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold
+                {{#if isCnpjValidado}}bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300{{/if}}
+                {{#if isCnpjInvalido}}bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300{{/if}}">
+                CNPJ atual: {{status_atual}}
+              </span>
+              {{#if hasCnpjPendente}}
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                Alteracao pendente
+              </span>
+              {{/if}}
+              {{#if hasCnpjRejeitado}}
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-white/70">
+                Solicitacao rejeitada
+              </span>
+              {{/if}}
+            </div>
+            {{#if cnpj_pendente}}
+            <p class="mt-2 text-xs text-amber-600 dark:text-amber-300">CNPJ pendente: {{cnpj_pendente}}</p>
+            {{/if}}
+            {{#if observacao_admin}}
+            <p class="mt-1 text-xs text-slate-500 dark:text-white/50">Obs. admin: {{observacao_admin}}</p>
+            {{/if}}
+            {{#if bloqueiaAtividadesPorCnpj}}
+            <p class="mt-1 text-xs text-red-500 dark:text-red-300">Atividades da empresa bloqueadas ate existir um CNPJ validado.</p>
+            {{/if}}
+          </div>
+
+          <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold
+            {{#if isAtiva}}bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300{{/if}}
+            {{#if isElegivel}}bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300{{/if}}
+            {{#if isBloqueada}}bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-white/60{{/if}}">
+            {{status_marketplace}}
+          </span>
+
+          <div class="flex gap-2 shrink-0">
+            {{#unless isAtiva}}
+            <form method="POST" action="/admin/empresas/{{id}}/ativar">
+              <button type="submit"
+                class="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-bold hover:opacity-90 transition">
+                Ativar
+              </button>
+            </form>
+            {{/unless}}
+            {{#unless isBloqueada}}
+            <form method="POST" action="/admin/empresas/{{id}}/bloquear">
+              <button type="submit"
+                class="px-3 py-1.5 rounded-xl bg-red-500 text-white text-xs font-bold hover:opacity-90 transition">
+                Bloquear
+              </button>
+            </form>
+            {{/unless}}
+          </div>
         </div>
-        {{/if}}
 
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-slate-800 dark:text-white text-sm truncate">{{nome_fantasia}}</p>
-          <p class="text-xs text-slate-400 dark:text-white/40">{{email}} · CNPJ: {{cnpj}}</p>
-          {{#if setor}}<p class="text-xs text-slate-400 dark:text-white/40">{{setor}}</p>{{/if}}
-        </div>
-
-        <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold
-          {{#if isAtiva}}bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300{{/if}}
-          {{#if isElegivel}}bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300{{/if}}
-          {{#if isBloqueada}}bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-white/60{{/if}}">
-          {{status_marketplace}}
-        </span>
-
-        <div class="flex gap-2 shrink-0">
-          {{#unless isAtiva}}
-          <form method="POST" action="/admin/empresas/{{id}}/ativar">
+        {{#if hasCnpjPendente}}
+        <div class="mt-3 flex gap-3 flex-wrap">
+          <form method="POST" action="/admin/empresas/{{id}}/cnpj/aprovar">
             <button type="submit"
               class="px-3 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-bold hover:opacity-90 transition">
-              Ativar
+              Aprovar CNPJ
             </button>
           </form>
-          {{/unless}}
-          {{#unless isBloqueada}}
-          <form method="POST" action="/admin/empresas/{{id}}/bloquear">
+          <form method="POST" action="/admin/empresas/{{id}}/cnpj/rejeitar" class="flex gap-2 flex-1 min-w-[280px]">
+            <input type="text" name="observacao" placeholder="Motivo da rejeicao (opcional)"
+              class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-red-400" />
             <button type="submit"
-              class="px-3 py-1.5 rounded-xl bg-red-500 text-white text-xs font-bold hover:opacity-90 transition">
-              Bloquear
+              class="px-3 py-1.5 rounded-xl bg-red-500 text-white text-xs font-bold hover:opacity-90 transition shrink-0">
+              Rejeitar CNPJ
             </button>
           </form>
-          {{/unless}}
         </div>
+        {{/if}}
       </div>
       {{/each}}
     </div>
@@ -126,6 +176,5 @@
     {{> emptyState message="Nenhuma empresa cadastrada ainda"}}
     {{/if}}
   </div>
-
 
 </div>

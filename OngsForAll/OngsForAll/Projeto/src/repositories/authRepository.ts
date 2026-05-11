@@ -19,7 +19,12 @@ export async function findUserByEmail(email: string): Promise<UserRow | null> {
 
 export async function findUserIdByNomeEmailCpf(nome: string, email: string, cpf: string): Promise<number | null> {
   const [rows]: any = await pool.query(
-    "SELECT id FROM usuarios WHERE nome = ? AND email = ? AND cpf = ? LIMIT 1",
+    `SELECT id
+     FROM usuarios
+     WHERE nome = ?
+       AND email = ?
+       AND REPLACE(REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', ''), '/', '') = ?
+     LIMIT 1`,
     [nome, email, cpf]
   );
   return rows?.[0]?.id ?? null;

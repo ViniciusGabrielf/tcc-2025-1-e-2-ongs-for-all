@@ -1,5 +1,21 @@
 import { pool } from "../config/ds";
 
+const EMPRESA_CNPJ_CONTROLES_TABLE = "empresa_cnpj_controles";
+
+async function ensureEmpresaCnpjControlesTable() {
+  await pool.query(
+    `CREATE TABLE IF NOT EXISTS ${EMPRESA_CNPJ_CONTROLES_TABLE} (
+      empresa_id INT NOT NULL PRIMARY KEY,
+      status_atual VARCHAR(20) NOT NULL DEFAULT 'invalido',
+      cnpj_pendente VARCHAR(18) NULL,
+      status_solicitacao VARCHAR(20) NULL,
+      observacao_admin VARCHAR(255) NULL,
+      criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )`
+  );
+}
+
 // ----------------------------------------------------------
 // Auth
 // ----------------------------------------------------------
@@ -58,11 +74,119 @@ export async function updateEmpresaLogo(id: number, logoUrl: string) {
 
 export async function updateEmpresaPerfil(
   id: number,
-  params: { nome_fantasia: string; razao_social?: string; telefone?: string; descricao?: string; setor?: string }
+  params: { nome_fantasia: string; razao_social?: string; email: string; telefone?: string; descricao?: string; setor?: string }
 ) {
   await pool.query(
-    `UPDATE empresas SET nome_fantasia = ?, razao_social = ?, telefone = ?, descricao = ?, setor = ? WHERE id = ?`,
-    [params.nome_fantasia, params.razao_social ?? null, params.telefone ?? null, params.descricao ?? null, params.setor ?? null, id]
+    `UPDATE empresas SET nome_fantasia = ?, razao_social = ?, email = ?, telefone = ?, descricao = ?, setor = ? WHERE id = ?`,
+    [params.nome_fantasia, params.razao_social ?? null, params.email, params.telefone ?? null, params.descricao ?? null, params.setor ?? null, id]
+  );
+}
+
+export async function findEmpresaCnpjControle(empresaId: number) {
+  await ensureEmpresaCnpjControlesTable();
+
+  const [rows]: any = await pool.query(
+    `SELECT empresa_id, status_atual, cnpj_pendente, status_solicitacao, observacao_admin
+     FROM ${EMPRESA_CNPJ_CONTROLES_TABLE}
+     WHERE empresa_id = ?
+     LIMIT 1`,
+    [empresaId]
+  );
+
+  return rows[0] ?? null;
+}
+
+export async function upsertEmpresaCnpjControle(params: {
+  empresaId: number;
+  statusAtual: "validado" | "invalido";
+  cnpjPendente?: string | null;
+  statusSolicitacao?: "pendente" | "rejeitado" | null;
+  observacaoAdmin?: string | null;
+}) {
+  await ensureEmpresaCnpjControlesTable();
+
+  await pool.query(
+    `INSERT INTO ${EMPRESA_CNPJ_CONTROLES_TABLE} (empresa_id, status_atual, cnpj_pendente, status_solicitacao, observacao_admin)
+     VALUES (?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       status_atual = VALUES(status_atual),
+       cnpj_pendente = VALUES(cnpj_pendente),
+       status_solicitacao = VALUES(status_solicitacao),
+       observacao_admin = VALUES(observacao_admin)`,
+    [
+      params.empresaId,
+      params.statusAtual,
+      params.cnpjPendente ?? null,
+      params.statusSolicitacao ?? null,
+      params.observacaoAdmin ?? null,
+    ]
+  );
+}
+
+export async function findEmpresaByNormalizedCnpjExcludingId(normalizedCnpj: string, empresaId: number) {
+  const [rows]: any = await pool.query(
+    `SELECT id, nome_fantasia
+     FROM empresas
+     WHERE REPLACE(REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '/', ''), '-', ''), ' ', '') = ?
+       AND id <> ?
+     LIMIT 1`,
+    [normalizedCnpj, empresaId]
+  );
+
+  return rows[0] ?? null;
+}
+
+export async function findEmpresaByPendingNormalizedCnpjExcludingId(normalizedCnpj: string, empresaId: number) {
+  await ensureEmpresaCnpjControlesTable();
+
+  const [rows]: any = await pool.query(
+    `SELECT c.empresa_id, e.nome_fantasia
+     FROM ${EMPRESA_CNPJ_CONTROLES_TABLE} c
+     INNER JOIN empresas e ON e.id = c.empresa_id
+     WHERE REPLACE(REPLACE(REPLACE(REPLACE(c.cnpj_pendente, '.', ''), '/', ''), '-', ''), ' ', '') = ?
+       AND c.empresa_id <> ?
+       AND c.status_solicitacao = 'pendente'
+     LIMIT 1`,
+    [normalizedCnpj, empresaId]
+  );
+
+  return rows[0] ?? null;
+}
+
+export async function aprovarCnpjPendente(empresaId: number) {
+  await ensureEmpresaCnpjControlesTable();
+
+  await pool.query(
+    `UPDATE empresas e
+     INNER JOIN ${EMPRESA_CNPJ_CONTROLES_TABLE} c ON c.empresa_id = e.id
+     SET e.cnpj = c.cnpj_pendente
+     WHERE e.id = ?
+       AND c.cnpj_pendente IS NOT NULL
+       AND c.status_solicitacao = 'pendente'`,
+    [empresaId]
+  );
+
+  await pool.query(
+    `UPDATE ${EMPRESA_CNPJ_CONTROLES_TABLE}
+     SET status_atual = 'validado',
+         cnpj_pendente = NULL,
+         status_solicitacao = NULL,
+         observacao_admin = NULL
+     WHERE empresa_id = ?`,
+    [empresaId]
+  );
+}
+
+export async function rejeitarCnpjPendente(empresaId: number, observacaoAdmin?: string | null) {
+  await ensureEmpresaCnpjControlesTable();
+
+  await pool.query(
+    `UPDATE ${EMPRESA_CNPJ_CONTROLES_TABLE}
+     SET cnpj_pendente = NULL,
+         status_solicitacao = 'rejeitado',
+         observacao_admin = ?
+     WHERE empresa_id = ?`,
+    [observacaoAdmin ?? null, empresaId]
   );
 }
 
@@ -187,12 +311,16 @@ export async function findNecessidadeOngId(necessidadeId: number): Promise<numbe
 // Admin
 // ----------------------------------------------------------
 export async function listarEmpresasParaAdmin() {
+  await ensureEmpresaCnpjControlesTable();
+
   const [rows]: any = await pool.query(
-    `SELECT e.id, e.nome_fantasia, e.razao_social, e.email, e.cnpj, e.setor, e.status_marketplace,
+    `SELECT e.id, e.nome_fantasia, e.razao_social, e.email, e.cnpj, e.setor, e.status_marketplace, e.logo,
             e.plano, DATE_FORMAT(e.plano_valido_ate, '%d/%m/%Y') AS plano_valido_ate,
             DATE_FORMAT(e.criado_em, '%d/%m/%Y') AS criado_em,
-            (SELECT COUNT(*) FROM empresa_apoios WHERE empresa_id = e.id) AS total_apoios
+            (SELECT COUNT(*) FROM empresa_apoios WHERE empresa_id = e.id) AS total_apoios,
+            c.status_atual, c.cnpj_pendente, c.status_solicitacao, c.observacao_admin
      FROM empresas e
+     LEFT JOIN ${EMPRESA_CNPJ_CONTROLES_TABLE} c ON c.empresa_id = e.id
      ORDER BY FIELD(e.status_marketplace,'elegivel','bloqueada','ativa'), e.criado_em DESC`
   );
   return rows as any[];

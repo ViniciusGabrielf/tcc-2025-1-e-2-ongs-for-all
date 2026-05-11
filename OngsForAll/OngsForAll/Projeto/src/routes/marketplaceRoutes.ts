@@ -7,6 +7,8 @@ import {
   rejeitarItem,
   ativarEmpresaMarketplace,
   bloquearEmpresaMarketplace,
+  aprovarCnpjEmpresa,
+  rejeitarCnpjEmpresa,
 } from "../controllers/marketplaceController";
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 
@@ -21,4 +23,6 @@ export async function marketplaceRoutes(fastify: FastifyInstance) {
   fastify.post("/admin/marketplace/itens/:id/rejeitar", rejeitarItem);
   fastify.post("/admin/empresas/:id/ativar", ativarEmpresaMarketplace);
   fastify.post("/admin/empresas/:id/bloquear", bloquearEmpresaMarketplace);
+  fastify.post("/admin/empresas/:id/cnpj/aprovar", aprovarCnpjEmpresa);
+  fastify.post("/admin/empresas/:id/cnpj/rejeitar", rejeitarCnpjEmpresa);
 }

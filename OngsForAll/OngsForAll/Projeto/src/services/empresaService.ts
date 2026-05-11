@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
+import { formatCnpj, isValidCnpj, normalizeCnpj, validateAndLookupCnpj } from "./cnpjService";
 
 const PLANOS = {
   starter: {
@@ -78,24 +79,152 @@ const cadastroSchema = z.object({
   nome_fantasia: z.string().min(2, "Nome fantasia obrigatorio"),
   razao_social: z.string().optional(),
   email: z.string().email("Email invalido"),
-  cnpj: z.string().min(14, "CNPJ invalido").max(18),
+  cnpj: z.string().length(14, "CNPJ deve ter 14 digitos."),
   telefone: z.string().min(8).optional(),
   descricao: z.string().optional(),
   setor: z.string().optional(),
   senha: z.string().min(6, "Senha minima de 6 caracteres"),
 });
 
+const perfilEmpresaSchema = z.object({
+  nome_fantasia: z.string().min(2, "Nome fantasia obrigatorio"),
+  razao_social: z.string().optional(),
+  email: z.string().email("Email invalido"),
+  cnpj: z.string().length(14, "CNPJ deve ter 14 digitos."),
+  telefone: z.string().optional(),
+  descricao: z.string().optional(),
+  setor: z.string().optional(),
+});
+
+function normalizeText(value?: string): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+type EmpresaCnpjStatus = {
+  statusAtual: "validado" | "invalido";
+  statusSolicitacao: "pendente" | "rejeitado" | null;
+  cnpjPendente: string | null;
+  observacaoAdmin: string | null;
+  bloqueiaAtividades: boolean;
+  possuiSolicitacaoPendente: boolean;
+  solicitacaoRejeitada: boolean;
+  mensagem: string | null;
+};
+
+function formatCnpjDigitado(cnpj: string) {
+  return /^\d{14}$/.test(cnpj) ? formatCnpj(cnpj) : cnpj;
+}
+
+function mapControleToStatus(controle: any): EmpresaCnpjStatus {
+  const statusAtual = controle?.status_atual === "validado" ? "validado" : "invalido";
+  const statusSolicitacao =
+    controle?.status_solicitacao === "pendente" || controle?.status_solicitacao === "rejeitado"
+      ? controle.status_solicitacao
+      : null;
+  const bloqueiaAtividades = statusAtual !== "validado";
+  const possuiSolicitacaoPendente = statusSolicitacao === "pendente";
+  const solicitacaoRejeitada = statusSolicitacao === "rejeitado";
+
+  let mensagem: string | null = null;
+  if (bloqueiaAtividades && possuiSolicitacaoPendente) {
+    mensagem =
+      "A atualizacao do CNPJ esta pendente de aprovacao do admin. Sua empresa permanece com atividades bloqueadas ate a analise.";
+  } else if (bloqueiaAtividades && solicitacaoRejeitada) {
+    mensagem =
+      "A ultima solicitacao de alteracao do CNPJ foi rejeitada. Informe um CNPJ valido no perfil para liberar as atividades.";
+  } else if (bloqueiaAtividades) {
+    mensagem =
+      "Sua empresa nao pode realizar atividades ate informar um CNPJ valido em Perfil da empresa.";
+  } else if (possuiSolicitacaoPendente) {
+    mensagem =
+      "Existe uma solicitacao de alteracao de CNPJ pendente. O CNPJ atual segue valido ate a decisao do admin.";
+  } else if (solicitacaoRejeitada) {
+    mensagem = "A ultima solicitacao de alteracao do CNPJ foi rejeitada.";
+  }
+
+  return {
+    statusAtual,
+    statusSolicitacao,
+    cnpjPendente: controle?.cnpj_pendente ?? null,
+    observacaoAdmin: controle?.observacao_admin ?? null,
+    bloqueiaAtividades,
+    possuiSolicitacaoPendente,
+    solicitacaoRejeitada,
+    mensagem,
+  };
+}
+
+export async function getEmpresaCnpjStatus(empresaId: number): Promise<EmpresaCnpjStatus> {
+  const empresa = await empresaRepo.findEmpresaById(empresaId);
+  if (!empresa) throw new Error("Empresa nao encontrada.");
+
+  let controle = await empresaRepo.findEmpresaCnpjControle(empresaId);
+  if (!controle) {
+    await empresaRepo.upsertEmpresaCnpjControle({
+      empresaId,
+      statusAtual: isValidCnpj(empresa.cnpj) ? "validado" : "invalido",
+    });
+    controle = await empresaRepo.findEmpresaCnpjControle(empresaId);
+  }
+
+  return mapControleToStatus(controle);
+}
+
+async function validarEmpresaPodeRealizarAtividades(
+  empresaId: number
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const status = await getEmpresaCnpjStatus(empresaId);
+  if (!status.bloqueiaAtividades) {
+    return { ok: true };
+  }
+
+  return {
+    ok: false,
+    error: status.mensagem ?? "Sua empresa nao pode realizar atividades ate regularizar o CNPJ no perfil.",
+  };
+}
+
 export async function cadastrarEmpresa(body: Record<string, string>) {
-  const parsed = cadastroSchema.safeParse(body);
+  const parsed = cadastroSchema.safeParse({
+    nome_fantasia: normalizeText(body.nome_fantasia),
+    razao_social: normalizeText(body.razao_social),
+    email: normalizeText(body.email)?.toLowerCase(),
+    cnpj: normalizeCnpj(body.cnpj),
+    telefone: normalizeText(body.telefone),
+    descricao: normalizeText(body.descricao),
+    setor: normalizeText(body.setor),
+    senha: body.senha,
+  });
   if (!parsed.success) {
     return { ok: false as const, error: parsed.error.errors[0].message };
   }
 
   const { senha, ...dados } = parsed.data;
   const senhaHash = await bcrypt.hash(senha, 10);
+  const cnpjValidation = await validateAndLookupCnpj(parsed.data.cnpj);
+  const cnpjStatusAtual = cnpjValidation.ok ? "validado" : "invalido";
+  const cnpjPersistido = cnpjValidation.ok ? cnpjValidation.cnpj : formatCnpjDigitado(parsed.data.cnpj);
+  const razaoSocial = dados.razao_social ?? (cnpjValidation.ok ? cnpjValidation.razaoSocial : undefined);
+  const nomeFantasia = dados.nome_fantasia;
 
   try {
-    await empresaRepo.createEmpresa({ ...dados, senhaHash });
+    const empresaId = await empresaRepo.createEmpresa({
+      ...dados,
+      nome_fantasia: nomeFantasia,
+      razao_social: razaoSocial,
+      cnpj: cnpjPersistido,
+      senhaHash,
+    });
+
+    await empresaRepo.upsertEmpresaCnpjControle({
+      empresaId,
+      statusAtual: cnpjStatusAtual,
+      cnpjPendente: null,
+      statusSolicitacao: null,
+      observacaoAdmin: null,
+    });
+
     return { ok: true as const };
   } catch (err: any) {
     if (err?.code === "ER_DUP_ENTRY") {
@@ -106,11 +235,12 @@ export async function cadastrarEmpresa(body: Record<string, string>) {
 }
 
 export async function getDashboardData(empresaId: number) {
-  const [empresa, metricas, apoios, totalItensMarketplace] = await Promise.all([
+  const [empresa, metricas, apoios, totalItensMarketplace, cnpjStatus] = await Promise.all([
     empresaRepo.findEmpresaById(empresaId),
     empresaRepo.getMetricas(empresaId),
     empresaRepo.listarApoiosDaEmpresa(empresaId),
     marketplaceRepo.contarItensNoLimiteDaEmpresa(empresaId),
+    getEmpresaCnpjStatus(empresaId),
   ]);
 
   if (!empresa) throw new Error("Empresa nao encontrada.");
@@ -154,7 +284,128 @@ export async function getDashboardData(empresaId: number) {
       usoLimite: usoLimitePlano,
       isPremium: planoInfo.codigo === "premium",
     },
+    cnpjStatus,
   };
+}
+
+export async function atualizarPerfilEmpresa(
+  empresaId: number,
+  body: Record<string, string>
+): Promise<{ ok: true; cnpjSolicitacaoCriada: boolean } | { ok: false; error: string }> {
+  const empresa = await empresaRepo.findEmpresaById(empresaId);
+  if (!empresa) {
+    return { ok: false, error: "Empresa nao encontrada." };
+  }
+
+  const parsed = perfilEmpresaSchema.safeParse({
+    nome_fantasia: normalizeText(body.nome_fantasia),
+    razao_social: normalizeText(body.razao_social),
+    email: normalizeText(body.email)?.toLowerCase(),
+    cnpj: normalizeCnpj(body.cnpj),
+    telefone: normalizeText(body.telefone),
+    descricao: normalizeText(body.descricao),
+    setor: normalizeText(body.setor),
+  });
+
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.errors[0].message };
+  }
+
+  const cnpjAtual = normalizeCnpj(empresa.cnpj);
+  const controleAtual = await getEmpresaCnpjStatus(empresaId);
+  let cnpjSolicitacaoCriada = false;
+
+  if (parsed.data.cnpj !== cnpjAtual) {
+    const cnpjValidation = await validateAndLookupCnpj(parsed.data.cnpj);
+    if (!cnpjValidation.ok) {
+      return {
+        ok: false,
+        error: `${cnpjValidation.message} Informe um CNPJ valido para enviar a alteracao para aprovacao.`,
+      };
+    }
+
+    const empresaComMesmoCnpj = await empresaRepo.findEmpresaByNormalizedCnpjExcludingId(
+      normalizeCnpj(cnpjValidation.cnpj),
+      empresaId
+    );
+    if (empresaComMesmoCnpj) {
+      return { ok: false, error: "Este CNPJ ja esta vinculado a outra empresa." };
+    }
+
+    const empresaComMesmoCnpjPendente = await empresaRepo.findEmpresaByPendingNormalizedCnpjExcludingId(
+      normalizeCnpj(cnpjValidation.cnpj),
+      empresaId
+    );
+    if (empresaComMesmoCnpjPendente) {
+      return { ok: false, error: "Este CNPJ ja esta pendente de aprovacao para outra empresa." };
+    }
+
+    await empresaRepo.upsertEmpresaCnpjControle({
+      empresaId,
+      statusAtual: controleAtual.statusAtual,
+      cnpjPendente: cnpjValidation.cnpj,
+      statusSolicitacao: "pendente",
+      observacaoAdmin: null,
+    });
+    cnpjSolicitacaoCriada = true;
+  }
+
+  try {
+    await empresaRepo.updateEmpresaPerfil(empresaId, {
+      nome_fantasia: parsed.data.nome_fantasia,
+      razao_social: parsed.data.razao_social,
+      email: parsed.data.email,
+      telefone: parsed.data.telefone,
+      descricao: parsed.data.descricao,
+      setor: parsed.data.setor,
+    });
+  } catch (err: any) {
+    if (err?.code === "ER_DUP_ENTRY") {
+      return { ok: false, error: "Este e-mail ja esta em uso por outra empresa." };
+    }
+    throw err;
+  }
+
+  return { ok: true, cnpjSolicitacaoCriada };
+}
+
+export async function aprovarCnpjEmpresa(
+  empresaId: number
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const empresa = await empresaRepo.findEmpresaById(empresaId);
+  if (!empresa) return { ok: false, error: "Empresa nao encontrada." };
+
+  const status = await getEmpresaCnpjStatus(empresaId);
+  if (!status.possuiSolicitacaoPendente || !status.cnpjPendente) {
+    return { ok: false, error: "Nao existe solicitacao de CNPJ pendente para esta empresa." };
+  }
+
+  const empresaComMesmoCnpj = await empresaRepo.findEmpresaByNormalizedCnpjExcludingId(
+    normalizeCnpj(status.cnpjPendente),
+    empresaId
+  );
+  if (empresaComMesmoCnpj) {
+    return { ok: false, error: "O CNPJ pendente ja esta vinculado a outra empresa." };
+  }
+
+  await empresaRepo.aprovarCnpjPendente(empresaId);
+  return { ok: true };
+}
+
+export async function rejeitarCnpjEmpresa(
+  empresaId: number,
+  observacao?: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const empresa = await empresaRepo.findEmpresaById(empresaId);
+  if (!empresa) return { ok: false, error: "Empresa nao encontrada." };
+
+  const status = await getEmpresaCnpjStatus(empresaId);
+  if (!status.possuiSolicitacaoPendente) {
+    return { ok: false, error: "Nao existe solicitacao de CNPJ pendente para esta empresa." };
+  }
+
+  await empresaRepo.rejeitarCnpjPendente(empresaId, normalizeText(observacao));
+  return { ok: true };
 }
 
 export async function apoiarNecessidade(params: {
@@ -163,6 +414,9 @@ export async function apoiarNecessidade(params: {
   ongId: number;
   observacao?: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
+  const validacaoAtividades = await validarEmpresaPodeRealizarAtividades(params.empresaId);
+  if (!validacaoAtividades.ok) return validacaoAtividades;
+
   const jaApoiou = await empresaRepo.jaApoiou(params.empresaId, params.necessidadeId);
   if (jaApoiou) return { ok: false, error: "Sua empresa ja apoiou esta necessidade." };
 
@@ -205,6 +459,9 @@ export async function criarItemMarketplace(params: {
   modoPreco?: "gratuito" | "fixo" | "sob_consulta";
   preco?: number | null;
 }): Promise<{ ok: true; id: number } | { ok: false; error: string }> {
+  const validacaoAtividades = await validarEmpresaPodeRealizarAtividades(params.empresaId);
+  if (!validacaoAtividades.ok) return validacaoAtividades;
+
   const empresa = await empresaRepo.findEmpresaById(params.empresaId);
   if (!empresa) return { ok: false, error: "Empresa nao encontrada." };
 
@@ -314,6 +571,9 @@ export async function editarItemMarketplace(params: {
   modoPreco?: string;
   preco?: string | number | null;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
+  const validacaoAtividades = await validarEmpresaPodeRealizarAtividades(params.empresaId);
+  if (!validacaoAtividades.ok) return validacaoAtividades;
+
   const parsed = editarItemSchema.safeParse({
     titulo: params.titulo,
     descricao: params.descricao,
@@ -374,6 +634,9 @@ export async function desativarItemMarketplace(params: {
   empresaId: number;
   itemId: number;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
+  const validacaoAtividades = await validarEmpresaPodeRealizarAtividades(params.empresaId);
+  if (!validacaoAtividades.ok) return validacaoAtividades;
+
   const item = await marketplaceRepo.findItemByIdDaEmpresa(params.itemId, params.empresaId);
   if (!item) return { ok: false, error: "Item nao encontrado." };
   if (item.status_publicacao === "rascunho") return { ok: false, error: "Item ja esta em rascunho." };
@@ -387,6 +650,9 @@ export async function reenviarItemMarketplace(params: {
   empresaId: number;
   itemId: number;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
+  const validacaoAtividades = await validarEmpresaPodeRealizarAtividades(params.empresaId);
+  if (!validacaoAtividades.ok) return validacaoAtividades;
+
   const item = await marketplaceRepo.findItemByIdDaEmpresa(params.itemId, params.empresaId);
   if (!item) return { ok: false, error: "Item nao encontrado." };
   if (!["rejeitado", "rascunho"].includes(item.status_publicacao)) {

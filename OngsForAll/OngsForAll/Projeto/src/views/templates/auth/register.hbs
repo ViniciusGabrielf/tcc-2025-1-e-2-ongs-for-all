@@ -1,139 +1,229 @@
-<section class="flex text-gray-700 flex-col justify-center min-h-screen items-center">
-  <div class="flex flex-col max-w-md bg-gray-100 shadow-md text-center w-full p-6 rounded-xl">
-    <h1 class="flex justify-center py-4 text-2xl font-extrabold text-[#1D3273]">
-      <a href="/" class="flex items-center gap-2">
-        <box-icon color="#1D3273" name="world"></box-icon> ONG For All
-      </a>
-    </h1>
+<div class="flex flex-col items-center justify-center min-h-screen py-10 px-4">
+  <div class="w-full max-w-lg bg-white dark:bg-[#102235] rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 p-8">
 
-    <div class="tab-section bg-gray-100 p-5 rounded-lg min-h-[400px]">
-      <div class="flex flex-row gap-2 p-2 rounded-full bg-gray-200">
-        <button class="py-2 rounded-full font-bold hover:bg-gray-400 flex-grow" data-tab-target="#tab1">PF/PJ</button>
-        <button class="py-2 rounded-full font-bold hover:bg-gray-400 flex-grow" data-tab-target="#tab2">ONG</button>
-        <button class="py-2 rounded-full font-bold hover:bg-gray-400 flex-grow" data-tab-target="#tab3">Empresa</button>
+    <div class="text-center mb-8">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center mx-auto mb-4 shadow-md">
+        <box-icon color="#ffffff" name="world"></box-icon>
+      </div>
+      <h1 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Cadastro na ONG For All</h1>
+      <p class="text-sm text-slate-500 dark:text-white/50 mt-1">Escolha o perfil ideal para criar sua conta</p>
+    </div>
+
+    {{#if error}}
+    <div class="mb-5 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm">
+      {{error}}
+    </div>
+    {{/if}}
+
+    <div class="tab-section">
+      <div class="flex flex-row gap-2 p-2 rounded-full bg-slate-100 dark:bg-white/5 mb-6">
+        <button type="button" class="py-2 rounded-full font-bold text-sm text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/10 flex-grow transition" data-tab-target="#tab1">Pessoa Física</button>
+        <button type="button" class="py-2 rounded-full font-bold text-sm text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/10 flex-grow transition" data-tab-target="#tab2">ONG</button>
+        <button type="button" class="py-2 rounded-full font-bold text-sm text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/10 flex-grow transition" data-tab-target="#tab3">Empresa</button>
       </div>
 
-      <div class="mt-4">
-        <!-- PF/PJ Formulário -->
-        <div id="tab1" class="tab-content text-gray-700 hidden">
-          <form action="/register-user" method="POST" class="flex flex-col text-start">
-            <label for="nome">Nome/Razão social:</label>
-            <input type="text" name="nome" id="nome" placeholder="Nome" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="100" />
-
-            <label class="mt-2" for="email">Email:</label>
-            <input type="email" name="email" id="email" placeholder="email@email.com" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="100" />
-
-            <label class="mt-2" for="cpf">CPF:</label>
-            <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="14" />
-
-            <label class="mt-2" for="telefone">Telefone:</label>
-            <input type="tel" name="telefone" id="telefone" placeholder="(11) 99999-9999" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="15" />
-
-            <label class="mt-2" for="password">Senha:</label>
-            <input type="password" name="password" id="password" placeholder="************" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" minlength="6" />
-
-            <button type="submit" class="mt-6 rounded-md bg-[#1D3273] hover:bg-[#1D3273]/90 text-lg text-white py-2">
-              Registrar
-            </button>
-          </form>
+      <div id="tab1" class="tab-content hidden">
+        <div class="mb-5 text-center">
+          <h2 class="text-xl font-bold text-[#2D4BA6] dark:text-white">Cadastro de Pessoa Física</h2>
+          <p class="text-sm text-slate-500 dark:text-white/50 mt-1">Crie sua conta para doar e acompanhar ONGs na plataforma</p>
         </div>
 
-        <!-- ONG Formulário -->
-        <div id="tab2" class="tab-content text-gray-700 hidden">
-          <form action="/register-ong" method="POST" class="flex flex-col text-start">
-            <label for="nomeong">Nome da ONG:</label>
-            <input type="text" name="nomeong" id="nomeong" placeholder="Nome da ONG" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="100" />
+        <form action="/register-user" method="POST" class="space-y-4">
+          <div>
+            <label for="nome" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Nome completo *</label>
+            <input type="text" name="nome" id="nome" placeholder="Seu nome completo" required maxlength="100"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+          </div>
 
-            <label class="mt-2" for="emailong">Email:</label>
-            <input type="email" name="emailong" id="emailong" placeholder="email@ong.com" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="100" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="email" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Email *</label>
+              <input type="email" name="email" id="email" placeholder="email@email.com" required maxlength="100"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+            <div>
+              <label for="cpf" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CPF *</label>
+              <input type="text" name="cpf" id="cpf" placeholder="000.000.000-00" required maxlength="14"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+          </div>
 
-            <label class="mt-2" for="cnpj_ong">CNPJ:</label>
-            <input type="text" name="cnpj_ong" id="cnpj_ong" placeholder="00.000.000/0000-00" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="18" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="telefone" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Telefone *</label>
+              <input type="tel" name="telefone" id="telefone" placeholder="(11) 99999-9999" required maxlength="15"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+            <div>
+              <label for="password" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Senha *</label>
+              <input type="password" name="password" id="password" placeholder="************" required minlength="6"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+          </div>
 
-            <label class="mt-2" for="areadeatuacao">Área de Atuação:</label>
-            <input type="text" name="areadeatuacao" id="areadeatuacao" placeholder="Educação, Saúde, Meio ambiente..."
-              required class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="100" />
+          <button type="submit"
+            class="w-full py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white font-bold text-sm shadow-md hover:opacity-90 transition mt-2">
+            Criar conta
+          </button>
+        </form>
+      </div>
 
-            <label class="mt-2" for="telefoneong">Telefone:</label>
-            <input type="tel" name="telefoneong" id="telefoneong" placeholder="(11) 99999-9999" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="15" />
-
-            <label class="mt-2" for="passwordong">Senha:</label>
-            <input type="password" name="passwordong" id="passwordong" placeholder="************" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" minlength="6" />
-
-            <button type="submit" class="mt-6 rounded-md bg-[#1D3273] hover:bg-[#1D3273]/90 text-lg text-white py-2">
-              Registrar ONG
-            </button>
-          </form>
+      <div id="tab2" class="tab-content hidden">
+        <div class="mb-5 text-center">
+          <h2 class="text-xl font-bold text-[#2D4BA6] dark:text-white">Cadastro de ONG</h2>
+          <p class="text-sm text-slate-500 dark:text-white/50 mt-1">Cadastre sua organização para receber apoio e validar sua atuação</p>
         </div>
 
-        <!-- Empresa Formulário -->
-        <div id="tab3" class="tab-content text-gray-700 hidden">
-          <p class="text-sm text-gray-500 mb-3">Cadastre sua empresa e apoie ONGs para desbloquear o marketplace social.</p>
-          <form action="/register-empresa" method="POST" class="flex flex-col text-start">
-            <label for="nome_fantasia">Nome fantasia:</label>
-            <input type="text" name="nome_fantasia" id="nome_fantasia" placeholder="Nome da empresa" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="255" />
+        <form action="/register-ong" method="POST" class="space-y-4">
+          <div>
+            <label for="nomeong" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Nome da ONG *</label>
+            <input type="text" name="nomeong" id="nomeong" placeholder="Nome da ONG" required maxlength="100"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+          </div>
 
-            <label class="mt-2" for="email_empresa">Email:</label>
-            <input type="email" name="email" id="email_empresa" placeholder="email@empresa.com" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="100" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="emailong" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Email *</label>
+              <input type="email" name="emailong" id="emailong" placeholder="email@ong.com" required maxlength="100"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+            <div>
+              <label for="cnpj_ong" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CNPJ *</label>
+              <input type="text" name="cnpj_ong" id="cnpj_ong" placeholder="00.000.000/0000-00" required maxlength="18"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+          </div>
 
-            <label class="mt-2" for="cnpj_empresa">CNPJ:</label>
-            <input type="text" name="cnpj" id="cnpj_empresa" placeholder="00.000.000/0000-00" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" maxlength="18" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="areadeatuacao" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Área de atuação *</label>
+              <input type="text" name="areadeatuacao" id="areadeatuacao" placeholder="Educação, Saúde, Meio ambiente..." required maxlength="100"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+            <div>
+              <label for="telefoneong" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Telefone *</label>
+              <input type="tel" name="telefoneong" id="telefoneong" placeholder="(11) 99999-9999" required maxlength="15"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+          </div>
 
-            <label class="mt-2" for="senha_empresa">Senha:</label>
-            <input type="password" name="senha" id="senha_empresa" placeholder="************" required
-              class="border-2 py-2 border-blue-300 rounded-lg p-1" minlength="6" />
+          <div>
+            <label for="passwordong" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Senha *</label>
+            <input type="password" name="passwordong" id="passwordong" placeholder="************" required minlength="6"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+          </div>
 
-            <button type="submit" class="mt-6 rounded-md bg-[#1D3273] hover:bg-[#1D3273]/90 text-lg text-white py-2">
-              Cadastrar empresa
-            </button>
-          </form>
+          <button type="submit"
+            class="w-full py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white font-bold text-sm shadow-md hover:opacity-90 transition mt-2">
+            Registrar ONG
+          </button>
+        </form>
+      </div>
+
+      <div id="tab3" class="tab-content hidden">
+        <div class="mb-5 text-center">
+          <h2 class="text-xl font-bold text-[#2D4BA6] dark:text-white">Cadastro de Empresa Parceira</h2>
+          <p class="text-sm text-slate-500 dark:text-white/50 mt-1">Junte-se à plataforma e apoie ONGs</p>
         </div>
+
+        <form method="POST" action="/register-empresa" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Nome fantasia *</label>
+              <input type="text" name="nome_fantasia" value="{{form.nome_fantasia}}" required maxlength="255"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Razão social</label>
+              <input type="text" name="razao_social" value="{{form.razao_social}}" maxlength="255"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Email *</label>
+              <input type="email" name="email" value="{{form.email}}" required
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CNPJ *</label>
+              <input type="text" name="cnpj" id="cnpj_empresa" value="{{form.cnpj}}" required maxlength="18" placeholder="00.000.000/0000-00"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+              <p class="mt-1 text-xs text-slate-400 dark:text-white/40">O CNPJ é validado automaticamente no cadastro.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Telefone</label>
+              <input type="tel" name="telefone" id="telefone_empresa" value="{{form.telefone}}" maxlength="20"
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Setor de atuação</label>
+              <input type="text" name="setor" value="{{form.setor}}" maxlength="100" placeholder="Ex: Tecnologia, Saúde..."
+                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Descrição</label>
+            <textarea name="descricao" rows="3" maxlength="1000" placeholder="Conte um pouco sobre sua empresa..."
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none">{{form.descricao}}</textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Senha *</label>
+            <input type="password" name="senha" required minlength="6"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+          </div>
+
+          <button type="submit"
+            class="w-full py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white font-bold text-sm shadow-md hover:opacity-90 transition mt-2">
+            Criar conta corporativa
+          </button>
+        </form>
       </div>
     </div>
 
-    <p class="mt-4">
-      Possui uma conta?
-      <a href="/login" class="text-[#1D3273] font-semibold">Entrar</a>
+    <p class="text-center text-sm text-slate-500 dark:text-white/50 mt-5">
+      Já tem conta?
+      <a href="/login" class="text-violet-600 dark:text-violet-400 font-semibold hover:underline">Entrar</a>
     </p>
   </div>
-</section>
+</div>
 
-<!-- SCRIPT Abas e Máscaras -->
 <script>
   const tabs = document.querySelectorAll('[data-tab-target]');
   const tabContents = document.querySelectorAll('.tab-content');
-  const activeClasses = ['tabativa', 'bg-[#1D3273]', 'text-white', 'hover:text-gray-700'];
+  const activeClasses = ['bg-[#2D4BA6]', 'text-white', 'shadow-sm'];
+  const inactiveClasses = ['text-slate-700', 'dark:text-white/80'];
+  const initialTabSelector = '{{activeTab}}';
 
-  // Seleciona a primeira aba
+  function activateTab(tab) {
+    const targetContent = document.querySelector(tab.dataset.tabTarget);
+    tabContents.forEach(content => content.classList.add('hidden'));
+    if (targetContent) targetContent.classList.remove('hidden');
+    tabs.forEach(t => {
+      t.classList.remove(...activeClasses);
+      t.classList.add(...inactiveClasses);
+    });
+    tab.classList.remove(...inactiveClasses);
+    tab.classList.add(...activeClasses);
+  }
+
   if (tabs.length && tabContents.length) {
-    tabs[0].classList.add(...activeClasses);
-    tabContents[0].classList.remove('hidden');
+    const initialTab =
+      Array.from(tabs).find(tab => tab.dataset.tabTarget === initialTabSelector) ||
+      tabs[0];
+    activateTab(initialTab);
   }
 
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetContent = document.querySelector(tab.dataset.tabTarget);
-      tabContents.forEach(content => content.classList.add('hidden'));
-      if (targetContent) targetContent.classList.remove('hidden');
-      tabs.forEach(t => t.classList.remove(...activeClasses));
-      tab.classList.add(...activeClasses);
-    });
+    tab.addEventListener('click', () => activateTab(tab));
   });
 
-  // Máscara CPF
   const cpfInput = document.getElementById('cpf');
   if (cpfInput) {
     cpfInput.addEventListener('input', function (e) {
@@ -146,7 +236,6 @@
     });
   }
 
-  // Máscara Telefone PF
   const telefoneInput = document.getElementById('telefone');
   if (telefoneInput) {
     telefoneInput.addEventListener('input', function (e) {
@@ -161,7 +250,6 @@
     });
   }
 
-  // Máscara CNPJ ONG
   const cnpjInput = document.getElementById('cnpj_ong');
   if (cnpjInput) {
     cnpjInput.addEventListener('input', function (e) {
@@ -175,7 +263,6 @@
     });
   }
 
-  // Máscara CNPJ Empresa
   const cnpjEmpresaInput = document.getElementById('cnpj_empresa');
   if (cnpjEmpresaInput) {
     cnpjEmpresaInput.addEventListener('input', function (e) {
@@ -189,10 +276,23 @@
     });
   }
 
-  // Máscara Telefone ONG
   const telefoneOngInput = document.getElementById('telefoneong');
   if (telefoneOngInput) {
     telefoneOngInput.addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, '');
+      value = value.slice(0, 11);
+      if (value.length <= 10) {
+        value = value.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+      } else {
+        value = value.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      }
+      e.target.value = value;
+    });
+  }
+
+  const telefoneEmpresaInput = document.getElementById('telefone_empresa');
+  if (telefoneEmpresaInput) {
+    telefoneEmpresaInput.addEventListener('input', function (e) {
       let value = e.target.value.replace(/\D/g, '');
       value = value.slice(0, 11);
       if (value.length <= 10) {

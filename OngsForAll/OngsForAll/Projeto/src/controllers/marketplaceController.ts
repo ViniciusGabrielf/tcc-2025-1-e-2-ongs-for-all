@@ -124,14 +124,25 @@ export async function renderAdminMarketplacePage(request: FastifyRequest, reply:
 
   const empresasEnrich = empresas.map((e: any) => ({
     ...e,
+    status_atual: e.status_atual === "validado" ? "validado" : "invalido",
     isBloqueada: e.status_marketplace === "bloqueada",
     isElegivel: e.status_marketplace === "elegivel",
     isAtiva: e.status_marketplace === "ativa",
+    isCnpjValidado: e.status_atual === "validado",
+    isCnpjInvalido: e.status_atual !== "validado",
+    hasCnpjPendente: e.status_solicitacao === "pendente",
+    hasCnpjRejeitado: e.status_solicitacao === "rejeitado",
+    bloqueiaAtividadesPorCnpj: e.status_atual !== "validado",
   }));
 
   return reply.view(
     "/templates/admin/marketplace.hbs",
-    { itens: itensEnrich, empresas: empresasEnrich, adminPageMarketplace: true },
+    {
+      itens: itensEnrich,
+      empresas: empresasEnrich,
+      adminPageMarketplace: true,
+      error: (request.query as any)?.erro || "",
+    },
     { layout: "layouts/adminLayout" }
   );
 }
@@ -162,5 +173,30 @@ export async function bloquearEmpresaMarketplace(request: FastifyRequest, reply:
   if (!(request.session as any).adminAutenticado) return reply.redirect("/admin/login");
   const { id } = request.params as { id: string };
   await empresaRepo.atualizarStatusMarketplace(Number(id), "bloqueada");
+  return reply.redirect("/admin/marketplace");
+}
+
+export async function aprovarCnpjEmpresa(request: FastifyRequest, reply: FastifyReply) {
+  if (!(request.session as any).adminAutenticado) return reply.redirect("/admin/login");
+  const { id } = request.params as { id: string };
+
+  const result = await empresaService.aprovarCnpjEmpresa(Number(id));
+  if (!result.ok) {
+    return reply.redirect(`/admin/marketplace?erro=${encodeURIComponent(result.error)}`);
+  }
+
+  return reply.redirect("/admin/marketplace");
+}
+
+export async function rejeitarCnpjEmpresa(request: FastifyRequest, reply: FastifyReply) {
+  if (!(request.session as any).adminAutenticado) return reply.redirect("/admin/login");
+  const { id } = request.params as { id: string };
+  const { observacao } = request.body as { observacao?: string };
+
+  const result = await empresaService.rejeitarCnpjEmpresa(Number(id), observacao);
+  if (!result.ok) {
+    return reply.redirect(`/admin/marketplace?erro=${encodeURIComponent(result.error)}`);
+  }
+
   return reply.redirect("/admin/marketplace");
 }
