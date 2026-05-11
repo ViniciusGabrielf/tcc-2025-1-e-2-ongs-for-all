@@ -19,7 +19,7 @@ Certifique-se de que tudo esta instalado corretamente, estude sobre [Docker](htt
 
 **Verficação**
 ```bash
-cd OngsForAll/OngsForAll/Projeto
+cd OngsForAll/Projeto
 
 node -v
 
