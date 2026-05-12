@@ -1,102 +1,126 @@
 <section class="min-h-screen px-6 py-10" style="--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
-    <div class="max-w-4xl mx-auto">
+  <div class="max-w-4xl mx-auto space-y-8">
 
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-3xl font-bold">Notificações</h1>
-                <p class="text-sm opacity-70 mt-1">
-                    Acompanhe atualizações sobre doações, interesses e necessidades.
-                </p>
-            </div>
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-[var(--theme-strong)] dark:text-white">Notificações</h1>
+        <p class="text-sm text-slate-500 dark:text-white/60 mt-1">
+          Acompanhe atualizações sobre doações, interesses e necessidades.
+        </p>
+      </div>
 
-            {{#if naoLidas}}
-            <span
-                class="inline-flex items-center justify-center min-w-[2rem] h-8 px-3 rounded-full bg-red-500 text-white text-sm font-semibold shadow">
-                {{naoLidas}} nova(s)
-            </span>
-            {{/if}}
-        </div>
-
-        {{#if notificacoes.length}}
-
-        <div class="space-y-4">
-
-            {{#each notificacoes}}
-            <div
-                class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[var(--theme-accent)]/20 shadow p-5 transition">
-
-                <div class="flex items-start justify-between gap-4 mb-2">
-                    <div class="flex items-center gap-3">
-
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg
-        {{#ifCond tipo 'novo_interesse'}}bg-[var(--theme-soft)] text-[var(--theme-accent)]{{/ifCond}}
-        {{#ifCond tipo 'interesse_aceito'}}bg-teal-100 text-teal-700{{/ifCond}}
-        {{#ifCond tipo 'interesse_recebido'}}bg-green-100 text-green-700{{/ifCond}}
-        {{#ifCond tipo 'interesse_confirmado'}}bg-green-100 text-green-700{{/ifCond}}
-        {{#ifCond tipo 'interesse_cancelado'}}bg-red-100 text-red-700{{/ifCond}}
-        {{#ifCond tipo 'meta_atingida'}}bg-yellow-100 text-yellow-700{{/ifCond}}
-        {{#ifCond tipo 'nova_necessidade'}}bg-[var(--theme-soft-2)] text-[var(--theme-accent)]{{/ifCond}}
-      ">
-                            {{#ifCond tipo 'novo_interesse'}}📦{{/ifCond}}
-                            {{#ifCond tipo 'interesse_aceito'}}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            {{/ifCond}}
-                            {{#ifCond tipo 'interesse_recebido'}}
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {{/ifCond}}
-                            {{#ifCond tipo 'interesse_confirmado'}}✅{{/ifCond}}
-                            {{#ifCond tipo 'interesse_cancelado'}}❌{{/ifCond}}
-                            {{#ifCond tipo 'meta_atingida'}}🎯{{/ifCond}}
-                            {{#ifCond tipo 'nova_necessidade'}}🔔{{/ifCond}}
-                        </div>
-
-                        <div>
-                            <h2 class="font-semibold text-lg">{{titulo}}</h2>
-                            <p class="text-sm opacity-70">{{criado_em}}</p>
-                        </div>
-                    </div>
-
-                    {{#if lida}}
-                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-                        Lida
-                    </span>
-                    {{else}}
-                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-[var(--theme-soft)] text-[var(--theme-accent)]">
-                        Nova
-                    </span>
-                    {{/if}}
-                </div>
-
-                <p class="text-sm leading-relaxed opacity-90 mb-4">
-                    {{mensagem}}
-                </p>
-
-                {{#unless lida}}
-                <form method="POST" action="/notificacoes/{{id}}/lida">
-                    <button type="submit"
-                        class="bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                        Marcar como lida
-                    </button>
-                </form>
-                {{/unless}}
-
-            </div>
-            {{/each}}
-
-        </div>
-
-        {{else}}
-
-        <div class="rounded-2xl border border-dashed border-slate-300 dark:border-white/10 p-10 text-center opacity-70">
-            <div class="text-4xl mb-3">🔔</div>
-            <p>Você ainda não possui notificações.</p>
-        </div>
-
-        {{/if}}
-
+      {{#if naoLidas}}
+      <span class="inline-flex items-center justify-center min-w-[2rem] h-8 px-3 rounded-full bg-red-500 text-white text-sm font-semibold shadow">
+        {{naoLidas}} nova(s)
+      </span>
+      {{/if}}
     </div>
+
+    {{#if notificacoes.length}}
+    <div class="space-y-4">
+      {{#each notificacoes}}
+      <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm transition">
+        <div class="flex items-start justify-between gap-4 mb-3">
+          <div class="flex items-start gap-3 min-w-0">
+            <div class="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
+              {{#ifCond tipo 'documento_aprovado'}}bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300{{/ifCond}}
+              {{#ifCond tipo 'documento_rejeitado'}}bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300{{/ifCond}}
+              {{#ifCond tipo 'novo_interesse'}}bg-[var(--theme-soft)] text-[var(--theme-strong)] dark:bg-[var(--theme-primary)]/20 dark:text-[var(--theme-soft)]{{/ifCond}}
+              {{#ifCond tipo 'interesse_aceito'}}bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300{{/ifCond}}
+              {{#ifCond tipo 'interesse_recebido'}}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300{{/ifCond}}
+              {{#ifCond tipo 'interesse_confirmado'}}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300{{/ifCond}}
+              {{#ifCond tipo 'interesse_cancelado'}}bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300{{/ifCond}}
+              {{#ifCond tipo 'meta_atingida'}}bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300{{/ifCond}}
+              {{#ifCond tipo 'nova_necessidade'}}bg-[var(--theme-soft-2)] text-[var(--theme-strong)] dark:bg-[var(--theme-primary)]/20 dark:text-[var(--theme-soft)]{{/ifCond}}">
+
+              {{#ifCond tipo 'documento_aprovado'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'documento_rejeitado'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'novo_interesse'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4m16 0l-4 4m4-4l-4-4" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'interesse_aceito'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'interesse_recebido'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'interesse_confirmado'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'interesse_cancelado'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'meta_atingida'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.977 2.889a1 1 0 00-.363 1.118l1.519 4.674c.3.921-.755 1.688-1.539 1.118l-3.977-2.889a1 1 0 00-1.176 0L7.433 19.9c-.784.57-1.838-.197-1.539-1.118l1.519-4.674a1 1 0 00-.363-1.118L3.073 10.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.523-4.674z" />
+              </svg>
+              {{/ifCond}}
+              {{#ifCond tipo 'nova_necessidade'}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {{/ifCond}}
+            </div>
+
+            <div class="min-w-0">
+              <h2 class="font-semibold text-lg text-slate-800 dark:text-white leading-tight">{{titulo}}</h2>
+              <p class="text-sm text-slate-400 dark:text-white/40 mt-1">{{criado_em}}</p>
+            </div>
+          </div>
+
+          {{#if lida}}
+          <span class="shrink-0 text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-white/60">
+            Lida
+          </span>
+          {{else}}
+          <span class="shrink-0 text-xs font-semibold px-3 py-1 rounded-full bg-[var(--theme-soft)] text-[var(--theme-strong)] dark:bg-[var(--theme-primary)]/20 dark:text-[var(--theme-soft)]">
+            Nova
+          </span>
+          {{/if}}
+        </div>
+
+        <p class="text-sm leading-relaxed text-slate-600 dark:text-white/70 mb-4">
+          {{mensagem}}
+        </p>
+
+        {{#unless lida}}
+        <form method="POST" action="/notificacoes/{{id}}/lida">
+          <button type="submit" class="bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+            Marcar como lida
+          </button>
+        </form>
+        {{/unless}}
+      </div>
+      {{/each}}
+    </div>
+
+    {{else}}
+    <div class="bg-white dark:bg-[#102235] border border-dashed border-slate-300 dark:border-white/10 rounded-2xl p-10 text-center shadow-sm">
+      <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-slate-300 dark:text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </div>
+      <p class="text-slate-500 dark:text-white/50 font-medium">Você ainda não possui notificações.</p>
+    </div>
+    {{/if}}
+  </div>
 </section>

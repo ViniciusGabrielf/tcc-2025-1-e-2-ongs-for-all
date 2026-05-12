@@ -1,0 +1,72 @@
+<div class="max-w-5xl mx-auto space-y-6">
+
+  <div>
+    <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Aprovação de documentos</h2>
+    <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Revise alterações de CPF e CNPJ solicitadas nos perfis</p>
+  </div>
+
+  {{#if sucesso}}
+  <div class="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-4 py-3 rounded-xl text-sm font-medium">
+    Ação realizada com sucesso.
+  </div>
+  {{/if}}
+
+  <div>
+    <h3 class="text-base font-bold text-slate-700 dark:text-white mb-3">Solicitações pendentes ({{total}})</h3>
+
+    {{#if total}}
+    <div class="space-y-3">
+      {{#each usuarios}}
+      <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div class="flex-1">
+            <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-xs font-semibold">Pessoa física</span>
+            <p class="font-bold text-slate-800 dark:text-white text-sm mt-2">{{nome}}</p>
+            <p class="text-xs text-slate-400 dark:text-white/40">{{email}}</p>
+            <p class="text-xs text-slate-500 dark:text-white/50 mt-2">CPF atual: <strong>{{documento_atual}}</strong></p>
+            <p class="text-xs text-amber-600 dark:text-amber-300">CPF solicitado: <strong>{{documento_pendente}}</strong></p>
+          </div>
+          <div class="flex flex-col gap-2 shrink-0 min-w-[220px]">
+            <form method="POST" action="/admin/documentos/usuario/{{id}}/aprovar" class="flex">
+              <button type="submit" class="w-full px-4 py-2 rounded-xl bg-emerald-500 text-white text-xs font-bold hover:opacity-90 transition shadow-sm">Aprovar</button>
+            </form>
+            <form method="POST" action="/admin/documentos/usuario/{{id}}/rejeitar" class="flex gap-2">
+              <input type="text" name="observacao" placeholder="Motivo (opcional)"
+                class="flex-1 text-xs rounded-xl px-3 py-2 border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-red-500 text-white text-xs font-bold hover:opacity-90 transition shadow-sm">Rejeitar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+
+      {{#each ongs}}
+      <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div class="flex-1">
+            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs font-semibold">ONG</span>
+            <p class="font-bold text-slate-800 dark:text-white text-sm mt-2">{{nome}}</p>
+            <p class="text-xs text-slate-400 dark:text-white/40">{{email}}</p>
+            <p class="text-xs text-slate-500 dark:text-white/50 mt-2">CNPJ atual: <strong>{{documento_atual}}</strong></p>
+            <p class="text-xs text-amber-600 dark:text-amber-300">CNPJ solicitado: <strong>{{documento_pendente}}</strong></p>
+          </div>
+          <div class="flex flex-col gap-2 shrink-0 min-w-[220px]">
+            <form method="POST" action="/admin/documentos/ong/{{id}}/aprovar" class="flex">
+              <button type="submit" class="w-full px-4 py-2 rounded-xl bg-emerald-500 text-white text-xs font-bold hover:opacity-90 transition shadow-sm">Aprovar</button>
+            </form>
+            <form method="POST" action="/admin/documentos/ong/{{id}}/rejeitar" class="flex gap-2">
+              <input type="text" name="observacao" placeholder="Motivo (opcional)"
+                class="flex-1 text-xs rounded-xl px-3 py-2 border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-red-500 text-white text-xs font-bold hover:opacity-90 transition shadow-sm">Rejeitar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    {{> emptyState message="Nenhuma solicitação de documento pendente"}}
+    {{/if}}
+  </div>
+
+</div>
