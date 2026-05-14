@@ -2,10 +2,10 @@
   <div class="max-w-7xl mx-auto space-y-10">
 
     <!-- Hero -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] p-8 sm:p-10 shadow-lg">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] p-6 sm:p-10 shadow-lg">
       <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
       <div class="relative">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-white break-words">
           Dashboard: {{user.nome}}
         </h1>
         <p class="mt-2 text-white/80 text-lg">
@@ -39,7 +39,7 @@
           <input type="date" name="ate" value="{{filtroAte}}"
             class="border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71] w-full" />
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <button type="submit"
             class="bg-gradient-to-r from-[#6B8F71] to-[#2F3E34] text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-sm">
             Filtrar
@@ -153,15 +153,15 @@
     <!-- Necessidade mais avançada -->
     {{#if necessidadeMaisAvancada}}
     <div class="bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] p-6 rounded-2xl shadow-lg text-white">
-      <div class="flex items-center justify-between flex-wrap gap-4">
-        <div>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="min-w-0">
           <p class="text-sm font-semibold opacity-80">Necessidade mais avançada</p>
           <p class="text-xl font-bold mt-1">{{necessidadeMaisAvancada.titulo}}</p>
           <p class="text-sm opacity-80 mt-1">
             {{necessidadeMaisAvancada.quantidade_recebida}} de {{necessidadeMaisAvancada.quantidade}} itens recebidos
           </p>
         </div>
-        <div class="text-center">
+        <div class="text-left sm:text-center shrink-0">
           <p class="text-4xl font-extrabold">{{necessidadeMaisAvancada.percentual}}%</p>
           <p class="text-xs opacity-80">concluído</p>
         </div>
@@ -178,14 +178,14 @@
       <h2 class="text-2xl font-bold mb-4 bg-gradient-to-r from-[#2F3E34] to-[#6B8F71] dark:from-white dark:to-white/80 text-transparent bg-clip-text">Quase completas</h2>
       <div class="space-y-3">
         {{#each necessidadesQuaseCompletas}}
-        <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:shadow-sm transition-all duration-200">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:shadow-sm transition-all duration-200">
           <div class="flex-1 min-w-0">
             <p class="font-semibold truncate text-slate-700 dark:text-white">{{this.titulo}}</p>
             <p class="text-sm text-slate-400 dark:text-white/50">
               {{this.quantidade_recebida}} / {{this.quantidade}} itens
             </p>
           </div>
-          <div class="flex items-center gap-3 ml-4">
+          <div class="flex items-center gap-3 sm:ml-4">
             <div class="w-24 bg-slate-200 dark:bg-white/10 rounded-full h-2.5">
               <div class="bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] rounded-full h-2.5 transition-all" style="width: {{this.percentual}}%"></div>
             </div>
@@ -199,16 +199,16 @@
 
     <!-- Gráficos -->
     <div id="chartsWrap" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
+      <div class="min-w-0 overflow-hidden bg-white dark:bg-white/5 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
         <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Total recebido por mês</h2>
-        <div class="h-64">
+        <div class="relative h-56 sm:h-64 min-w-0">
           <canvas id="graficoRecebidoMes"></canvas>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
+      <div class="min-w-0 overflow-hidden bg-white dark:bg-white/5 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
         <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Doações por tipo</h2>
-        <div class="h-64">
+        <div class="relative h-56 sm:h-64 min-w-0">
           <canvas id="graficoTipos"></canvas>
         </div>
       </div>

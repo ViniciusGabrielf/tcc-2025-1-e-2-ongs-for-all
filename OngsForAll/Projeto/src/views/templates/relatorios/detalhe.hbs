@@ -1,4 +1,4 @@
-<section class="min-h-screen px-6 py-10">
+<section class="min-h-screen px-4 sm:px-6 py-6 sm:py-10">
   <div class="max-w-3xl mx-auto">
 
     <div class="flex items-center gap-2 mb-3">
@@ -14,7 +14,7 @@
 
     <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{relatorio.titulo}}</h1>
 
-    <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-white/50 mb-6">
+    <div class="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-slate-500 dark:text-white/50 mb-6">
       <span>{{relatorio.nome_ong}}</span>
       <span>·</span>
       <span>{{relatorio.data_publicacao}}</span>
@@ -31,7 +31,7 @@
     {{#if relatorio.anexos.length}}
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm mb-6">
       <h2 class="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">Imagens</h2>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {{#each relatorio.anexos}}
         <img src="{{arquivo_url}}" alt="Imagem do relatório"
           class="rounded-xl w-full object-cover max-h-48 border border-slate-200 dark:border-white/10" />

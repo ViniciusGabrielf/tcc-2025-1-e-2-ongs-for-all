@@ -1,10 +1,10 @@
 <div class="max-w-4xl mx-auto space-y-8">
 
   <!-- Hero -->
-  <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 to-purple-800 p-8 text-white shadow-lg">
+  <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 to-purple-800 p-6 sm:p-8 text-white shadow-lg">
     <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5"></div>
     <div class="absolute -bottom-12 -left-8 w-64 h-64 rounded-full bg-white/5"></div>
-    <div class="relative flex items-center gap-5">
+    <div class="relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
       {{#if empresa.logo}}
       <img src="{{empresa.logo}}" class="w-16 h-16 rounded-2xl object-cover border-2 border-white/30 shadow-md shrink-0" />
       {{else}}
@@ -12,9 +12,9 @@
         {{empresa.nome_fantasia.[0]}}
       </div>
       {{/if}}
-      <div>
+      <div class="min-w-0 text-center sm:text-left">
         <p class="text-white/70 text-sm font-medium">Bem-vinda ao ONGs For All</p>
-        <h1 class="text-2xl font-extrabold mt-0.5">{{empresa.nome_fantasia}}</h1>
+        <h1 class="text-xl sm:text-2xl font-extrabold mt-0.5 break-words">{{empresa.nome_fantasia}}</h1>
         {{#if empresa.setor}}<p class="text-white/70 text-sm mt-0.5">{{empresa.setor}}</p>{{/if}}
       </div>
     </div>
@@ -134,7 +134,7 @@
   </div>
 
   <!-- KPIs -->
-  <div class="grid grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm text-center">
       <p class="text-3xl font-extrabold text-violet-600">{{metricas.total_apoios}}</p>
       <p class="text-xs text-slate-500 dark:text-white/50 mt-1 font-medium">Necessidades apoiadas</p>
@@ -152,13 +152,13 @@
   <!-- Apoios recentes -->
   {{#if apoiosRecentes.length}}
   <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-    <div class="flex items-center justify-between mb-5">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5">
       <h2 class="font-bold text-[#2D4BA6] dark:text-white">Apoios recentes</h2>
       <a href="/empresa/necessidades" class="text-xs text-violet-600 dark:text-violet-400 font-semibold hover:underline">Ver mais</a>
     </div>
     <div class="space-y-3">
       {{#each apoiosRecentes}}
-      <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+      <div class="flex items-start sm:items-center gap-3 sm:gap-4 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
         <div class="w-2 h-2 rounded-full bg-violet-500 shrink-0"></div>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-slate-800 dark:text-white truncate">{{titulo_necessidade}}</p>

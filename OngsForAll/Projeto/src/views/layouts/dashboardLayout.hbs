@@ -151,23 +151,74 @@
       </nav>
     </aside>
 
+    <!-- Menu mobile Usuario -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 z-40 hidden lg:hidden bg-slate-950/60 backdrop-blur-sm"></div>
+    <aside id="mobile-menu"
+      class="fixed inset-y-0 left-0 z-50 hidden lg:hidden w-[min(20rem,calc(100vw-2rem))] flex-col bg-white dark:bg-[#102235] border-r border-slate-200 dark:border-white/10 shadow-2xl">
+      <div class="px-5 py-5 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Menu do usuario</p>
+          <h2 class="text-lg font-bold text-[#2D4BA6] dark:text-white truncate">
+            {{#if user.nome}}{{user.nome}}{{else}}Painel do Usuario{{/if}}
+          </h2>
+        </div>
+        <button type="button" data-mobile-menu-close
+          class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-[#2D4BA6] dark:text-white">
+          <span class="sr-only">Fechar menu</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <nav class="p-4 overflow-y-auto">
+        <p class="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Navegacao</p>
+        <div class="space-y-2">
+          <a href="/dashboard" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Dashboard</a>
+          <a href="/necessidades" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Necessidades</a>
+          <a href="/ongs" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Explorar ONGs</a>
+          <a href="/feed" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Feed de atividades</a>
+          <a href="/mensagens" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Mensagens</a>
+          <a href="/conquistas" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Conquistas</a>
+          <a href="/marketplace" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Marketplace</a>
+        </div>
+
+        <p class="px-3 mt-6 mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Acao rapida</p>
+        <a href="/necessidades" class="flex items-center justify-center px-4 py-3 rounded-2xl bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white font-semibold shadow-md">Explorar necessidades</a>
+
+        <p class="px-3 mt-6 mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Conta</p>
+        <div class="space-y-2">
+          <a href="/perfil/editar" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Perfil</a>
+          <a href="/notificacoes" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2D4BA6] dark:text-white hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5 font-medium">Notificacoes</a>
+          <a href="/logout" class="flex items-center justify-center px-4 py-3 rounded-2xl bg-red-500 text-white font-medium shadow-sm">Sair</a>
+        </div>
+      </nav>
+    </aside>
+
     <!-- Conteúdo -->
     <main class="flex-1 min-w-0 flex flex-col">
 
       <!-- Topbar -->
       <header
         class="sticky top-0 z-30 bg-white/90 dark:bg-[#0D1B2A]/90 backdrop-blur border-b border-slate-200 dark:border-white/10">
-        <div class="px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        <div class="px-4 sm:px-6 py-4 flex items-start sm:items-center justify-between gap-3">
+          <button type="button" data-mobile-menu-open
+            class="lg:hidden flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-100 dark:bg-white/10 text-[#2D4BA6] dark:text-white shadow-sm shrink-0">
+            <span class="sr-only">Abrir menu</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
           <div class="min-w-0">
             <h1 class="text-xl sm:text-2xl font-bold text-[#2D4BA6] dark:text-white truncate">
               {{#if title}}{{title}}{{else}}Dashboard{{/if}}
             </h1>
-            <p class="text-sm text-slate-500 dark:text-white/60">
+            <p class="hidden sm:block text-sm text-slate-500 dark:text-white/60">
               Acompanhe interesses, necessidades e seu impacto.
             </p>
           </div>
 
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
             <div class="hidden sm:flex items-center gap-3 px-3 py-2 rounded-2xl bg-slate-100 dark:bg-white/10">
               <div
                 class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#4886D9] to-[#2D4BA6] flex items-center justify-center text-white text-sm font-bold">
@@ -219,49 +270,8 @@
         </div>
       </header>
 
-      <!-- Atalhos mobile -->
-      <div class="lg:hidden px-4 sm:px-6 pt-4">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <a href="/dashboard"
-            class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z" />
-            </svg>
-            Dashboard
-          </a>
-          <a href="/feed"
-            class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-            </svg>
-            Atividades
-          </a>
-          <a href="/necessidades"
-            class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            Necessidades
-          </a>
-          <a href="/ongs"
-            class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            ONGs
-          </a>
-          <a href="/marketplace"
-            class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            Marketplace
-          </a>
-        </div>
-      </div>
-
       <!-- Conteúdo da página -->
-      <div class="flex-1 px-4 sm:px-6 py-6">
+      <div class="flex-1 min-w-0 max-w-full overflow-x-hidden px-4 sm:px-6 py-6">
         {{{body}}}
       </div>
     </main>
@@ -306,9 +316,26 @@
         });
       }
 
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileOverlay = document.getElementById('mobile-menu-overlay');
+      const openMobileMenu = document.querySelector('[data-mobile-menu-open]');
+      const closeMobileMenu = document.querySelector('[data-mobile-menu-close]');
+
+      function setMobileMenu(open) {
+        if (!mobileMenu || !mobileOverlay) return;
+        mobileMenu.classList.toggle('hidden', !open);
+        mobileMenu.classList.toggle('flex', open);
+        mobileOverlay.classList.toggle('hidden', !open);
+        document.body.classList.toggle('overflow-hidden', open);
+      }
+
+      if (openMobileMenu) openMobileMenu.addEventListener('click', () => setMobileMenu(true));
+      if (closeMobileMenu) closeMobileMenu.addEventListener('click', () => setMobileMenu(false));
+      if (mobileOverlay) mobileOverlay.addEventListener('click', () => setMobileMenu(false));
+
       // Sidebar: destacar link ativo (match mais específico)
       var path = window.location.pathname;
-      var links = document.querySelectorAll('a.sidebar-link[data-nav]');
+      var links = document.querySelectorAll('a.sidebar-link[data-nav], a.mobile-nav-link[data-nav]');
       var bestLink = null, bestLen = 0;
       links.forEach(function(link) {
         var href = link.getAttribute('href');

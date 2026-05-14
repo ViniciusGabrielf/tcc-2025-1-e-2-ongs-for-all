@@ -1,4 +1,4 @@
-<section class="min-h-screen px-6 py-10">
+<section class="min-h-screen px-4 sm:px-6 py-6 sm:py-10">
   <div class="max-w-xl mx-auto">
 
     <div class="flex items-center gap-3 mb-8">
@@ -44,7 +44,7 @@
         </select>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Pessoas beneficiadas <span class="font-normal text-slate-400 dark:text-white/40">(opcional)</span></label>
           <input type="number" name="pessoas_beneficiadas" value="{{form.pessoas_beneficiadas}}" min="0"
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <div class="flex gap-3">
+      <div class="flex flex-col sm:flex-row gap-3">
         <a href="/ong/relatorios"
           class="flex-1 text-center py-3 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/70 hover:opacity-80 transition">
           Cancelar
