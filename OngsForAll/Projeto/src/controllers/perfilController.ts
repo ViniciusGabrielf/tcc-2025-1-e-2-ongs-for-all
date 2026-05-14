@@ -58,6 +58,7 @@ export async function renderPerfilPage(request: FastifyRequest, reply: FastifyRe
     naoLidas,
     backUrl: getBackUrl(session.tipo),
     success: (request.query as any)?.success === "1",
+    documentoPendingNotice: (request.query as any)?.documento === "pendente",
   }, { layout: getLayout(session.tipo) });
 }
 
@@ -70,6 +71,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
 
   try {
     let nome: string, email: string, telefone: string | undefined, password: string | undefined, area_atuacao: string | undefined;
+    let cpf: string | undefined, cnpj: string | undefined;
     let logoPath: string | null = null;
 
     if (isOng) {
@@ -83,6 +85,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
         telefone = fields.telefone;
         password = fields.password;
         area_atuacao = fields.area_atuacao;
+        cnpj = fields.cnpj;
 
         if (data.filename && data.mimetype) {
           if (!ALLOWED_MIMES.includes(data.mimetype)) {
@@ -115,6 +118,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
         telefone = body.telefone;
         password = body.password;
         area_atuacao = body.area_atuacao;
+        cnpj = body.cnpj;
       }
     } else {
       // Usuário usa form normal (sem arquivo)
@@ -123,6 +127,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
       email = body.email;
       telefone = body.telefone;
       password = body.password;
+      cpf = body.cpf;
     }
 
     const result = isOng
@@ -132,6 +137,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
           email,
           telefone,
           areaAtuacao: area_atuacao,
+          cnpj,
           password,
         })
       : await perfilService.updateProfile({
@@ -139,6 +145,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
           nome,
           email,
           telefone,
+          cpf,
           password,
         });
 
@@ -156,6 +163,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
         naoLidas,
         backUrl: getBackUrl(session.tipo),
         message: result.error,
+        documentoPendingNotice: false,
       }, { layout: getLayout(session.tipo) });
     }
 
@@ -180,7 +188,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
       ...(logoPath ? { logo: logoPath } : {}),
     };
 
-    return reply.redirect("/perfil/editar?success=1");
+    return reply.redirect(`/perfil/editar?success=1${result.documentoSolicitacaoCriada ? "&documento=pendente" : ""}`);
   } catch (error: any) {
     console.error("Erro ao atualizar perfil:", error);
 
@@ -197,6 +205,7 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
       naoLidas,
       backUrl: getBackUrl(session.tipo),
       message: error.message || "Erro ao atualizar perfil",
+      documentoPendingNotice: false,
     }, { layout: getLayout(session.tipo) });
   }
 }

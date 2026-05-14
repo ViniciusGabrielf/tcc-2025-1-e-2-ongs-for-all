@@ -26,10 +26,25 @@
   </div>
   {{/if}}
 
+  {{#if documentoPendingNotice}}
+  <div class="px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-sm font-medium">
+    A alteração do {{#if isOng}}CNPJ{{else}}CPF{{/if}} foi enviada para aprovação do admin.
+  </div>
+  {{/if}}
+
+  {{#if user.documentoStatus.mensagem}}
+  <div class="px-4 py-3 rounded-xl border text-sm font-medium
+    {{#if user.documentoStatus.solicitacaoRejeitada}}bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300{{else}}bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300{{/if}}">
+    {{user.documentoStatus.mensagem}}
+    {{#if user.documentoStatus.observacaoAdmin}}
+    <p class="mt-2 text-xs font-semibold">Observação do admin: {{user.documentoStatus.observacaoAdmin}}</p>
+    {{/if}}
+  </div>
+  {{/if}}
+
   <form action="/perfil/editar" method="POST" {{#if isOng}}enctype="multipart/form-data"{{/if}}
     class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm space-y-5">
 
-    <!-- Avatar / Logo -->
     <div class="flex items-center gap-5">
       {{#if isOng}}
         {{#if user.logo}}
@@ -43,7 +58,7 @@
           <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Logo da ONG</label>
           <input type="file" name="logo" accept="image/jpeg,image/png,image/webp,image/gif"
             class="w-full text-sm text-slate-500 dark:text-white/50 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--theme-strong)]/10 dark:file:bg-[var(--theme-primary)]/20 file:text-[var(--theme-strong)] dark:file:text-[var(--theme-primary)] hover:file:opacity-80" />
-          <p class="text-xs text-slate-400 dark:text-white/30 mt-1">JPG, PNG, WebP ou GIF · máx. 2MB</p>
+          <p class="text-xs text-slate-400 dark:text-white/30 mt-1">JPG, PNG, WebP ou GIF - max. 2MB</p>
         </div>
       {{else}}
         <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--theme-primary)] to-[var(--theme-strong)] flex items-center justify-center text-white font-bold text-2xl shadow-sm shrink-0">
@@ -56,69 +71,90 @@
       {{/if}}
     </div>
 
-    <!-- Nome -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Nome *</label>
-      <input type="text" name="nome" value="{{user.nome}}" required maxlength="255"
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Nome *</label>
+        <input type="text" name="nome" value="{{user.nome}}" required maxlength="255"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">E-mail *</label>
+        <input type="email" name="email" value="{{user.email}}" required maxlength="255"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+      </div>
     </div>
 
-    <!-- Email -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">E-mail *</label>
-      <input type="email" name="email" value="{{user.email}}" required maxlength="255"
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Telefone</label>
+        <input type="tel" name="telefone" id="telefone_perfil" value="{{user.telefone}}" maxlength="20" placeholder="(00) 00000-0000"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+      </div>
+
+      {{#if isOng}}
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Área de atuação</label>
+        <input type="text" name="area_atuacao" value="{{user.area_atuacao}}" maxlength="100" placeholder="Ex: Educação, Saúde..."
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+      </div>
+      {{else}}
+      {{#if user.cpf}}
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CPF</label>
+        <input type="text" name="cpf" id="cpf_perfil" value="{{user.cpf}}" maxlength="14"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Alterações de CPF ficam pendentes para aprovação do admin.</p>
+        {{#if user.documentoStatus.documentoPendente}}
+        <p class="text-xs text-amber-600 dark:text-amber-300 mt-1">Solicitação pendente: {{user.documentoStatus.documentoPendente}}</p>
+        {{/if}}
+      </div>
+      {{/if}}
+      {{/if}}
     </div>
 
-    <!-- Telefone -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Telefone</label>
-      <input type="tel" name="telefone" value="{{user.telefone}}" maxlength="20" placeholder="(00) 00000-0000"
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
-    </div>
-
-    {{#if isOng}}
-    <!-- Área de atuação (somente ONG) -->
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Área de atuação</label>
-      <input type="text" name="area_atuacao" value="{{user.area_atuacao}}" maxlength="100" placeholder="Ex: Educação, Saúde, Meio Ambiente..."
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
-    </div>
-    {{/if}}
-
-    <!-- CPF somente leitura (usuário) -->
-    {{#unless isOng}}
-    {{#if user.cpf}}
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CPF</label>
-      <input type="text" value="{{user.cpf}}" disabled
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/40 text-sm cursor-not-allowed" />
-    </div>
-    {{/if}}
-    {{/unless}}
-
-    <!-- CNPJ somente leitura (ONG) -->
     {{#if isOng}}
     {{#if user.cnpj}}
-    <div>
-      <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CNPJ</label>
-      <input type="text" value="{{user.cnpj}}" disabled
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-white/40 text-sm cursor-not-allowed" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CNPJ</label>
+        <input type="text" name="cnpj" id="cnpj_ong_perfil" value="{{user.cnpj}}" maxlength="18"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Alterações de CNPJ ficam pendentes para aprovação do admin.</p>
+        {{#if user.documentoStatus.documentoPendente}}
+        <p class="text-xs text-amber-600 dark:text-amber-300 mt-1">Solicitação pendente: {{user.documentoStatus.documentoPendente}}</p>
+        {{/if}}
+      </div>
     </div>
     {{/if}}
     {{/if}}
 
-    <!-- Separador senha -->
-    <div class="pt-1 border-t border-slate-100 dark:border-white/5">
+    {{#if isOng}}
+    {{#if user.cnpj}}
+    <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4 space-y-1">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">CNPJ atual em uso</p>
+      <p class="text-sm font-bold text-slate-800 dark:text-white">{{user.cnpj}}</p>
+      <p class="text-xs text-slate-500 dark:text-white/50">Este é o CNPJ atualmente aprovado para a ONG.</p>
+    </div>
+    {{/if}}
+    {{else}}
+    {{#if user.cpf}}
+    <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4 space-y-1">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">CPF atual em uso</p>
+      <p class="text-sm font-bold text-slate-800 dark:text-white">{{user.cpf}}</p>
+      <p class="text-xs text-slate-500 dark:text-white/50">Este é o CPF atualmente aprovado para a conta.</p>
+    </div>
+    {{/if}}
+    {{/if}}
+
+    <div>
       <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">
         Nova senha
         <span class="text-slate-400 dark:text-white/30 font-normal text-xs ml-1">(deixe em branco para manter)</span>
       </label>
-      <input type="password" name="password" placeholder="••••••••" minlength="6"
+      <input type="password" name="password" placeholder="********" minlength="6"
         class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
     </div>
 
-    <!-- Botões -->
     <div class="flex gap-3 pt-2">
       <button type="submit"
         class="flex-1 py-3 rounded-2xl bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-strong)] text-white font-bold text-sm shadow hover:opacity-90 transition">
@@ -132,3 +168,28 @@
   </form>
 
 </div>
+
+<script>
+  const cpfPerfilInput = document.getElementById('cpf_perfil');
+  if (cpfPerfilInput) {
+    cpfPerfilInput.addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, '').slice(0, 11);
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      e.target.value = value;
+    });
+  }
+
+  const cnpjOngPerfilInput = document.getElementById('cnpj_ong_perfil');
+  if (cnpjOngPerfilInput) {
+    cnpjOngPerfilInput.addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, '').slice(0, 14);
+      value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+      value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+      value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+      value = value.replace(/(\d{4})(\d)/, '$1-$2');
+      e.target.value = value;
+    });
+  }
+</script>
