@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import * as dashboardService from "../services/dashboardService";
 import * as notificacaoService from "../services/notificacaoService";
-import * as gamificacaoService from "../services/gamificacaoService";
 
 // =======================
 // DASHBOARD - USUÁRIO
@@ -18,10 +17,7 @@ export async function renderDashBoardPage(
     }
 
     const { de, ate, interesse } = request.query as { de?: string; ate?: string; interesse?: string };
-    const [data, gamificacao] = await Promise.all([
-      dashboardService.getDashboardData(Number(sessionUser.id), de, ate),
-      gamificacaoService.getDadosGamificacao(Number(sessionUser.id)),
-    ]);
+    const data = await dashboardService.getDashboardData(Number(sessionUser.id), de, ate);
     if (process.env.NODE_ENV === "test") {
       return reply.send({ user: sessionUser, ...data });
     }
@@ -36,8 +32,6 @@ export async function renderDashBoardPage(
       {
         user: sessionUser,
         naoLidas,
-        gamificacao,
-
         // cards
         totalInteresses: data.totalInteresses ?? 0,
         qtdTipos: data.qtdTipos ?? 0,
@@ -152,21 +146,7 @@ export async function renderConquistasPage(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const sessionUser = request.session.user;
-  if (!sessionUser) return reply.redirect("/login");
-
-  const { naoLidas } = await notificacaoService.contarNaoLidas({
-    tipoConta: sessionUser.tipo as "usuario" | "ong",
-    id: Number(sessionUser.id),
-  });
-
-  const gamificacao = await gamificacaoService.getDadosGamificacaoCompleto(Number(sessionUser.id));
-
-  return reply.view(
-    "/templates/usuario/conquistas.hbs",
-    { user: sessionUser, naoLidas, gamificacao },
-    { layout: "layouts/dashboardLayout" }
-  );
+  return reply.redirect("/dashboard");
 }
 
 // =======================

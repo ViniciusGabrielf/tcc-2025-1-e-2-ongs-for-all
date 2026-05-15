@@ -1,10 +1,20 @@
 import { FastifyRequest, FastifyReply } from "fastify";
+import { NEED_CATALOG, getNeedFilterCategories } from "../constants/necessidadeCatalogo";
 import * as necessidadeService from "../services/necessidadeService";
 import * as notificacaoService from "../services/notificacaoService";
 import * as ongAprovacaoRepo from "../repositories/ongAprovacaoRepository";
 
 function buildInteresseRedirectPath(necessidadeId: number) {
   return `/interesses/nova?necessidade_id=${necessidadeId}`;
+}
+
+function getSingleFormValue(value: unknown) {
+  if (Array.isArray(value)) {
+    const firstNonEmpty = value.find((item) => `${item ?? ""}`.trim() !== "");
+    return `${firstNonEmpty ?? value[0] ?? ""}`;
+  }
+
+  return `${value ?? ""}`;
 }
 
 async function getNaoLidas(user: { tipo: string; id: number }) {
@@ -19,12 +29,25 @@ export async function renderListaNecessidadesPage(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const { ong, tipo } = request.query as { ong?: string; tipo?: string };
+  const { ong, tipo, categoria, q } = request.query as {
+    ong?: string;
+    tipo?: string;
+    categoria?: string;
+    q?: string;
+  };
   const ongId = ong ? Number(ong) : undefined;
   const filtroOngId = ongId && !isNaN(ongId) ? ongId : undefined;
   const filtroTipo = ["bem", "servico", "voluntariado"].includes(tipo || "") ? tipo : undefined;
+  const filtroCategoria = categoria || "";
+  const filtroBusca = q?.trim() || "";
+  const categoriasFiltro = getNeedFilterCategories(filtroTipo);
 
-  const result = await necessidadeService.listarNecessidadesAbertas(filtroOngId, filtroTipo);
+  const result = await necessidadeService.listarNecessidadesAbertas(
+    filtroOngId,
+    filtroTipo,
+    filtroCategoria || undefined,
+    filtroBusca || undefined
+  );
 
   if (process.env.NODE_ENV === "test") {
     return reply.send(result);
@@ -53,6 +76,9 @@ export async function renderListaNecessidadesPage(
       necessidades: result.necessidades,
       filtroOngId,
       filtroTipo,
+      filtroCategoria,
+      filtroBusca,
+      categoriasFiltro,
       nomeOngFiltrada,
       filtroBem: filtroTipo === "bem",
       filtroServico: filtroTipo === "servico",
@@ -88,6 +114,7 @@ export async function renderNovaNecessidadePage(
       user: sessionUser,
       naoLidas,
       isBem: true,
+      necessidadeCatalogoJson: JSON.stringify(NEED_CATALOG),
       ...(ongBloqueada
         ? { error: "Sua ONG precisa ser aprovada antes de cadastrar necessidades. Acesse a seção de Aprovação." }
         : {}),
@@ -121,32 +148,22 @@ export async function criarNecessidade(
         naoLidas,
         error: "Sua ONG precisa ser aprovada antes de cadastrar necessidades. Acesse a seção de Aprovação.",
         isBem: true,
+        necessidadeCatalogoJson: JSON.stringify(NEED_CATALOG),
       },
       { layout: "layouts/ongDashboardLayout" }
     );
   }
 
-  const {
-    titulo,
-    descricao,
-    categoria,
-    quantidade,
-    tipo_necessidade,
-    local_atividade,
-    turno,
-    data_inicio,
-    data_fim,
-  } = request.body as {
-    titulo: string;
-    descricao: string;
-    categoria: string;
-    quantidade: string;
-    tipo_necessidade: string;
-    local_atividade?: string;
-    turno?: string;
-    data_inicio?: string;
-    data_fim?: string;
-  };
+  const rawBody = request.body as Record<string, unknown>;
+  const titulo = getSingleFormValue(rawBody.titulo);
+  const descricao = getSingleFormValue(rawBody.descricao);
+  const categoria = getSingleFormValue(rawBody.categoria);
+  const quantidade = getSingleFormValue(rawBody.quantidade);
+  const tipo_necessidade = getSingleFormValue(rawBody.tipo_necessidade);
+  const local_atividade = getSingleFormValue(rawBody.local_atividade) || undefined;
+  const turno = getSingleFormValue(rawBody.turno) || undefined;
+  const data_inicio = getSingleFormValue(rawBody.data_inicio) || undefined;
+  const data_fim = getSingleFormValue(rawBody.data_fim) || undefined;
 
   const result = await necessidadeService.criarNecessidade({
     ongId: Number(sessionUser.id),
@@ -173,6 +190,7 @@ export async function criarNecessidade(
         form: { titulo, descricao, categoria, quantidade, tipo_necessidade, local_atividade, turno, data_inicio, data_fim },
         isVoluntariado: tipo_necessidade === "voluntariado",
         isBem: !tipo_necessidade || tipo_necessidade === "bem",
+        necessidadeCatalogoJson: JSON.stringify(NEED_CATALOG),
       },
       { layout: "layouts/ongDashboardLayout" }
     );
@@ -203,6 +221,7 @@ export async function renderDetalheNecessidadePage(
     : "layouts/dashboardLayout";
   const isPropriaOng = isOngDashboard && Number(user?.id) === Number(result.necessidade.ong_id);
   const canRegistrarInteresse = user?.tipo === "usuario";
+  const canViewNeedMetrics = isPropriaOng;
   const interesseRedirectPath = buildInteresseRedirectPath(Number(result.necessidade.id));
 
   return reply.view(
@@ -215,6 +234,7 @@ export async function renderDetalheNecessidadePage(
       isOngDashboard,
       isPropriaOng,
       canRegistrarInteresse,
+      canViewNeedMetrics,
       isPublicGuest: !user,
       interesseRedirectPath,
       loginRedirectUrl: `/login?redirect=${encodeURIComponent(interesseRedirectPath)}`,

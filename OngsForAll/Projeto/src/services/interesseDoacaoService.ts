@@ -1,7 +1,6 @@
 import * as interesseRepo from "../repositories/interesseDoacaoRepository";
 import * as doacaoRepo from "../repositories/doacaoRepository";
 import * as notificacaoService from "../services/notificacaoService";
-import * as gamificacaoService from "../services/gamificacaoService";
 
 export async function getNovaPaginaInteresse(
     userId: number,
@@ -10,7 +9,7 @@ export async function getNovaPaginaInteresse(
     const necessidade = await interesseRepo.buscarNecessidadePorId(necessidadeId);
 
     if (!necessidade) {
-        throw new Error("Necessidade não encontrada.");
+        throw new Error("Necessidade nao encontrada.");
     }
 
     return { necessidade };
@@ -28,7 +27,7 @@ export async function criarInteresse(params: {
     if (!userExists) {
         return {
             ok: false as const,
-            error: "Apenas usuários podem demonstrar interesse em ajudar.",
+            error: "Apenas usuarios podem demonstrar interesse em ajudar.",
         };
     }
 
@@ -39,14 +38,14 @@ export async function criarInteresse(params: {
     if (!necessidade) {
         return {
             ok: false as const,
-            error: "Necessidade não encontrada.",
+            error: "Necessidade nao encontrada.",
         };
     }
 
     if (necessidade.status === "concluida" || necessidade.status === "cancelada") {
         return {
             ok: false as const,
-            error: "Essa necessidade não está mais disponível para recebimento.",
+            error: "Essa necessidade nao esta mais disponivel para recebimento.",
         };
     }
 
@@ -70,7 +69,7 @@ export async function criarInteresse(params: {
     });
 
     const usuario = await doacaoRepo.buscarNomeUsuarioPorId(params.userId);
-    const nomeUsuario = usuario?.nome ?? "Um usuário";
+    const nomeUsuario = usuario?.nome ?? "Um usuario";
 
     await notificacaoService.criarNotificacaoParaOng({
         ongId: Number(necessidade.ong_id),
@@ -78,9 +77,6 @@ export async function criarInteresse(params: {
         mensagem: `${nomeUsuario} demonstrou interesse em ajudar a necessidade "${necessidade.titulo}".`,
         tipo: "novo_interesse",
     });
-
-    // Gamificação (fire-and-forget)
-    gamificacaoService.processarAcao({ usuarioId: params.userId, acao: "primeiro_interesse" }).catch(() => {});
 
     return { ok: true as const };
 }
@@ -111,11 +107,11 @@ export async function aceitarInteresse(params: {
     const interesse = await interesseRepo.buscarInteressePorId(params.interesseId);
 
     if (!interesse) {
-        return { ok: false as const, error: "Interesse não encontrado." };
+        return { ok: false as const, error: "Interesse nao encontrado." };
     }
 
     if (Number(interesse.ong_id) !== Number(params.ongId)) {
-        return { ok: false as const, error: "Você não pode alterar este interesse." };
+        return { ok: false as const, error: "Voce nao pode alterar este interesse." };
     }
 
     if (interesse.status !== "pendente") {
@@ -144,11 +140,11 @@ export async function receberInteresse(params: {
     const interesse = await interesseRepo.buscarInteressePorId(params.interesseId);
 
     if (!interesse) {
-        return { ok: false as const, error: "Interesse não encontrado." };
+        return { ok: false as const, error: "Interesse nao encontrado." };
     }
 
     if (Number(interesse.ong_id) !== Number(params.ongId)) {
-        return { ok: false as const, error: "Você não pode alterar este interesse." };
+        return { ok: false as const, error: "Voce nao pode alterar este interesse." };
     }
 
     if (interesse.status !== "aceito") {
@@ -164,8 +160,8 @@ export async function receberInteresse(params: {
 
     await notificacaoService.criarNotificacaoParaUsuario({
         usuarioId: Number(interesse.usuario_id),
-        titulo: "Doação recebida",
-        mensagem: `${interesse.nome_ong} confirmou o recebimento da sua doação para "${interesse.titulo_necessidade}". Obrigado pela ajuda!`,
+        titulo: "Doacao recebida",
+        mensagem: `${interesse.nome_ong} confirmou o recebimento da sua doacao para "${interesse.titulo_necessidade}". Obrigado pela ajuda!`,
         tipo: "interesse_recebido",
     });
 
@@ -183,15 +179,11 @@ export async function receberInteresse(params: {
             await notificacaoService.criarNotificacaoParaOng({
                 ongId: Number(interesse.ong_id),
                 titulo: "Meta atingida!",
-                mensagem: `A necessidade "${interesse.titulo_necessidade}" atingiu a meta de doações e foi concluída automaticamente!`,
+                mensagem: `A necessidade "${interesse.titulo_necessidade}" atingiu a meta de doacoes e foi concluida automaticamente!`,
                 tipo: "meta_atingida",
             });
         }
     }
-
-    // Gamificação (fire-and-forget)
-    const acao = interesse.tipo_necessidade === "voluntariado" ? "interesse_voluntariado" : "interesse_confirmado";
-    gamificacaoService.processarAcao({ usuarioId: Number(interesse.usuario_id), acao }).catch(() => {});
 
     return { ok: true as const };
 }
@@ -203,11 +195,11 @@ export async function cancelarInteresse(params: {
     const interesse = await interesseRepo.buscarInteressePorId(params.interesseId);
 
     if (!interesse) {
-        return { ok: false as const, error: "Interesse não encontrado." };
+        return { ok: false as const, error: "Interesse nao encontrado." };
     }
 
     if (Number(interesse.ong_id) !== Number(params.ongId)) {
-        return { ok: false as const, error: "Você não pode alterar este interesse." };
+        return { ok: false as const, error: "Voce nao pode alterar este interesse." };
     }
 
     if (interesse.status !== "pendente" && interesse.status !== "aceito") {
@@ -222,7 +214,7 @@ export async function cancelarInteresse(params: {
     await notificacaoService.criarNotificacaoParaUsuario({
         usuarioId: Number(interesse.usuario_id),
         titulo: "Interesse cancelado",
-        mensagem: `${interesse.nome_ong} cancelou o interesse relacionado à necessidade "${interesse.titulo_necessidade}".`,
+        mensagem: `${interesse.nome_ong} cancelou o interesse relacionado a necessidade "${interesse.titulo_necessidade}".`,
         tipo: "interesse_cancelado",
     });
 

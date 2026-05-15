@@ -278,7 +278,7 @@ export async function verificarElegibilidade(empresaId: number): Promise<boolean
 // ----------------------------------------------------------
 // Necessidades abertas (para empresa apoiar)
 // ----------------------------------------------------------
-export async function listarNecessidadesAbertas(empresaId: number, tipo?: string) {
+export async function listarNecessidadesAbertas(empresaId: number, tipo?: string, categoria?: string) {
   let query = `
     SELECT n.id, n.titulo, n.descricao, n.tipo_necessidade, n.categoria, n.quantidade, n.quantidade_recebida, n.status,
            o.nome AS nome_ong, o.ong_id,
@@ -292,6 +292,11 @@ export async function listarNecessidadesAbertas(empresaId: number, tipo?: string
   if (tipo && ["bem", "servico", "voluntariado"].includes(tipo)) {
     query += ` AND n.tipo_necessidade = ?`;
     params.push(tipo);
+  }
+
+  if (categoria) {
+    query += ` AND n.categoria = ?`;
+    params.push(categoria);
   }
   query += ` ORDER BY n.criado_em DESC LIMIT 30`;
 

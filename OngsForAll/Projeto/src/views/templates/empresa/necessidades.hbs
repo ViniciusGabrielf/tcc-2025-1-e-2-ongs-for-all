@@ -1,5 +1,4 @@
 <div class="max-w-4xl mx-auto space-y-6">
-
   <div class="flex items-center justify-between flex-wrap gap-3">
     <div>
       <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Apoiar necessidades</h2>
@@ -15,36 +14,41 @@
     {{/if}}
   </div>
 
-  <!-- Filtros -->
   <div class="flex gap-2 flex-wrap">
-    <a href="/empresa/necessidades"
-      class="px-4 py-2 rounded-full text-sm font-semibold border transition
-        {{#unless filtroTipo}}bg-[#2D4BA6] text-white border-[#2D4BA6]{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-[#4886D9]{{/unless}}">
+    <a href="/empresa/necessidades{{#if filtroCategoria}}?categoria={{filtroCategoria}}{{/if}}"
+      class="px-4 py-2 rounded-full text-sm font-semibold border transition {{#unless filtroTipo}}bg-[#2D4BA6] text-white border-[#2D4BA6]{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-[#4886D9]{{/unless}}">
       Todos
     </a>
-    <a href="/empresa/necessidades?tipo=bem"
-      class="px-4 py-2 rounded-full text-sm font-semibold border transition
-        {{#if filtroBem}}bg-blue-600 text-white border-blue-600{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-blue-400{{/if}}">
-      Doação
+    <a href="/empresa/necessidades?tipo=bem{{#if filtroCategoria}}&categoria={{filtroCategoria}}{{/if}}"
+      class="px-4 py-2 rounded-full text-sm font-semibold border transition {{#if filtroBem}}bg-blue-600 text-white border-blue-600{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-blue-400{{/if}}">
+      Doacao
     </a>
-    <a href="/empresa/necessidades?tipo=servico"
-      class="px-4 py-2 rounded-full text-sm font-semibold border transition
-        {{#if filtroServico}}bg-purple-600 text-white border-purple-600{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-purple-400{{/if}}">
-      Serviço
+    <a href="/empresa/necessidades?tipo=servico{{#if filtroCategoria}}&categoria={{filtroCategoria}}{{/if}}"
+      class="px-4 py-2 rounded-full text-sm font-semibold border transition {{#if filtroServico}}bg-purple-600 text-white border-purple-600{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-purple-400{{/if}}">
+      Servico
     </a>
-    <a href="/empresa/necessidades?tipo=voluntariado"
-      class="px-4 py-2 rounded-full text-sm font-semibold border transition
-        {{#if filtroVoluntariado}}bg-emerald-600 text-white border-emerald-600{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-emerald-400{{/if}}">
+    <a href="/empresa/necessidades?tipo=voluntariado{{#if filtroCategoria}}&categoria={{filtroCategoria}}{{/if}}"
+      class="px-4 py-2 rounded-full text-sm font-semibold border transition {{#if filtroVoluntariado}}bg-emerald-600 text-white border-emerald-600{{else}}bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:border-emerald-400{{/if}}">
       Voluntariado
     </a>
+  </div>
+
+  <div>
+    <label for="categoria-filtro" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-2">Categoria</label>
+    <select id="categoria-filtro"
+      onchange="window.location.href='/empresa/necessidades?{{#if filtroTipo}}tipo={{filtroTipo}}&{{/if}}categoria=' + this.value"
+      class="w-full md:w-80 rounded-xl px-3 py-2.5 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 dark:[color-scheme:dark] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
+      <option value="">Todas as categorias</option>
+      {{#each categoriasFiltro}}
+      <option value="{{codigo}}" {{#ifCond ../filtroCategoria codigo}}selected{{/ifCond}}>{{nome}}</option>
+      {{/each}}
+    </select>
   </div>
 
   {{#if necessidades.length}}
   <div class="grid sm:grid-cols-2 gap-4">
     {{#each necessidades}}
-    <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm
-      {{#if ja_apoiou}}opacity-70{{/if}}">
-
+    <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm {{#if ja_apoiou}}opacity-70{{/if}}">
       <div class="flex items-start justify-between gap-3 mb-3">
         <div class="min-w-0 flex-1">
           <p class="font-bold text-[#2D4BA6] dark:text-white text-sm leading-snug truncate">{{titulo}}</p>
@@ -62,14 +66,12 @@
       <p class="text-xs text-slate-500 dark:text-white/50 line-clamp-2 mb-3">{{descricao}}</p>
       {{/if}}
 
-      {{#if quantidade}}
-      <div class="mb-3">
-        <div class="h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
-          <div class="h-full bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] rounded-full" style="width: {{progresso}}%"></div>
+      <div class="mb-4 space-y-1 text-xs text-slate-500 dark:text-white/50">
+        <div class="flex justify-between gap-3">
+          <span>Categoria</span>
+          <span class="font-medium text-right text-slate-700 dark:text-white/70">{{categoria}}</span>
         </div>
-        <p class="text-[10px] text-slate-400 dark:text-white/30 mt-1">{{progresso}}% concluído</p>
       </div>
-      {{/if}}
 
       {{#if ja_apoiou}}
       <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-semibold">
@@ -90,9 +92,7 @@
     </div>
     {{/each}}
   </div>
-
   {{else}}
   {{> emptyState message="Nenhuma necessidade aberta encontrada"}}
   {{/if}}
-
 </div>

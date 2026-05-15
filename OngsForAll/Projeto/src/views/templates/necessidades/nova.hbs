@@ -1,6 +1,5 @@
 <section class="min-h-screen px-4 sm:px-6 py-6 sm:py-10">
   <div class="max-w-xl mx-auto">
-
     <div class="flex items-center gap-3 mb-8">
       <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#3F5F45] to-[#2F3E34] flex items-center justify-center shadow">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -20,25 +19,20 @@
     {{/if}}
 
     <form method="POST" action="/necessidades" class="space-y-5">
-
-      <!-- Tipo de necessidade -->
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-2">Tipo de necessidade</label>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-
-          <label id="btn-bem" class="tipo-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition
-            {{#if isBem}}border-[#3F5F45] bg-[#3F5F45]/5 dark:border-[#6B8F71] dark:bg-[#6B8F71]/10{{else}}border-slate-200 dark:border-white/10 bg-white dark:bg-white/5{{/if}}">
+          <label id="btn-bem" class="tipo-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition {{#if isBem}}border-[#3F5F45] bg-[#3F5F45]/5 dark:border-[#6B8F71] dark:bg-[#6B8F71]/10{{else}}border-slate-200 dark:border-white/10 bg-white dark:bg-white/5{{/if}}">
             <input type="radio" name="tipo_necessidade" value="bem" class="sr-only" {{#if isBem}}checked{{/if}} />
             <div class="w-9 h-9 rounded-lg bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#DDEADB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </div>
-            <span class="text-xs font-semibold text-center text-slate-800 dark:text-white">Doação de bem</span>
+            <span class="text-xs font-semibold text-center text-slate-800 dark:text-white">Doacao de bem</span>
           </label>
 
-          <label id="btn-servico" class="tipo-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition
-            {{#ifCond form.tipo_necessidade 'servico'}}border-[#3F5F45] bg-[#3F5F45]/5 dark:border-[#6B8F71] dark:bg-[#6B8F71]/10{{else}}border-slate-200 dark:border-white/10 bg-white dark:bg-white/5{{/ifCond}}">
+          <label id="btn-servico" class="tipo-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition {{#ifCond form.tipo_necessidade 'servico'}}border-[#3F5F45] bg-[#3F5F45]/5 dark:border-[#6B8F71] dark:bg-[#6B8F71]/10{{else}}border-slate-200 dark:border-white/10 bg-white dark:bg-white/5{{/ifCond}}">
             <input type="radio" name="tipo_necessidade" value="servico" class="sr-only" {{#ifCond form.tipo_necessidade 'servico'}}checked{{/ifCond}} />
             <div class="w-9 h-9 rounded-lg bg-[#DDEADB] dark:bg-[#6B8F71]/20 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#DDEADB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -46,11 +40,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <span class="text-xs font-semibold text-center text-slate-800 dark:text-white">Serviço</span>
+            <span class="text-xs font-semibold text-center text-slate-800 dark:text-white">Servico</span>
           </label>
 
-          <label id="btn-voluntariado" class="tipo-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition
-            {{#if isVoluntariado}}border-[#3F5F45] bg-[#3F5F45]/5 dark:border-[#6B8F71] dark:bg-[#6B8F71]/10{{else}}border-slate-200 dark:border-white/10 bg-white dark:bg-white/5{{/if}}">
+          <label id="btn-voluntariado" class="tipo-btn flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition {{#if isVoluntariado}}border-[#3F5F45] bg-[#3F5F45]/5 dark:border-[#6B8F71] dark:bg-[#6B8F71]/10{{else}}border-slate-200 dark:border-white/10 bg-white dark:bg-white/5{{/if}}">
             <input type="radio" name="tipo_necessidade" value="voluntariado" class="sr-only" {{#if isVoluntariado}}checked{{/if}} />
             <div class="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -59,62 +52,57 @@
             </div>
             <span class="text-xs font-semibold text-center text-slate-800 dark:text-white">Voluntariado</span>
           </label>
-
         </div>
       </div>
 
-      <!-- Título -->
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Título</label>
-        <input type="text" name="titulo" value="{{form.titulo}}" required
-          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3F5F45]"
-          placeholder="Ex.: Agasalhos para o inverno" />
-      </div>
-
-      <!-- Descrição -->
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Descrição</label>
-        <textarea name="descricao" rows="4" required
-          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3F5F45]"
-          placeholder="Descreva a necessidade, requisitos ou observações importantes">{{form.descricao}}</textarea>
-      </div>
-
-      <!-- Categoria -->
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Categoria</label>
-        <input type="text" name="categoria" value="{{form.categoria}}" required
-          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3F5F45]"
-          placeholder="Ex.: Educação, Saúde, Assistência social" />
+        <select name="categoria" id="categoria-catalogo" required
+          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3F5F45]">
+          <option value="">Selecione uma categoria</option>
+        </select>
       </div>
 
-      <!-- Campos para bem/serviço -->
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Item necessario</label>
+        <select name="titulo" id="titulo-catalogo" required
+          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3F5F45]">
+          <option value="">Selecione um item da lista</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Descricao</label>
+        <textarea name="descricao" rows="4" required
+          class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3F5F45]"
+          placeholder="Descreva detalhes, medidas, estado do item, urgencia ou observacoes importantes. Se voce precisar de um item que nao esteja na lista, informe aqui na descricao.">{{form.descricao}}</textarea>
+      </div>
+
       <div id="campos-item" class="space-y-4">
         <div>
-          <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Quantidade necessária</label>
+          <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Quantidade necessaria</label>
           <input type="number" name="quantidade" value="{{form.quantidade}}" min="1"
             class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3F5F45]"
-            placeholder="Quantas unidades / horas precisadas" />
+            placeholder="Quantas unidades ou horas sao necessarias" />
         </div>
       </div>
 
-      <!-- Campos exclusivos de voluntariado -->
       <div id="campos-voluntariado" class="space-y-4" style="display:none;">
-
         <div>
-          <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Número de vagas</label>
+          <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Numero de vagas</label>
           <input type="number" name="quantidade" min="1" value="{{form.quantidade}}"
             class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3F5F45]"
-            placeholder="Quantas pessoas são necessárias" />
+            placeholder="Quantas pessoas sao necessarias" />
         </div>
 
-        <!-- Local -->
         <div>
           <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-2">Local da atividade <span class="text-red-500">*</span></label>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <label class="local-btn flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition border-slate-200 dark:border-white/10 bg-white dark:bg-white/5">
               <input type="radio" name="local_atividade" value="presencial" class="sr-only" {{#ifCond form.local_atividade 'presencial'}}checked{{/ifCond}} />
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-500 dark:text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span class="text-xs font-semibold text-slate-700 dark:text-white/80">Presencial</span>
             </label>
@@ -130,68 +118,121 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-500 dark:text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span class="text-xs font-semibold text-slate-700 dark:text-white/80">Híbrido</span>
+              <span class="text-xs font-semibold text-slate-700 dark:text-white/80">Hibrido</span>
             </label>
           </div>
         </div>
 
-        <!-- Turno -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Turno / Período</label>
+          <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Turno / Periodo</label>
           <select name="turno"
             class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
-            <option value="">Não especificado</option>
-            <option value="manha" {{#ifCond form.turno 'manha'}}selected{{/ifCond}}>Manhã</option>
+            <option value="">Nao especificado</option>
+            <option value="manha" {{#ifCond form.turno 'manha'}}selected{{/ifCond}}>Manha</option>
             <option value="tarde" {{#ifCond form.turno 'tarde'}}selected{{/ifCond}}>Tarde</option>
             <option value="noite" {{#ifCond form.turno 'noite'}}selected{{/ifCond}}>Noite</option>
             <option value="integral" {{#ifCond form.turno 'integral'}}selected{{/ifCond}}>Integral</option>
           </select>
         </div>
 
-        <!-- Datas -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Data de início</label>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Data de inicio</label>
             <input type="date" name="data_inicio" value="{{form.data_inicio}}"
               class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3F5F45]" />
           </div>
           <div>
-            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Data de término</label>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Data de termino</label>
             <input type="date" name="data_fim" value="{{form.data_fim}}"
               class="w-full rounded-xl p-3 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#24352A] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3F5F45]" />
           </div>
         </div>
-
       </div>
 
       <button type="submit"
         class="w-full bg-gradient-to-r from-[#3F5F45] to-[#2F3E34] hover:opacity-90 text-white py-3 rounded-xl font-semibold transition shadow">
         Criar necessidade
       </button>
-
     </form>
   </div>
 </section>
 
 <script>
 (function () {
+  const catalogo = {{{necessidadeCatalogoJson}}};
+  const categoriaSelect = document.getElementById('categoria-catalogo');
+  const tituloSelect = document.getElementById('titulo-catalogo');
   const radios = document.querySelectorAll('input[name="tipo_necessidade"]');
   const camposItem = document.getElementById('campos-item');
   const camposVol = document.getElementById('campos-voluntariado');
   const ativo = ['border-[#3F5F45]','bg-[#3F5F45]/5','dark:border-[#6B8F71]','dark:bg-[#6B8F71]/10'];
   const inativo = ['border-slate-200','dark:border-white/10','bg-white','dark:bg-white/5'];
+  const selectedCategoria = '{{form.categoria}}';
+  const selectedTitulo = '{{form.titulo}}';
+
+  function buildOption(value, label, selected) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    if (selected && value === selected) {
+      option.selected = true;
+    }
+    return option;
+  }
+
+  function renderCategorias(tipo, categoriaAtual) {
+    if (!categoriaSelect) return;
+
+    categoriaSelect.innerHTML = '';
+    categoriaSelect.appendChild(buildOption('', 'Selecione uma categoria', ''));
+
+    (catalogo[tipo] || []).forEach(categoria => {
+      categoriaSelect.appendChild(buildOption(categoria.codigo, categoria.nome, categoriaAtual));
+    });
+  }
+
+  function renderItens(tipo, categoriaAtual, tituloAtual) {
+    if (!tituloSelect) return;
+
+    tituloSelect.innerHTML = '';
+    tituloSelect.appendChild(buildOption('', 'Selecione um item da lista', ''));
+
+    const categoria = (catalogo[tipo] || []).find(item => item.codigo === categoriaAtual);
+    if (!categoria) return;
+
+    categoria.itens.forEach(item => {
+      tituloSelect.appendChild(buildOption(item.nome, item.nome, tituloAtual));
+    });
+  }
+
+  function toggleGroupFields(container, disabled) {
+    if (!container) return;
+    container.querySelectorAll('input, select, textarea').forEach(field => {
+      field.disabled = disabled;
+    });
+  }
 
   function setTipo(tipo) {
     if (tipo === 'voluntariado') {
       camposItem.style.display = 'none';
       camposVol.style.display = 'block';
+      toggleGroupFields(camposItem, true);
+      toggleGroupFields(camposVol, false);
     } else {
       camposItem.style.display = 'block';
       camposVol.style.display = 'none';
+      toggleGroupFields(camposItem, false);
+      toggleGroupFields(camposVol, true);
     }
+
+    const currentCategoria = categoriaSelect && categoriaSelect.value ? categoriaSelect.value : selectedCategoria;
+    const currentTitulo = tituloSelect && tituloSelect.value ? tituloSelect.value : selectedTitulo;
+    renderCategorias(tipo, currentCategoria);
+    renderItens(tipo, categoriaSelect ? categoriaSelect.value : '', currentTitulo);
+
     document.querySelectorAll('.tipo-btn').forEach(btn => {
-      const r = btn.querySelector('input[type="radio"]');
-      if (r.value === tipo) {
+      const radio = btn.querySelector('input[type="radio"]');
+      if (radio.value === tipo) {
         ativo.forEach(c => btn.classList.add(c));
         inativo.forEach(c => btn.classList.remove(c));
       } else {
@@ -201,29 +242,39 @@
     });
   }
 
-  radios.forEach(r => r.addEventListener('change', () => setTipo(r.value)));
+  radios.forEach(radio => radio.addEventListener('change', () => setTipo(radio.value)));
+
+  if (categoriaSelect) {
+    categoriaSelect.addEventListener('change', () => {
+      const checkedRadio = document.querySelector('input[name="tipo_necessidade"]:checked');
+      renderItens(checkedRadio ? checkedRadio.value : 'bem', categoriaSelect.value, '');
+    });
+  }
 
   const checked = document.querySelector('input[name="tipo_necessidade"]:checked');
-  if (checked) setTipo(checked.value);
+  if (checked) {
+    setTipo(checked.value);
+  } else {
+    setTipo('bem');
+  }
 
-  // Local selector
   document.querySelectorAll('.local-btn').forEach(label => {
     const radio = label.querySelector('input[type="radio"]');
     radio.addEventListener('change', () => {
-      document.querySelectorAll('.local-btn').forEach(l => {
-        inativo.forEach(c => l.classList.add(c));
-        ativo.forEach(c => l.classList.remove(c));
+      document.querySelectorAll('.local-btn').forEach(item => {
+        inativo.forEach(c => item.classList.add(c));
+        ativo.forEach(c => item.classList.remove(c));
       });
       ativo.forEach(c => label.classList.add(c));
       inativo.forEach(c => label.classList.remove(c));
     });
+
     if (radio.checked) {
       ativo.forEach(c => label.classList.add(c));
       inativo.forEach(c => label.classList.remove(c));
     }
   });
 
-  // Date sync
   const di = document.querySelector('input[name="data_inicio"]');
   const df = document.querySelector('input[name="data_fim"]');
   if (di && df) {

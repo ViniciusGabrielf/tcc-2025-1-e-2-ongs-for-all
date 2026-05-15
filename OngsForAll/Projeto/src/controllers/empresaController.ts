@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import bcrypt from "bcryptjs";
+import { getNeedCategoryDisplayName, getNeedFilterCategories } from "../constants/necessidadeCatalogo";
 import * as empresaService from "../services/empresaService";
 import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
@@ -136,9 +137,15 @@ export async function renderNecessidadesParaApoiar(request: FastifyRequest, repl
   const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
   if (bloqueio) return bloqueio;
 
-  const { tipo } = request.query as { tipo?: string };
+  const { tipo, categoria } = request.query as { tipo?: string; categoria?: string };
+  const categoriaFiltro = categoria || "";
+  const categoriasFiltro = getNeedFilterCategories(tipo);
 
-  const rows = await empresaRepo.listarNecessidadesAbertas(Number(sessionUser.id), tipo);
+  const rows = await empresaRepo.listarNecessidadesAbertas(
+    Number(sessionUser.id),
+    tipo,
+    categoriaFiltro ? getNeedCategoryDisplayName(tipo || "", categoriaFiltro) : undefined
+  );
 
   const necessidades = rows.map((n: any) => ({
     ...n,
@@ -162,6 +169,8 @@ export async function renderNecessidadesParaApoiar(request: FastifyRequest, repl
       naoLidas,
       necessidades,
       filtroTipo: tipo ?? "",
+      filtroCategoria: categoriaFiltro,
+      categoriasFiltro,
       filtroBem: tipo === "bem",
       filtroServico: tipo === "servico",
       filtroVoluntariado: tipo === "voluntariado",

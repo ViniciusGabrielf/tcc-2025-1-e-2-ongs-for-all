@@ -5,111 +5,142 @@
     {{/unless}}
 
     <div class="flex-1 min-w-0">
-
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-        {{#if nomeOngFiltrada}}Necessidades de {{nomeOngFiltrada}}{{else}}Necessidades das ONGs{{/if}}
-      </h1>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+          {{#if nomeOngFiltrada}}Necessidades de {{nomeOngFiltrada}}{{else}}Necessidades das ONGs{{/if}}
+        </h1>
 
-      <div class="flex items-center gap-2 flex-wrap">
-        <a href="/necessidades{{#if filtroOngId}}?ong={{filtroOngId}}{{/if}}"
-          class="px-4 py-2 rounded-full text-sm font-medium transition border {{#unless filtroTipo}}bg-[var(--theme-accent)] text-white border-[var(--theme-accent)]{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/unless}}">
-          Todos
-        </a>
-        <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}tipo=bem"
-          class="px-4 py-2 rounded-full text-sm font-medium transition border {{#if filtroBem}}bg-[var(--theme-primary)] text-white border-[var(--theme-primary)]{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/if}}">
-          Doação de bem
-        </a>
-        <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}tipo=servico"
-          class="px-4 py-2 rounded-full text-sm font-medium transition border {{#if filtroServico}}bg-[var(--theme-accent)] text-white border-[var(--theme-accent)]{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/if}}">
-          Serviço
-        </a>
-        <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}tipo=voluntariado"
-          class="px-4 py-2 rounded-full text-sm font-medium transition border {{#if filtroVoluntariado}}bg-emerald-600 text-white border-emerald-600{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/if}}">
-          Voluntariado
-        </a>
+        <div class="flex items-center gap-2 flex-wrap">
+          <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}{{#if filtroCategoria}}categoria={{filtroCategoria}}&{{/if}}{{#if filtroBusca}}q={{filtroBusca}}&{{/if}}"
+            class="px-4 py-2 rounded-full text-sm font-medium transition border {{#unless filtroTipo}}bg-[var(--theme-accent)] text-white border-[var(--theme-accent)]{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/unless}}">
+            Todos
+          </a>
+          <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}tipo=bem{{#if filtroCategoria}}&categoria={{filtroCategoria}}{{/if}}{{#if filtroBusca}}&q={{filtroBusca}}{{/if}}"
+            class="px-4 py-2 rounded-full text-sm font-medium transition border {{#if filtroBem}}bg-[var(--theme-primary)] text-white border-[var(--theme-primary)]{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/if}}">
+            Doacao de bem
+          </a>
+          <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}tipo=servico{{#if filtroCategoria}}&categoria={{filtroCategoria}}{{/if}}{{#if filtroBusca}}&q={{filtroBusca}}{{/if}}"
+            class="px-4 py-2 rounded-full text-sm font-medium transition border {{#if filtroServico}}bg-[var(--theme-accent)] text-white border-[var(--theme-accent)]{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/if}}">
+            Servico
+          </a>
+          <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}tipo=voluntariado{{#if filtroCategoria}}&categoria={{filtroCategoria}}{{/if}}{{#if filtroBusca}}&q={{filtroBusca}}{{/if}}"
+            class="px-4 py-2 rounded-full text-sm font-medium transition border {{#if filtroVoluntariado}}bg-emerald-600 text-white border-emerald-600{{else}}border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:opacity-80{{/if}}">
+            Voluntariado
+          </a>
+        </div>
       </div>
+
+      <form method="GET" action="/necessidades" class="mb-4">
+        {{#if filtroOngId}}<input type="hidden" name="ong" value="{{filtroOngId}}" />{{/if}}
+        {{#if filtroTipo}}<input type="hidden" name="tipo" value="{{filtroTipo}}" />{{/if}}
+        {{#if filtroCategoria}}<input type="hidden" name="categoria" value="{{filtroCategoria}}" />{{/if}}
+        <label for="busca-necessidade" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-2">Buscar item</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input id="busca-necessidade" type="text" name="q" value="{{filtroBusca}}" placeholder="Ex.: monitor, cadeira, cesta basica"
+            class="flex-1 rounded-xl px-4 py-2.5 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          <div class="flex gap-3">
+            <button type="submit"
+              class="px-5 py-2.5 rounded-xl bg-[var(--theme-primary)] text-white text-sm font-semibold hover:opacity-90 transition">
+              Buscar
+            </button>
+            {{#if filtroBusca}}
+            <a href="/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}{{#if filtroTipo}}tipo={{filtroTipo}}&{{/if}}{{#if filtroCategoria}}categoria={{filtroCategoria}}{{/if}}"
+              class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-white/70 hover:opacity-80 transition">
+              Limpar
+            </a>
+            {{/if}}
+          </div>
+        </div>
+      </form>
+
+      <div class="mb-5">
+        <label for="categoria-filtro" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-2">Categoria</label>
+        <select id="categoria-filtro"
+          onchange="window.location.href='/necessidades?{{#if filtroOngId}}ong={{filtroOngId}}&{{/if}}{{#if filtroTipo}}tipo={{filtroTipo}}&{{/if}}{{#if filtroBusca}}q={{filtroBusca}}&{{/if}}categoria=' + this.value"
+          class="w-full md:w-80 rounded-xl px-3 py-2.5 border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 dark:[color-scheme:dark] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]">
+          <option value="">Todas as categorias</option>
+          {{#each categoriasFiltro}}
+          <option value="{{codigo}}" {{#ifCond ../filtroCategoria codigo}}selected{{/ifCond}}>{{nome}}</option>
+          {{/each}}
+        </select>
       </div>
 
       {{#if filtroOngId}}
       <div class="flex items-center gap-3 mb-5">
-      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--theme-strong)]/10 dark:bg-[var(--theme-primary)]/20 text-[var(--theme-strong)] dark:text-[var(--theme-soft)] text-sm font-semibold">
-        {{#if nomeOngFiltrada}}{{nomeOngFiltrada}}{{else}}ONG #{{filtroOngId}}{{/if}}
-      </span>
-      <a href="/necessidades" class="inline-flex items-center gap-1 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/70 hover:opacity-80 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-        Ver todas
-      </a>
+        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--theme-strong)]/10 dark:bg-[var(--theme-primary)]/20 text-[var(--theme-strong)] dark:text-[var(--theme-soft)] text-sm font-semibold">
+          {{#if nomeOngFiltrada}}{{nomeOngFiltrada}}{{else}}ONG #{{filtroOngId}}{{/if}}
+        </span>
+        <a href="/necessidades" class="inline-flex items-center gap-1 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/70 hover:opacity-80 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Ver todas
+        </a>
       </div>
       {{/if}}
 
       {{#if necessidades.length}}
-
       <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
-      {{#each necessidades}}
-      <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm flex flex-col">
-
-        <!-- Badges -->
-        <div class="flex items-center gap-2 mb-3 flex-wrap">
-          {{#if isVoluntariado}}
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            Voluntariado
-          </span>
-          {{else if isServico}}
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft-2)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            Serviço
-          </span>
-          {{else}}
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-            Doação de bem
-          </span>
-          {{/if}}
-
-          {{#if meta_atingida}}<span class="px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold">Meta atingida</span>{{/if}}
-          {{#if quase_completa}}<span class="px-2.5 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-semibold">Quase completa</span>{{/if}}
-        </div>
-
-        <h2 class="text-base font-bold text-slate-900 dark:text-white mb-1">{{titulo}}</h2>
-        <p class="text-xs text-slate-500 dark:text-white/50 mb-2 font-medium">{{nome_ong}}</p>
-        <p class="text-sm text-slate-600 dark:text-white/70 mb-4 line-clamp-2 flex-1">{{descricao}}</p>
-
-        <div class="text-xs text-slate-500 dark:text-white/50 mb-3 space-y-1">
-          <div class="flex justify-between">
-            <span>Categoria</span>
-            <span class="font-medium text-slate-700 dark:text-white/70">{{categoria}}</span>
+        {{#each necessidades}}
+        <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm flex flex-col">
+          <div class="flex items-center gap-2 mb-3 flex-wrap">
+            {{#if isVoluntariado}}
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Voluntariado
+            </span>
+            {{else if isServico}}
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft-2)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Servico
+            </span>
+            {{else}}
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              Doacao de bem
+            </span>
+            {{/if}}
           </div>
-          {{#if isVoluntariado}}
-          {{#if local_atividade}}<div class="flex justify-between"><span>Local</span><span class="font-medium text-slate-700 dark:text-white/70 capitalize">{{local_atividade}}</span></div>{{/if}}
-          {{#if data_inicio}}<div class="flex justify-between"><span>Início</span><span class="font-medium text-slate-700 dark:text-white/70">{{data_inicio}}</span></div>{{/if}}
-          <div class="flex justify-between"><span>Vagas</span><span class="font-medium text-slate-700 dark:text-white/70">{{quantidade_recebida}}/{{quantidade}}</span></div>
-          {{else}}
-          <div class="flex justify-between"><span>Meta</span><span class="font-medium text-slate-700 dark:text-white/70">{{quantidade}}</span></div>
-          <div class="flex justify-between"><span>Faltam</span><span class="font-medium text-slate-700 dark:text-white/70">{{faltante}}</span></div>
-          {{/if}}
-        </div>
 
-        <div class="mb-4">
-          <div class="flex justify-between text-xs mb-1">
-            <span class="font-semibold text-slate-600 dark:text-white/60">Progresso</span>
-            <span class="font-semibold text-slate-700 dark:text-white/70">{{percentual}}%</span>
+          <h2 class="text-base font-bold text-slate-900 dark:text-white mb-1">{{titulo}}</h2>
+          <p class="text-xs text-slate-500 dark:text-white/50 mb-2 font-medium">{{nome_ong}}</p>
+          <p class="text-sm text-slate-600 dark:text-white/70 mb-4 line-clamp-2 flex-1">{{descricao}}</p>
+
+          <div class="text-xs text-slate-500 dark:text-white/50 mb-3 space-y-1">
+            <div class="flex justify-between gap-3">
+              <span>Categoria</span>
+              <span class="font-medium text-right text-slate-700 dark:text-white/70">{{categoria}}</span>
+            </div>
+            {{#if isVoluntariado}}
+              {{#if local_atividade}}
+              <div class="flex justify-between gap-3">
+                <span>Local</span>
+                <span class="font-medium text-right text-slate-700 dark:text-white/70 capitalize">{{local_atividade}}</span>
+              </div>
+              {{/if}}
+              {{#if data_inicio}}
+              <div class="flex justify-between gap-3">
+                <span>Inicio</span>
+                <span class="font-medium text-right text-slate-700 dark:text-white/70">{{data_inicio}}</span>
+              </div>
+              {{/if}}
+            {{/if}}
           </div>
-          <div class="w-full bg-slate-100 dark:bg-white/10 rounded-full h-2 overflow-hidden">
-            <div class="{{#if isVoluntariado}}bg-emerald-500{{else if isServico}}bg-[var(--theme-accent)]{{else}}bg-[var(--theme-primary)]{{/if}} h-2 rounded-full" style="width: {{percentual}}%;"></div>
-          </div>
+
+          <a href="/necessidades/{{id}}"
+            class="block text-center {{#if isVoluntariado}}bg-emerald-600 hover:bg-emerald-700{{else if isServico}}bg-[var(--theme-accent)] hover:bg-[var(--theme-strong)]{{else}}bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)]{{/if}} text-white py-2.5 rounded-xl text-sm font-semibold transition">
+            Ver detalhes
+          </a>
         </div>
-
-        <a href="/necessidades/{{id}}"
-          class="block text-center {{#if isVoluntariado}}bg-emerald-600 hover:bg-emerald-700{{else if isServico}}bg-[var(--theme-accent)] hover:bg-[var(--theme-strong)]{{else}}bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)]{{/if}} text-white py-2.5 rounded-xl text-sm font-semibold transition">
-          Ver detalhes
-        </a>
-
+        {{/each}}
       </div>
-      {{/each}}
-      </div>
-
       {{else}}
       {{> emptyState message="Nenhuma necessidade encontrada."}}
       {{/if}}

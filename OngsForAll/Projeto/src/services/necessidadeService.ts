@@ -1,4 +1,5 @@
 import * as necessidadeRepository from "../repositories/necessidadeRepository";
+import { getNeedCategoryDisplayName } from "../constants/necessidadeCatalogo";
 import { notificarTodosUsuarios } from "./notificacaoService";
 import { validateNecessidade, validateStatus } from "../validators/necessidadeValidator";
 
@@ -49,7 +50,7 @@ export async function criarNecessidade(params: {
 
   const titulo = params.titulo.trim();
   const descricao = params.descricao.trim();
-  const categoria = params.categoria.trim();
+  const categoria = getNeedCategoryDisplayName(tipo, params.categoria.trim());
   const quantidade = tipo === "voluntariado" ? (Number(params.quantidade) || 1) : Number(params.quantidade);
 
   await necessidadeRepository.createNecessidade({
@@ -77,8 +78,20 @@ export async function criarNecessidade(params: {
   return { ok: true as const };
 }
 
-export async function listarNecessidadesAbertas(ongId?: number, tipo?: string) {
-  const necessidades = await necessidadeRepository.findAllAbertas(ongId, tipo);
+export async function listarNecessidadesAbertas(
+  ongId?: number,
+  tipo?: string,
+  categoria?: string,
+  busca?: string
+) {
+  const categoriaFiltro = categoria ? getNeedCategoryDisplayName(tipo || "", categoria) : undefined;
+  const textoBusca = busca?.trim();
+  const necessidades = await necessidadeRepository.findAllAbertas(
+    ongId,
+    tipo,
+    categoriaFiltro,
+    textoBusca || undefined
+  );
   return {
     ok: true as const,
     necessidades: necessidades.map(enrichNecessidade),

@@ -47,7 +47,12 @@ export async function createNecessidade(params: {
   );
 }
 
-export async function findAllAbertas(ongId?: number, tipoNecessidade?: string) {
+export async function findAllAbertas(
+  ongId?: number,
+  tipoNecessidade?: string,
+  categoria?: string,
+  busca?: string
+) {
   let query = `
     SELECT
       n.id,
@@ -97,6 +102,16 @@ export async function findAllAbertas(ongId?: number, tipoNecessidade?: string) {
   if (tipoNecessidade && ["bem", "servico", "voluntariado"].includes(tipoNecessidade)) {
     query += ` AND n.tipo_necessidade = ?`;
     params.push(tipoNecessidade);
+  }
+
+  if (categoria) {
+    query += ` AND n.categoria = ?`;
+    params.push(categoria);
+  }
+
+  if (busca) {
+    query += ` AND (n.titulo LIKE ? OR n.descricao LIKE ?)`;
+    params.push(`%${busca}%`, `%${busca}%`);
   }
 
   query += ` ORDER BY n.criado_em DESC`;
