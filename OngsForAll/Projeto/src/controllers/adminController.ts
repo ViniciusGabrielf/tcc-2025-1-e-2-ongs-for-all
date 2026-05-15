@@ -24,7 +24,8 @@ export async function handleAdminLogin(request: FastifyRequest, reply: FastifyRe
     );
   }
 
-  (request.session as any).adminAutenticado = true;
+  await request.session.regenerate();
+  request.session.adminAutenticado = true;
   return reply.redirect("/admin/ongs");
 }
 

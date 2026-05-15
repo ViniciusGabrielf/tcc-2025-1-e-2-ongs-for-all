@@ -159,7 +159,7 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       return renderRegisterUserError(reply, message, request.body as Record<string, string>);
     }
 
-    return reply.status(500).send({ message: "Erro no banco", error });
+    return reply.status(500).send({ message: "Erro ao registrar usuario" });
   }
 }
 
@@ -226,7 +226,7 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
       return renderRegisterOngError(reply, message, request.body as Record<string, string>);
     }
 
-    return reply.status(500).send({ message: "Erro ao cadastrar ONG", error });
+    return reply.status(500).send({ message: "Erro ao cadastrar ONG" });
   }
 }
 
@@ -283,8 +283,9 @@ export async function loginUser(
       );
     }
 
+    await request.session.regenerate();
     request.session.user = result.user;
-    console.log(`[LOGIN] ${result.user.tipo.toUpperCase()} | ${result.user.email}`);
+    console.log(`[LOGIN] ${result.user.tipo.toUpperCase()} | usuario_id=${result.user.id}`);
 
     if (redirectTo) {
       return reply.redirect(redirectTo);
@@ -318,7 +319,7 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply): 
     // sessão já expirada
   }
   if (user) {
-    console.log(`[LOGOUT] ${user.tipo.toUpperCase()} | ${user.email}`);
+    console.log(`[LOGOUT] ${user.tipo.toUpperCase()} | usuario_id=${user.id}`);
   }
   return reply.redirect("/login?logout=1");
 }
@@ -340,10 +341,13 @@ export async function handleForgotPassword(request: FastifyRequest, reply: Fasti
     const neutralMsg =
       "Se os dados estiverem corretos, você receberá instruções para redefinir sua senha.";
 
-    if (result.ok) {
-      const baseUrl = process.env.APP_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
-      const resetLink = `${baseUrl}/redefinir-senha?token=${result.token}`;
-      console.log(`[RESET SENHA] Token gerado para: ${email}\n  Link: ${resetLink}`);
+    if (result.ok && process.env.NODE_ENV !== "production") {
+      if (process.env.ALLOW_RESET_LINK_LOG === "true") {
+        const baseUrl = process.env.APP_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+        console.log(`[RESET SENHA][DEV] ${baseUrl}/redefinir-senha?token=${result.token}`);
+      } else {
+        console.log("[RESET SENHA] Solicitacao valida registrada. Link oculto por seguranca.");
+      }
     }
 
     return reply.view(

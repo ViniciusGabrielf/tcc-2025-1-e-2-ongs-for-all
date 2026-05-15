@@ -163,13 +163,15 @@
             <span class="font-medium">Notificações</span>
           </a>
 
-          <a href="/logout"
-            class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl bg-red-500 text-white hover:bg-red-600 transition shadow-sm mt-4">
+          <form action="/logout" method="post" class="mt-4">
+          <button type="submit"
+            class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl bg-red-500 text-white hover:bg-red-600 transition shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
             <span class="font-medium">Sair</span>
-          </a>
+          </button>
+          </form>
         </div>
       </nav>
     </aside>
@@ -215,7 +217,9 @@
         <div class="space-y-2">
           <a href="/perfil/editar" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2F3E34] dark:text-[#EAF3EC] hover:bg-[#2F3E34]/5 dark:hover:bg-[#6B8F71]/10 font-medium">Perfil</a>
           <a href="/notificacoes" data-nav class="mobile-nav-link flex items-center px-4 py-3 rounded-2xl text-[#2F3E34] dark:text-[#EAF3EC] hover:bg-[#2F3E34]/5 dark:hover:bg-[#6B8F71]/10 font-medium">Notificações</a>
-          <a href="/logout" class="flex items-center justify-center px-4 py-3 rounded-2xl bg-red-500 text-white font-medium shadow-sm">Sair</a>
+          <form action="/logout" method="post">
+            <button type="submit" class="flex w-full items-center justify-center px-4 py-3 rounded-2xl bg-red-500 text-white font-medium shadow-sm">Sair</button>
+          </form>
         </div>
       </nav>
     </aside>

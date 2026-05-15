@@ -11,6 +11,19 @@ import {
   renderResetPasswordPage,
   handleResetPassword,
 } from '../controllers/authController'
+import { createRateLimit } from '../middlewares/rateLimit'
+
+const loginRateLimit = createRateLimit({
+  keyPrefix: 'login',
+  maxAttempts: 10,
+  windowMs: 15 * 60 * 1000,
+})
+
+const passwordResetRateLimit = createRateLimit({
+  keyPrefix: 'password-reset',
+  maxAttempts: 5,
+  windowMs: 15 * 60 * 1000,
+})
 
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.get('/login', renderAuthLoginPage)
@@ -19,11 +32,11 @@ export async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/register-user', registerUser)
   fastify.post('/register-ong', registerONG)
 
-  fastify.post('/login', loginUser)
-  fastify.get('/logout', logoutUser)
+  fastify.post('/login', { preHandler: loginRateLimit }, loginUser)
+  fastify.post('/logout', logoutUser)
 
   fastify.get('/esqueci-minha-senha', renderForgotPasswordPage)
-  fastify.post('/esqueci-minha-senha', handleForgotPassword)
+  fastify.post('/esqueci-minha-senha', { preHandler: passwordResetRateLimit }, handleForgotPassword)
   fastify.get("/redefinir-senha", renderResetPasswordPage);
-  fastify.post("/redefinir-senha", handleResetPassword);
+  fastify.post("/redefinir-senha", { preHandler: passwordResetRateLimit }, handleResetPassword);
 }

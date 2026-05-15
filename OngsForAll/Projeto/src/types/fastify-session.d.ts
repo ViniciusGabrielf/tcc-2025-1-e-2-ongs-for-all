@@ -11,6 +11,7 @@ declare module "fastify" {
       ong_id?: number; // opcional
       logo?: string; // opcional (empresa)
     };
+    adminAutenticado?: boolean;
   }
 
   interface FastifyRequest {

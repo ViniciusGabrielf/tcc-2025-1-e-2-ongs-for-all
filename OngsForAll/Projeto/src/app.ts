@@ -20,7 +20,8 @@ if (!sessionSecret || sessionSecret.length < 32) {
 }
 
 const server = fastify({
-  logger: false,
+  logger: true,
+  trustProxy: isProd,
 });
 
 
@@ -54,8 +55,17 @@ registerAllRoutes(server);
 
 // (Opcional) Handler global pra você ver erro real ao invés de "Erro no servidor"
 server.setErrorHandler((error: any, request, reply) => {
-  console.error("[ERRO]", error.message);
-  reply.status(500).send({ message: "Erro no servidor", error: error.message });
+  request.log.error({ err: error }, "Erro interno no servidor");
+
+  const payload: Record<string, string> = {
+    message: "Erro no servidor",
+  };
+
+  if (!isProd) {
+    payload.error = error.message;
+  }
+
+  reply.status(500).send(payload);
 });
 
 server.listen({ port, host }, (err) => {
