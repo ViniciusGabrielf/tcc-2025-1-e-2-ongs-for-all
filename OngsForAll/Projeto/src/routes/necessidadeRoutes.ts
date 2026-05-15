@@ -11,10 +11,10 @@ import {
 
 export async function necessidadeRoutes(fastify: FastifyInstance) {
   // usuários e ongs podem ver a lista pública de necessidades abertas
-  fastify.get("/necessidades", { preHandler: ensureAuthenticated }, renderListaNecessidadesPage);
+  fastify.get("/necessidades", renderListaNecessidadesPage);
 
   // detalhe da necessidade
-  fastify.get("/necessidades/:id", { preHandler: ensureAuthenticated }, renderDetalheNecessidadePage);
+  fastify.get("/necessidades/:id", renderDetalheNecessidadePage);
 
   // ONG cria necessidade
   fastify.get("/necessidades/nova", { preHandler: ensureAuthenticated }, renderNovaNecessidadePage);

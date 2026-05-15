@@ -18,7 +18,9 @@ export async function renderTransparenciaPage(
   const sessionUser = request.session.user;
   const naoLidas = sessionUser ? await getNaoLidas(sessionUser as any) : 0;
   const isOngDashboard = sessionUser?.tipo === "ong";
-  const layout = isOngDashboard
+  const layout = !sessionUser
+    ? "layouts/main"
+    : isOngDashboard
     ? "layouts/ongDashboardLayout"
     : "layouts/dashboardLayout";
 
@@ -58,6 +60,7 @@ export async function renderTransparenciaPage(
     {
       user: sessionUser,
       naoLidas,
+      title: "Transparencia da ONG",
       ong: dados.ong,
       stats: dados.stats,
       relatorios: dados.relatorios,

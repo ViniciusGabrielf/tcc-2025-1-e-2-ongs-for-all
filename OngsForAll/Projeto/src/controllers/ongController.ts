@@ -4,21 +4,23 @@ import * as notificacaoService from "../services/notificacaoService";
 
 export async function renderOngsPage(request: FastifyRequest, reply: FastifyReply) {
   const session = request.session.user;
-  if (!session) return reply.redirect("/login");
-
   const { busca } = request.query as { busca?: string };
-  const isOngDashboard = session.tipo === "ong";
+  const isOngDashboard = session?.tipo === "ong";
   const todasOngs = await ongService.listOngs(busca);
   const ongs = isOngDashboard
     ? todasOngs.filter((ong: any) => Number(ong.id) !== Number(session.id))
     : todasOngs;
 
-  const { naoLidas } = await notificacaoService.contarNaoLidas({
-    tipoConta: session.tipo,
-    id: Number(session.id),
-  });
+  const naoLidas = session
+    ? (await notificacaoService.contarNaoLidas({
+        tipoConta: session.tipo,
+        id: Number(session.id),
+      })).naoLidas
+    : 0;
 
-  const layout = session.tipo === "ong"
+  const layout = !session
+    ? "layouts/main"
+    : session.tipo === "ong"
     ? "layouts/ongDashboardLayout"
     : "layouts/dashboardLayout";
 

@@ -64,6 +64,7 @@ export default async function (fastify: FastifyInstance) {
       partials: {
         homenavbar: 'partials/homenavbar.hbs',
         emptyState: 'partials/emptyState.hbs',
+        publicExploreSidebar: 'partials/publicExploreSidebar.hbs',
       },
     },
 

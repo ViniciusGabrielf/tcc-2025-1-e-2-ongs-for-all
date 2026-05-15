@@ -35,6 +35,16 @@ function normalizeText(value: string | undefined): string {
   return (value ?? "").trim();
 }
 
+function getSafeRedirectPath(value: string | undefined): string | null {
+  if (!value) return null;
+  const normalized = value.trim();
+
+  if (!normalized.startsWith("/")) return null;
+  if (normalized.startsWith("//")) return null;
+
+  return normalized;
+}
+
 function getDuplicateFieldMessage(error: any, fields: Record<string, string>, fallback: string): string {
   const rawMessage = `${error?.sqlMessage ?? ""} ${error?.message ?? ""}`.toLowerCase();
 
@@ -48,17 +58,19 @@ function getDuplicateFieldMessage(error: any, fields: Record<string, string>, fa
 }
 
 function renderRegisterUserError(reply: FastifyReply, error: string, form?: Record<string, string>) {
+  const redirectTo = getSafeRedirectPath(form?.redirect);
   return reply.status(400).view(
     "/templates/auth/register.hbs",
-    { error, form, activeTab: "#tab1" },
+    { error, form, redirectTo, activeTab: "#tab1" },
     { layout: "layouts/authLayout" }
   );
 }
 
 function renderRegisterOngError(reply: FastifyReply, error: string, form?: Record<string, string>) {
+  const redirectTo = getSafeRedirectPath(form?.redirect);
   return reply.status(400).view(
     "/templates/auth/register.hbs",
-    { error, form, activeTab: "#tab2" },
+    { error, form, redirectTo, activeTab: "#tab2" },
     { layout: "layouts/authLayout" }
   );
 }
@@ -69,21 +81,25 @@ function renderRegisterOngError(reply: FastifyReply, error: string, form?: Recor
 export async function renderAuthLoginPage(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const logoutSuccess = (request.query as any).logout === "1";
   const resetSuccess = (request.query as any).reset === "1";
+  const redirectTo = getSafeRedirectPath((request.query as any).redirect);
+  const registerUrl = redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : "/register";
   return reply.view(
     "/templates/auth/login.hbs",
-    { logoutSuccess, resetSuccess },
+    { logoutSuccess, resetSuccess, redirectTo, registerUrl },
     { layout: "layouts/authLayout" }
   );
 }
 
 export async function renderAuthRegisterPage(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const tab = (request.query as any)?.tab;
+  const redirectTo = getSafeRedirectPath((request.query as any)?.redirect);
+  const loginUrl = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login";
   const activeTab =
     tab === "empresa" ? "#tab3" :
     tab === "ong" ? "#tab2" :
     "#tab1";
 
-  return reply.view("/templates/auth/register.hbs", { activeTab }, { layout: "layouts/authLayout" });
+  return reply.view("/templates/auth/register.hbs", { activeTab, redirectTo, loginUrl }, { layout: "layouts/authLayout" });
 }
 
 // =======================
@@ -120,7 +136,9 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       [body.nome, body.email, hashedPassword, body.cpf, body.telefone]
     );
 
-    return reply.redirect("/login");
+    const redirectTo = getSafeRedirectPath(rawBody.redirect);
+    const loginTarget = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login";
+    return reply.redirect(loginTarget);
   } catch (error: any) {
     console.error("Erro ao registrar usuário:", error);
 
@@ -185,7 +203,9 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
       [ong.nome, ong.email, hashedPassword, ong.cnpj, ong.area_atuacao, ong.telefone]
     );
 
-    return reply.redirect("/login");
+    const redirectTo = getSafeRedirectPath((request.body as any)?.redirect);
+    const loginTarget = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login";
+    return reply.redirect(loginTarget);
   } catch (error: any) {
     console.error("Erro ao cadastrar ONG:", error);
 
@@ -217,10 +237,12 @@ export async function loginUser(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> {
-  const { email, password } = request.body as {
+    const { email, password } = request.body as {
     email: string;
     password: string;
+    redirect?: string;
   };
+  const redirectTo = getSafeRedirectPath((request.body as any)?.redirect);
 
   const ip = request.ip;
 
@@ -233,12 +255,13 @@ export async function loginUser(
 
     return reply.status(400).view(
       "/templates/auth/login.hbs",
-      {
-        error: validation.errors[0],
-        email,
-      },
-      { layout: "layouts/authLayout" }
-    );
+        {
+          error: validation.errors[0],
+          email,
+          redirectTo,
+        },
+        { layout: "layouts/authLayout" }
+      );
   }
 
   try {
@@ -254,6 +277,7 @@ export async function loginUser(
         {
           error: "E-mail ou senha incorretos",
           email,
+          redirectTo,
         },
         { layout: "layouts/authLayout" }
       );
@@ -261,6 +285,10 @@ export async function loginUser(
 
     request.session.user = result.user;
     console.log(`[LOGIN] ${result.user.tipo.toUpperCase()} | ${result.user.email}`);
+
+    if (redirectTo) {
+      return reply.redirect(redirectTo);
+    }
 
     if (result.user.tipo === "ong") {
       return reply.redirect("/dashboard/ong");

@@ -3,6 +3,10 @@ import * as necessidadeService from "../services/necessidadeService";
 import * as notificacaoService from "../services/notificacaoService";
 import * as ongAprovacaoRepo from "../repositories/ongAprovacaoRepository";
 
+function buildInteresseRedirectPath(necessidadeId: number) {
+  return `/interesses/nova?necessidade_id=${necessidadeId}`;
+}
+
 async function getNaoLidas(user: { tipo: string; id: number }) {
   const { naoLidas } = await notificacaoService.contarNaoLidas({
     tipoConta: user.tipo as "usuario" | "ong",
@@ -29,7 +33,11 @@ export async function renderListaNecessidadesPage(
   const user = request.session.user;
   const naoLidas = user ? await getNaoLidas(user as any) : 0;
   const isOngDashboard = user?.tipo === "ong";
-  const layout = isOngDashboard ? "layouts/ongDashboardLayout" : "layouts/dashboardLayout";
+  const layout = !user
+    ? "layouts/main"
+    : isOngDashboard
+    ? "layouts/ongDashboardLayout"
+    : "layouts/dashboardLayout";
 
   // Se filtrou por ONG, pega o nome da primeira necessidade para mostrar no título
   const nomeOngFiltrada = filtroOngId && result.necessidades.length > 0
@@ -39,6 +47,7 @@ export async function renderListaNecessidadesPage(
   return reply.view(
     "/templates/necessidades/lista.hbs",
     {
+      title: "Necessidades das ONGs",
       user,
       naoLidas,
       necessidades: result.necessidades,
@@ -187,19 +196,29 @@ export async function renderDetalheNecessidadePage(
   const user = request.session.user;
   const naoLidas = user ? await getNaoLidas(user as any) : 0;
   const isOngDashboard = user?.tipo === "ong";
-  const layout = isOngDashboard ? "layouts/ongDashboardLayout" : "layouts/dashboardLayout";
+  const layout = !user
+    ? "layouts/main"
+    : isOngDashboard
+    ? "layouts/ongDashboardLayout"
+    : "layouts/dashboardLayout";
   const isPropriaOng = isOngDashboard && Number(user?.id) === Number(result.necessidade.ong_id);
   const canRegistrarInteresse = user?.tipo === "usuario";
+  const interesseRedirectPath = buildInteresseRedirectPath(Number(result.necessidade.id));
 
   return reply.view(
     "/templates/necessidades/detalhe.hbs",
     {
+      title: result.necessidade.titulo,
       user,
       naoLidas,
       necessidade: result.necessidade,
       isOngDashboard,
       isPropriaOng,
       canRegistrarInteresse,
+      isPublicGuest: !user,
+      interesseRedirectPath,
+      loginRedirectUrl: `/login?redirect=${encodeURIComponent(interesseRedirectPath)}`,
+      registerRedirectUrl: `/register?redirect=${encodeURIComponent(interesseRedirectPath)}`,
     },
     { layout }
   );

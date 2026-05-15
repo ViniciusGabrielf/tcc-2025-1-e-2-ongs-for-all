@@ -56,6 +56,10 @@
     {{/if}}
 
     <form action="/login" method="POST" class="space-y-4">
+      {{#if redirectTo}}
+      <input type="hidden" name="redirect" value="{{redirectTo}}" />
+      {{/if}}
+
       <div>
         <label for="email" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Email</label>
         <input
@@ -94,7 +98,7 @@
 
     <p class="text-center text-sm text-slate-500 dark:text-white/50 mt-5">
       Não tem uma conta?
-      <a href="/register" class="text-violet-600 dark:text-violet-400 font-semibold hover:underline">Cadastre-se</a>
+      <a href="{{registerUrl}}" class="text-violet-600 dark:text-violet-400 font-semibold hover:underline">Cadastre-se</a>
     </p>
   </div>
 </div>

@@ -1,8 +1,13 @@
-<section class="min-h-screen" style="--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
-  <div class="max-w-7xl mx-auto space-y-8">
+<section class="min-h-screen {{#unless user}}pt-28 px-4 sm:px-6 pb-10{{/unless}}" style="--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
+  <div class="max-w-7xl mx-auto {{#unless user}}lg:flex lg:items-start lg:gap-8{{/unless}}">
+    {{#unless user}}
+    {{> publicExploreSidebar publicPageOngs=true}}
+    {{/unless}}
 
-    <!-- Hero -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-accent)] p-8 sm:p-10 shadow-lg">
+    <div class="space-y-8 flex-1 min-w-0">
+
+      <!-- Hero -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-accent)] p-8 sm:p-10 shadow-lg">
       <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
       <div class="relative">
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
@@ -10,10 +15,10 @@
         </h1>
         <p class="mt-2 text-white/80 text-lg">Conheça as organizações cadastradas e descubra como ajudar</p>
       </div>
-    </div>
+      </div>
 
-    <!-- Barra de pesquisa -->
-    <form method="GET" action="/ongs" class="flex flex-col sm:flex-row gap-3">
+      <!-- Barra de pesquisa -->
+      <form method="GET" action="/ongs" class="flex flex-col sm:flex-row gap-3">
       <div class="relative flex-1">
         <svg xmlns="http://www.w3.org/2000/svg"
           class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-white/40 pointer-events-none"
@@ -38,10 +43,10 @@
         Limpar
       </a>
       {{/if}}
-    </form>
+      </form>
 
-    <!-- Contador -->
-    <div class="flex items-center gap-2">
+      <!-- Contador -->
+      <div class="flex items-center gap-2">
       <span
         class="inline-flex items-center px-3 py-1 rounded-full bg-[var(--theme-strong)]/10 dark:bg-[var(--theme-primary)]/20 text-[var(--theme-strong)] dark:text-[var(--theme-soft)] text-sm font-semibold">
         {{totalOngs}} ONG(s)
@@ -51,11 +56,11 @@
         para "{{busca}}"
       </span>
       {{/if}}
-    </div>
+      </div>
 
-    <!-- Grid de ONGs -->
-    {{#if ongs.length}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Grid de ONGs -->
+      {{#if ongs.length}}
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
       {{#each ongs}}
       <div
         class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group">
@@ -136,9 +141,9 @@
         </div>
       </div>
       {{/each}}
-    </div>
-    {{else}}
-    <div
+      </div>
+      {{else}}
+      <div
       class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-12 shadow-sm text-center">
       <svg xmlns="http://www.w3.org/2000/svg"
         class="w-16 h-16 mx-auto text-slate-300 dark:text-white/20 mb-4" fill="none" viewBox="0 0 24 24"
@@ -150,8 +155,8 @@
       <p class="text-slate-400 dark:text-white/40">
         {{#if busca}}Tente buscar com outros termos.{{else}}Ainda não há ONGs cadastradas.{{/if}}
       </p>
+      </div>
+      {{/if}}
     </div>
-    {{/if}}
-
   </div>
 </section>

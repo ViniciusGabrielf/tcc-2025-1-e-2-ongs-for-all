@@ -7,7 +7,8 @@ export async function ensureUser(
   const user = request.session.user;
 
   if (!user) {
-    return reply.redirect("/login");
+    const redirectTo = encodeURIComponent(request.raw.url || "/dashboard");
+    return reply.redirect(`/login?redirect=${redirectTo}`);
   }
 
   if (user.tipo === "ong") return reply.redirect("/dashboard/ong");
