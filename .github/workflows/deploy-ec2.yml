@@ -1,21 +1,58 @@
-name: Deploy EC2
+name: Sync upstream and deploy EC2
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: write
 
 concurrency:
-  group: deploy-ec2-main
-  cancel-in-progress: true
+  group: sync-deploy-ec2-main
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  sync-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync with upstream
+        id: sync
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          git remote add upstream https://github.com/TCC-CAS/tcc-2025-1-e-2-ongs-for-all.git || git remote set-url upstream https://github.com/TCC-CAS/tcc-2025-1-e-2-ongs-for-all.git
+
+          git fetch upstream main
+
+          BEFORE=$(git rev-parse HEAD)
+
+          git merge --no-edit upstream/main
+
+          AFTER=$(git rev-parse HEAD)
+
+          if [ "$BEFORE" != "$AFTER" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            git push origin main
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to EC2
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || steps.sync.outputs.changed == 'true'
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
