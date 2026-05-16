@@ -216,16 +216,11 @@
   </div>
 
   {{! Divisor }}
-  <div class="= w-full overflow-hidden leading-[0]">
-    <svg class="block w-full h-20 max-h-20 m-0 relative" xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28 " preserveAspectRatio="none">
+  <div class="w-full overflow-hidden leading-[0] -mb-px">
+    <svg class="block w-full h-32" xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none">
       <defs>
-        <path id="gentle-wave" d="M-160 44c30 0 
-    58-18 88-18s
-    58 18 88 18 
-    58-18 88-18 
-    58 18 88 18
-    v44h-352z" />
+        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18v44h-352z" />
       </defs>
       <g class="parallax1">
         <use xlink:href="#gentle-wave" opacity=".25" x="50" y="3" fill="#fff" />
@@ -244,55 +239,55 @@
 </section>
 
 <!-- Seção Contato com fundo claro -->
-<section id="contato" class="about-section-bg pt-16">
+<section id="contato" class="bg-transparent pt-16">
   <div class="relative items-center w-full mx-auto max-w-7xl px-4 md:px-12 lg:px-16">
     <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 py-16">
 
       <!-- SOBRE NÓS -->
-      <div class="text-left text-white">
+      <div class="text-left text-[#2D4BA6]">
         <h2 class="text-4xl font-bold mb-4">Fale com a gente</h2>
-        <p class="mb-6 text-white/80">
+        <p class="mb-6 text-gray-600">
           Estamos aqui para tirar suas dúvidas e ouvir suas sugestões. Nossa equipe está pronta para ajudar ONGs e
           apoiadores a se conectarem da melhor forma possível.
         </p>
-        <ul class="space-y-4">
+        <ul class="space-y-4 text-gray-700">
           <li class="flex items-center gap-3">
-            <box-icon name="map" color="#ffffff"></box-icon>
+            <box-icon name="map" color="#2D4BA6"></box-icon>
             <span>Av. Eng. Eusébio Stevaux, 823 - Santo Amaro, São Paulo - SP, 04696-000</span>
           </li>
           <li class="flex items-center gap-3">
-            <box-icon name="phone-call" color="#ffffff"></box-icon>
+            <box-icon name="phone-call" color="#2D4BA6"></box-icon>
             <span>(11) 99999-0000</span>
           </li>
           <li class="flex items-center gap-3">
-            <box-icon name="envelope" color="#ffffff"></box-icon>
+            <box-icon name="envelope" color="#2D4BA6"></box-icon>
             <span>contato@ongforall.org</span>
           </li>
         </ul>
       </div>
 
       <!-- FORMULÁRIO -->
-      <form class="space-y-6 text-white">
+      <form class="space-y-6">
         <div class="relative">
-          <box-icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2" color="#ffffff"></box-icon>
+          <box-icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2" color="#2D4BA6"></box-icon>
           <input type="text" placeholder="Seu nome" required
-            class="w-full pl-10 pr-4 py-2 bg-transparent text-white border border-white rounded placeholder-white focus:outline-none focus:ring-2 focus:ring-white" />
+            class="w-full pl-10 pr-4 py-2 bg-white text-gray-800 border border-gray-300 rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D4BA6]" />
         </div>
 
         <div class="relative">
-          <box-icon name="envelope" class="absolute left-3 top-1/2 -translate-y-1/2" color="#ffffff"></box-icon>
+          <box-icon name="envelope" class="absolute left-3 top-1/2 -translate-y-1/2" color="#2D4BA6"></box-icon>
           <input type="email" placeholder="Seu e-mail" required
-            class="w-full pl-10 pr-4 py-2 bg-transparent text-white border border-white rounded placeholder-white focus:outline-none focus:ring-2 focus:ring-white" />
+            class="w-full pl-10 pr-4 py-2 bg-white text-gray-800 border border-gray-300 rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D4BA6]" />
         </div>
 
         <div class="relative">
-          <box-icon name="message-dots" class="absolute left-3 top-3" color="#ffffff"></box-icon>
+          <box-icon name="message-dots" class="absolute left-3 top-3" color="#2D4BA6"></box-icon>
           <textarea rows="5" placeholder="Sua mensagem" required
-            class="w-full pl-10 pr-4 pt-3 pb-2 bg-transparent text-white border border-white rounded placeholder-white focus:outline-none focus:ring-2 focus:ring-white"></textarea>
+            class="w-full pl-10 pr-4 pt-3 pb-2 bg-white text-gray-800 border border-gray-300 rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D4BA6]"></textarea>
         </div>
 
         <button type="submit"
-          class="bg-white text-[#2D4BA6] font-semibold px-6 py-3 rounded hover:bg-gray-100 transition-all duration-300">
+          class="bg-[#2D4BA6] text-white font-semibold px-6 py-3 rounded hover:bg-[#1e3a8a] transition-all duration-300">
           Enviar
         </button>
       </form>
