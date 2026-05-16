@@ -20,7 +20,7 @@ if (!sessionSecret || sessionSecret.length < 32) {
 }
 
 const server = fastify({
-  logger: true,
+  logger: { level: "warn" },
   trustProxy: isProd,
 });
 
