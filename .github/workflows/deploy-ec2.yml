@@ -1,0 +1,62 @@
+name: Deploy EC2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-ec2-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_PROJECT_PATH: ${{ secrets.EC2_PROJECT_PATH }}
+          PM2_APP_NAME: ${{ secrets.PM2_APP_NAME }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$EC2_SSH_KEY" > ~/.ssh/ec2_key.pem
+          chmod 600 ~/.ssh/ec2_key.pem
+
+          if [ -z "$EC2_HOST" ]; then echo "EC2_HOST não configurado"; exit 1; fi
+          if [ -z "$EC2_USER" ]; then echo "EC2_USER não configurado"; exit 1; fi
+          if [ -z "$EC2_PROJECT_PATH" ]; then echo "EC2_PROJECT_PATH não configurado"; exit 1; fi
+          if [ -z "$PM2_APP_NAME" ]; then echo "PM2_APP_NAME não configurado"; exit 1; fi
+          if [ -z "$EC2_SSH_KEY" ]; then echo "EC2_SSH_KEY não configurado"; exit 1; fi
+
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem "$EC2_USER@$EC2_HOST" << EOF
+            set -e
+
+            echo "Entrando no projeto..."
+            cd "$EC2_PROJECT_PATH"
+
+            echo "Atualizando repositório..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "Instalando dependências..."
+            cd OngsForAll/Projeto
+            npm ci
+
+            echo "Removendo build antigo..."
+            rm -rf dist
+
+            echo "Gerando build..."
+            npm run build
+
+            echo "Reiniciando aplicação no PM2..."
+            pm2 restart "$PM2_APP_NAME" --update-env || pm2 start dist/app.js --name "$PM2_APP_NAME"
+
+            pm2 save
+
+            echo "Deploy finalizado com sucesso."
+          EOF
