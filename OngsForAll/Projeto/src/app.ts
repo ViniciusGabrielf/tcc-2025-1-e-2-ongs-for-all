@@ -20,7 +20,7 @@ if (!sessionSecret || sessionSecret.length < 32) {
 }
 
 const server = fastify({
-  logger: true,
+  logger: false,
   trustProxy: isProd,
 });
 
@@ -55,7 +55,7 @@ registerAllRoutes(server);
 
 // (Opcional) Handler global pra você ver erro real ao invés de "Erro no servidor"
 server.setErrorHandler((error: any, request, reply) => {
-  request.log.error({ err: error }, "Erro interno no servidor");
+  console.error("[ERRO]", error);
 
   const payload: Record<string, string> = {
     message: "Erro no servidor",
