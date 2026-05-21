@@ -121,7 +121,7 @@ export async function iniciarConversaUsuario(params: {
   ongId: number;
   necessidadeId?: number;
   mensagemInicial: string;
-}): Promise<{ ok: true; conversaId: number } | { ok: false; error: string }> {
+}): Promise<{ ok: true; conversaId: number; rascunho: string } | { ok: false; error: string }> {
   const conteudo = params.mensagemInicial.trim();
   if (!conteudo) return { ok: false, error: "A mensagem inicial não pode estar vazia." };
 
@@ -133,20 +133,5 @@ export async function iniciarConversaUsuario(params: {
 
   if (!result.ok) return result;
 
-  await mensagemRepo.criarMensagem({
-    conversaId: result.conversaId,
-    remetenteTipo: "usuario",
-    remetenteId: params.usuarioId,
-    conteudo,
-  });
-
-  const nomeUsuario = await buscarNomeUsuario(params.usuarioId);
-  await notificacaoService.criarNotificacaoParaOng({
-    ongId: params.ongId,
-    titulo: "Nova mensagem recebida",
-    mensagem: `${nomeUsuario} iniciou uma conversa com sua ONG.`,
-    tipo: "nova_mensagem",
-  });
-
-  return { ok: true, conversaId: result.conversaId };
+  return { ok: true, conversaId: result.conversaId, rascunho: conteudo };
 }

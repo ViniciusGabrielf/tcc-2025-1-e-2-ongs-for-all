@@ -48,12 +48,47 @@ export async function createNecessidade(params: {
 }
 
 export async function findAllAbertas(
-  ongId?: number,
-  tipoNecessidade?: string,
-  categoria?: string,
-  busca?: string
+  params: {
+    ongId?: number;
+    tipoNecessidade?: string;
+    categoria?: string;
+    busca?: string;
+    limit: number;
+    offset: number;
+  }
 ) {
-  let query = `
+  let fromClause = `
+    FROM necessidades n
+    INNER JOIN ongs o ON o.ong_id = n.ong_id
+    WHERE n.status = 'aberta'`;
+  const queryParams: any[] = [];
+
+  if (params.ongId) {
+    fromClause += ` AND n.ong_id = ?`;
+    queryParams.push(params.ongId);
+  }
+
+  if (params.tipoNecessidade && ["bem", "servico", "voluntariado"].includes(params.tipoNecessidade)) {
+    fromClause += ` AND n.tipo_necessidade = ?`;
+    queryParams.push(params.tipoNecessidade);
+  }
+
+  if (params.categoria) {
+    fromClause += ` AND n.categoria = ?`;
+    queryParams.push(params.categoria);
+  }
+
+  if (params.busca) {
+    fromClause += ` AND (n.titulo LIKE ? OR n.descricao LIKE ?)`;
+    queryParams.push(`%${params.busca}%`, `%${params.busca}%`);
+  }
+
+  const [countRows]: any = await pool.query(
+    `SELECT COUNT(*) AS total ${fromClause}`,
+    queryParams
+  );
+
+  const query = `
     SELECT
       n.id,
       n.titulo,
@@ -88,36 +123,15 @@ export async function findAllAbertas(
         THEN 1
         ELSE 0
       END AS quase_completa
-    FROM necessidades n
-    INNER JOIN ongs o ON o.ong_id = n.ong_id
-    WHERE n.status = 'aberta'`;
+    ${fromClause}
+    ORDER BY n.criado_em DESC
+    LIMIT ? OFFSET ?`;
 
-  const params: any[] = [];
-
-  if (ongId) {
-    query += ` AND n.ong_id = ?`;
-    params.push(ongId);
-  }
-
-  if (tipoNecessidade && ["bem", "servico", "voluntariado"].includes(tipoNecessidade)) {
-    query += ` AND n.tipo_necessidade = ?`;
-    params.push(tipoNecessidade);
-  }
-
-  if (categoria) {
-    query += ` AND n.categoria = ?`;
-    params.push(categoria);
-  }
-
-  if (busca) {
-    query += ` AND (n.titulo LIKE ? OR n.descricao LIKE ?)`;
-    params.push(`%${busca}%`, `%${busca}%`);
-  }
-
-  query += ` ORDER BY n.criado_em DESC`;
-
-  const [rows]: any = await pool.query(query, params);
-  return rows;
+  const [rows]: any = await pool.query(query, [...queryParams, params.limit, params.offset]);
+  return {
+    items: rows,
+    total: Number(countRows?.[0]?.total ?? 0),
+  };
 }
 
 export async function findById(id: number) {

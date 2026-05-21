@@ -310,19 +310,41 @@ export async function updateOngLogo(ongId: number, logoPath: string) {
   await pool.query("UPDATE ongs SET logo = ? WHERE ong_id = ?", [logoPath, ongId]);
 }
 
-export async function listAllOngs(search?: string) {
-  let query = "SELECT ong_id AS id, nome, email, area_atuacao, telefone, logo FROM ongs";
-  const params: any[] = [];
+export async function listAllOngs(params: {
+  search?: string;
+  limit: number;
+  offset: number;
+  excludeOngId?: number;
+}) {
+  let fromClause = " FROM ongs";
+  const queryParams: any[] = [];
 
-  if (search && search.trim()) {
-    query += " WHERE nome LIKE ? OR area_atuacao LIKE ?";
-    const term = `%${search.trim()}%`;
-    params.push(term, term);
+  if (params.excludeOngId) {
+    fromClause += " WHERE ong_id <> ?";
+    queryParams.push(params.excludeOngId);
   }
 
-  query += " ORDER BY nome ASC";
-  const [rows]: any = await pool.query(query, params);
-  return rows;
+  if (params.search && params.search.trim()) {
+    fromClause += queryParams.length ? " AND" : " WHERE";
+    fromClause += " (nome LIKE ? OR area_atuacao LIKE ?)";
+    const term = `%${params.search.trim()}%`;
+    queryParams.push(term, term);
+  }
+
+  const [countRows]: any = await pool.query(
+    `SELECT COUNT(*) AS total${fromClause}`,
+    queryParams
+  );
+
+  const [rows]: any = await pool.query(
+    `SELECT ong_id AS id, nome, email, area_atuacao, telefone, logo${fromClause} ORDER BY nome ASC LIMIT ? OFFSET ?`,
+    [...queryParams, params.limit, params.offset]
+  );
+
+  return {
+    items: rows,
+    total: Number(countRows?.[0]?.total ?? 0),
+  };
 }
 
 export async function listarDocumentosPendentesParaAdmin() {
