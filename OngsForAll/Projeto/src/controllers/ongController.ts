@@ -67,5 +67,6 @@ export async function renderOngsPage(request: FastifyRequest, reply: FastifyRepl
     naoLidas,
     isOngDashboard,
     pagination,
+    loginRedirectUrl: `/login?redirect=${encodeURIComponent(request.raw.url || "/ongs")}`,
   }, { layout });
 }

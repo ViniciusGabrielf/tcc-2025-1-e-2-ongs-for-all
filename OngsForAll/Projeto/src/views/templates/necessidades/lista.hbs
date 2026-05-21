@@ -134,10 +134,36 @@
             {{/if}}
           </div>
 
-          <a href="/necessidades/{{id}}"
-            class="block text-center {{#if isVoluntariado}}bg-emerald-600 hover:bg-emerald-700{{else if isServico}}bg-[var(--theme-accent)] hover:bg-[var(--theme-strong)]{{else}}bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)]{{/if}} text-white py-2.5 rounded-xl text-sm font-semibold transition">
-            Ver detalhes
-          </a>
+          <div class="mt-auto flex gap-2">
+            <a href="/necessidades/{{id}}"
+              class="flex-1 text-center {{#if isVoluntariado}}bg-emerald-600 hover:bg-emerald-700{{else if isServico}}bg-[var(--theme-accent)] hover:bg-[var(--theme-strong)]{{else}}bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)]{{/if}} text-white py-2.5 rounded-xl text-sm font-semibold transition">
+              Ver detalhes
+            </a>
+            {{#ifCond ../user.tipo 'usuario'}}
+            <form method="POST" action="/mensagens/iniciar" class="flex">
+              <input type="hidden" name="ong_id" value="{{ong_id}}" />
+              <input type="hidden" name="necessidade_id" value="{{id}}" />
+              <input type="hidden" name="mensagem" value="Ola! Tenho interesse na necessidade &quot;{{titulo}}&quot; e gostaria de conversar melhor." />
+              <button type="submit"
+                class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-slate-600 dark:text-white/70 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition"
+                title="Conversar com a ONG">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 13.042 3 11.574 3 10c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Chat
+              </button>
+            </form>
+            {{else if ../loginRedirectUrl}}
+            <a href="{{../loginRedirectUrl}}"
+              class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-slate-600 dark:text-white/70 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition"
+              title="Entrar para conversar com a ONG">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 13.042 3 11.574 3 10c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Chat
+            </a>
+            {{/ifCond}}
+          </div>
         </div>
         {{/each}}
       </div>

@@ -130,6 +130,7 @@ export async function renderListaNecessidadesPage(
       filtroVoluntariado: filtroTipo === "voluntariado",
       isOngDashboard,
       pagination,
+      loginRedirectUrl: `/login?redirect=${encodeURIComponent(request.raw.url || "/necessidades")}`,
     },
     { layout }
   );

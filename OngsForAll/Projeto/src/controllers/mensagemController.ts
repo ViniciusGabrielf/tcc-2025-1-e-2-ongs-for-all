@@ -55,6 +55,7 @@ export async function renderConversa(
   if (!sessionUser) return reply.redirect("/login");
 
   const { id } = request.params as { id: string };
+  const { rascunho } = request.query as { rascunho?: string };
   const naoLidas = await getNaoLidas(sessionUser as any);
 
   const result = await mensagemService.visualizarConversa({
@@ -83,6 +84,7 @@ export async function renderConversa(
       mensagens: result.mensagens,
       isOng: sessionUser.tipo === "ong",
       listaUrl,
+      draftMessage: rascunho?.trim() || "",
     },
     { layout }
   );
@@ -138,5 +140,5 @@ export async function iniciarConversa(
     return reply.status(400).send({ message: result.error });
   }
 
-  return reply.redirect(`/mensagens/${result.conversaId}`);
+  return reply.redirect(`/mensagens/${result.conversaId}?rascunho=${encodeURIComponent(result.rascunho)}`);
 }
