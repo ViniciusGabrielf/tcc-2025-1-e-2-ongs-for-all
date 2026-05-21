@@ -3,6 +3,9 @@ import { NEED_CATALOG, getNeedFilterCategories } from "../constants/necessidadeC
 import * as necessidadeService from "../services/necessidadeService";
 import * as notificacaoService from "../services/notificacaoService";
 import * as ongAprovacaoRepo from "../repositories/ongAprovacaoRepository";
+import { buildPagination, normalizePage } from "../utils/pagination";
+
+const NECESSIDADES_PAGE_SIZE = 9;
 
 function buildInteresseRedirectPath(necessidadeId: number) {
   return `/interesses/nova?necessidade_id=${necessidadeId}`;
@@ -34,7 +37,9 @@ export async function renderListaNecessidadesPage(
     tipo?: string;
     categoria?: string;
     q?: string;
+    pagina?: string;
   };
+  const requestedPage = normalizePage((request.query as { pagina?: string }).pagina);
   const ongId = ong ? Number(ong) : undefined;
   const filtroOngId = ongId && !isNaN(ongId) ? ongId : undefined;
   const filtroTipo = ["bem", "servico", "voluntariado"].includes(tipo || "") ? tipo : undefined;
@@ -42,11 +47,13 @@ export async function renderListaNecessidadesPage(
   const filtroBusca = q?.trim() || "";
   const categoriasFiltro = getNeedFilterCategories(filtroTipo);
 
-  const result = await necessidadeService.listarNecessidadesAbertas(
+  let result = await necessidadeService.listarNecessidadesAbertas(
     filtroOngId,
     filtroTipo,
     filtroCategoria || undefined,
-    filtroBusca || undefined
+    filtroBusca || undefined,
+    requestedPage,
+    NECESSIDADES_PAGE_SIZE
   );
 
   if (process.env.NODE_ENV === "test") {
@@ -63,9 +70,47 @@ export async function renderListaNecessidadesPage(
     : "layouts/dashboardLayout";
 
   // Se filtrou por ONG, pega o nome da primeira necessidade para mostrar no título
-  const nomeOngFiltrada = filtroOngId && result.necessidades.length > 0
+  let nomeOngFiltrada = filtroOngId && result.necessidades.length > 0
     ? result.necessidades[0].nome_ong
     : null;
+  let pagination = buildPagination({
+    basePath: "/necessidades",
+    currentPage: requestedPage,
+    totalItems: result.total,
+    pageSize: NECESSIDADES_PAGE_SIZE,
+    extraParams: {
+      ong: filtroOngId,
+      tipo: filtroTipo,
+      categoria: filtroCategoria || undefined,
+      q: filtroBusca || undefined,
+    },
+  });
+
+  if (pagination.currentPage !== requestedPage) {
+    result = await necessidadeService.listarNecessidadesAbertas(
+      filtroOngId,
+      filtroTipo,
+      filtroCategoria || undefined,
+      filtroBusca || undefined,
+      pagination.currentPage,
+      NECESSIDADES_PAGE_SIZE
+    );
+    pagination = buildPagination({
+      basePath: "/necessidades",
+      currentPage: pagination.currentPage,
+      totalItems: result.total,
+      pageSize: NECESSIDADES_PAGE_SIZE,
+      extraParams: {
+        ong: filtroOngId,
+        tipo: filtroTipo,
+        categoria: filtroCategoria || undefined,
+        q: filtroBusca || undefined,
+      },
+    });
+    nomeOngFiltrada = filtroOngId && result.necessidades.length > 0
+      ? result.necessidades[0].nome_ong
+      : null;
+  }
 
   return reply.view(
     "/templates/necessidades/lista.hbs",
@@ -84,6 +129,7 @@ export async function renderListaNecessidadesPage(
       filtroServico: filtroTipo === "servico",
       filtroVoluntariado: filtroTipo === "voluntariado",
       isOngDashboard,
+      pagination,
     },
     { layout }
   );

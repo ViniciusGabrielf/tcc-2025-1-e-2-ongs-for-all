@@ -65,6 +65,7 @@ export default async function (fastify: FastifyInstance) {
         homenavbar: 'partials/homenavbar.hbs',
         emptyState: 'partials/emptyState.hbs',
         publicExploreSidebar: 'partials/publicExploreSidebar.hbs',
+        paginationControls: 'partials/paginationControls.hbs',
       },
     },
 

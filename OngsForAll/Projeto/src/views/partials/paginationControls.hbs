@@ -1,0 +1,30 @@
+{{#if pagination.hasPagination}}
+<nav class="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  <p class="text-sm text-slate-500 dark:text-white/50">
+    Mostrando {{pagination.startItem}}-{{pagination.endItem}} de {{pagination.totalItems}}
+  </p>
+
+  <div class="flex items-center gap-2 flex-wrap">
+    {{#if pagination.hasPrev}}
+    <a href="{{pagination.prevPageUrl}}"
+      class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition">
+      Anterior
+    </a>
+    {{/if}}
+
+    {{#each pagination.pages}}
+    <a href="{{url}}"
+      class="inline-flex items-center justify-center min-w-[44px] px-4 py-2 rounded-xl text-sm font-semibold transition {{#if isCurrent}}bg-[var(--theme-primary)] text-white shadow-sm{{else}}border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5{{/if}}">
+      {{number}}
+    </a>
+    {{/each}}
+
+    {{#if pagination.hasNext}}
+    <a href="{{pagination.nextPageUrl}}"
+      class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition">
+      Proxima
+    </a>
+    {{/if}}
+  </div>
+</nav>
+{{/if}}

@@ -82,19 +82,25 @@ export async function listarNecessidadesAbertas(
   ongId?: number,
   tipo?: string,
   categoria?: string,
-  busca?: string
+  busca?: string,
+  page = 1,
+  pageSize = 9
 ) {
   const categoriaFiltro = categoria ? getNeedCategoryDisplayName(tipo || "", categoria) : undefined;
   const textoBusca = busca?.trim();
-  const necessidades = await necessidadeRepository.findAllAbertas(
+  const result = await necessidadeRepository.findAllAbertas({
     ongId,
-    tipo,
-    categoriaFiltro,
-    textoBusca || undefined
-  );
+    tipoNecessidade: tipo,
+    categoria: categoriaFiltro,
+    busca: textoBusca || undefined,
+    limit: pageSize,
+    offset: (page - 1) * pageSize,
+  });
+
   return {
     ok: true as const,
-    necessidades: necessidades.map(enrichNecessidade),
+    necessidades: result.items.map(enrichNecessidade),
+    total: result.total,
   };
 }
 

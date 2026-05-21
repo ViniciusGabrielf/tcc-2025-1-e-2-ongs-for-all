@@ -141,6 +141,8 @@
         </div>
         {{/each}}
       </div>
+
+      {{> paginationControls pagination=pagination}}
       {{else}}
       {{> emptyState message="Nenhuma necessidade encontrada."}}
       {{/if}}
