@@ -85,14 +85,14 @@
         <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm flex flex-col">
           <div class="flex items-center gap-2 mb-3 flex-wrap">
             {{#if isVoluntariado}}
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-400/20">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               Voluntariado
             </span>
             {{else if isServico}}
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft-2)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft-2)] dark:bg-sky-500/15 text-[var(--theme-accent)] dark:text-sky-200 text-xs font-semibold border border-slate-200 dark:border-sky-400/20">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -100,7 +100,7 @@
               Servico
             </span>
             {{else}}
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft)] dark:bg-[var(--theme-primary)]/20 text-[var(--theme-accent)] dark:text-[var(--theme-soft)] text-xs font-semibold">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--theme-soft)] dark:bg-sky-500/15 text-[var(--theme-accent)] dark:text-sky-200 text-xs font-semibold border border-slate-200 dark:border-sky-400/20">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
@@ -110,25 +110,25 @@
           </div>
 
           <h2 class="text-base font-bold text-slate-900 dark:text-white mb-1">{{titulo}}</h2>
-          <p class="text-xs text-slate-500 dark:text-white/50 mb-2 font-medium">{{nome_ong}}</p>
-          <p class="text-sm text-slate-600 dark:text-white/70 mb-4 line-clamp-2 flex-1">{{descricao}}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-300 mb-2 font-medium">{{nome_ong}}</p>
+          <p class="text-sm text-slate-600 dark:text-slate-200 mb-4 line-clamp-2 flex-1">{{descricao}}</p>
 
-          <div class="text-xs text-slate-500 dark:text-white/50 mb-3 space-y-1">
+          <div class="text-xs text-slate-500 dark:text-slate-300 mb-3 space-y-1">
             <div class="flex justify-between gap-3">
               <span>Categoria</span>
-              <span class="font-medium text-right text-slate-700 dark:text-white/70">{{categoria}}</span>
+              <span class="font-medium text-right text-slate-700 dark:text-slate-100">{{categoria}}</span>
             </div>
             {{#if isVoluntariado}}
               {{#if local_atividade}}
               <div class="flex justify-between gap-3">
                 <span>Local</span>
-                <span class="font-medium text-right text-slate-700 dark:text-white/70 capitalize">{{local_atividade}}</span>
+                <span class="font-medium text-right text-slate-700 dark:text-slate-100 capitalize">{{local_atividade}}</span>
               </div>
               {{/if}}
               {{#if data_inicio}}
               <div class="flex justify-between gap-3">
                 <span>Inicio</span>
-                <span class="font-medium text-right text-slate-700 dark:text-white/70">{{data_inicio}}</span>
+                <span class="font-medium text-right text-slate-700 dark:text-slate-100">{{data_inicio}}</span>
               </div>
               {{/if}}
             {{/if}}
@@ -145,7 +145,7 @@
               <input type="hidden" name="necessidade_id" value="{{id}}" />
               <input type="hidden" name="mensagem" value="Ola! Tenho interesse na necessidade &quot;{{titulo}}&quot; e gostaria de conversar melhor." />
               <button type="submit"
-                class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-slate-600 dark:text-white/70 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition"
+                class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800/70 text-slate-600 dark:text-slate-100 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/80 transition"
                 title="Conversar com a ONG">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 13.042 3 11.574 3 10c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -155,7 +155,7 @@
             </form>
             {{else if ../loginRedirectUrl}}
             <a href="{{../loginRedirectUrl}}"
-              class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-slate-600 dark:text-white/70 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition"
+              class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800/70 text-slate-600 dark:text-slate-100 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/80 transition"
               title="Entrar para conversar com a ONG">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 13.042 3 11.574 3 10c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
