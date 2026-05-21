@@ -5,6 +5,7 @@ import { z, ZodError } from "zod";
 import { validateLogin } from "../validators/authValidator";
 
 import * as authService from "../services/authService";
+import { validateAndLookupCnpj } from "../services/cnpjService";
 import { pool } from "../config/ds"; // ainda usado em registerUser/registerONG por enquanto (pode refatorar depois)
 
 // =======================
@@ -183,6 +184,15 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
       telefone: normalizeDigits(body.telefoneong),
     });
 
+    const cnpjValidation = await validateAndLookupCnpj(ong.cnpj);
+    if (!cnpjValidation.ok) {
+      return renderRegisterOngError(
+        reply,
+        `${cnpjValidation.message} Informe um CNPJ valido e ativo para cadastrar a ONG.`,
+        body as any
+      );
+    }
+
     const [cnpjRows]: any = await pool.query(
       `SELECT ong_id
        FROM ongs
@@ -200,7 +210,7 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
     await pool.query(
       `INSERT INTO ongs (nome, email, senha, cnpj, area_atuacao, telefone)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [ong.nome, ong.email, hashedPassword, ong.cnpj, ong.area_atuacao, ong.telefone]
+      [ong.nome, ong.email, hashedPassword, cnpjValidation.cnpj, ong.area_atuacao, ong.telefone]
     );
 
     const redirectTo = getSafeRedirectPath((request.body as any)?.redirect);
