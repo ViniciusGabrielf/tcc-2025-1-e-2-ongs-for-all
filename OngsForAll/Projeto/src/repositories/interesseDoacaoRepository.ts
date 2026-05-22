@@ -118,7 +118,7 @@ export async function buscarInteressePorId(id: number) {
       i.observacao,
       i.status,
       i.criado_em,
-      i.data_prevista,
+      DATE_FORMAT(i.data_prevista, '%d/%m/%Y') AS data_prevista,
       n.titulo AS titulo_necessidade,
       n.quantidade AS meta,
       n.quantidade_recebida,

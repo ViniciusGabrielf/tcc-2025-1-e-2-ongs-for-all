@@ -193,6 +193,18 @@ export async function aceitarInteresse(params: {
         tipo: "interesse_aceito",
     });
 
+    if (interesse.email_usuario) {
+        emailService.enviarAceitacaoInteresseUsuario({
+            interesseId: interesse.id,
+            emailUsuario: interesse.email_usuario,
+            nomeUsuario: interesse.nome_usuario,
+            nomeOng: interesse.nome_ong,
+            tituloNecessidade: interesse.titulo_necessidade,
+            dataPrevista: interesse.data_prevista ?? null,
+            quantidade: interesse.quantidade ?? null,
+        }).catch((err) => console.error("[EMAIL] Falha ao enviar email de aceitação:", err.message));
+    }
+
     return { ok: true as const };
 }
 
@@ -327,6 +339,17 @@ export async function cancelarInteresse(params: {
         mensagem: `${interesse.nome_ong} cancelou o interesse relacionado a necessidade "${interesse.titulo_necessidade}".${mensagemMotivo}`,
         tipo: "interesse_cancelado",
     });
+
+    if (interesse.email_usuario) {
+        emailService.enviarCancelamentoInteresseUsuario({
+            interesseId: interesse.id,
+            emailUsuario: interesse.email_usuario,
+            nomeUsuario: interesse.nome_usuario,
+            nomeOng: interesse.nome_ong,
+            tituloNecessidade: interesse.titulo_necessidade,
+            motivo: motivoCancelamento ?? null,
+        }).catch((err) => console.error("[EMAIL] Falha ao enviar email de cancelamento:", err.message));
+    }
 
     return { ok: true as const };
 }
