@@ -17,7 +17,6 @@
       <p><span class="font-semibold">Título:</span> {{necessidade.titulo}}</p>
       <p><span class="font-semibold">ONG:</span> {{necessidade.nome_ong}}</p>
       <p><span class="font-semibold">Categoria:</span> {{necessidade.categoria}}</p>
-      <p><span class="font-semibold">Quantidade:</span> {{necessidade.quantidade}}</p>
     </div>
   </div>
 
@@ -45,7 +44,10 @@
         <label for="observacao" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50 mb-1">
           Observação
         </label>
-        <textarea name="observacao" id="observacao" rows="3" placeholder="Ex.: Posso entregar no período da tarde."
+        <p class="text-xs text-slate-400 dark:text-white/45 mb-2">
+          Use este campo para combinar a entrega e também informar especificações do item, como estado de conservação, tamanho, modelo ou voltagem.
+        </p>
+        <textarea name="observacao" id="observacao" rows="3" placeholder="Ex: Posso entregar no período da tarde, O item está em bom estado."
           class="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9] transition resize-none"></textarea>
       </div>
 
@@ -63,3 +65,16 @@
   </div>
 
 </div>
+
+<script>
+  (function () {
+    const dataPrevistaInput = document.getElementById('data_prevista');
+    if (!dataPrevistaInput) return;
+
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    dataPrevistaInput.min = `${ano}-${mes}-${dia}`;
+  })();
+</script>

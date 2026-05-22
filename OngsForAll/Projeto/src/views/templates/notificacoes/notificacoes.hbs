@@ -26,7 +26,7 @@
               {{#ifCond tipo 'nova_mensagem'}}bg-sky-100 text-sky-700 dark:bg-slate-800/85 dark:text-sky-200{{/ifCond}}
               {{#ifCond tipo 'documento_aprovado'}}bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300{{/ifCond}}
               {{#ifCond tipo 'documento_rejeitado'}}bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300{{/ifCond}}
-              {{#ifCond tipo 'novo_interesse'}}bg-[var(--theme-soft)] text-[var(--theme-strong)] dark:bg-[var(--theme-primary)]/20 dark:text-[var(--theme-soft)]{{/ifCond}}
+              {{#ifCond tipo 'novo_interesse'}}bg-sky-100 text-sky-700 dark:bg-slate-800/85 dark:text-sky-200{{/ifCond}}
               {{#ifCond tipo 'interesse_aceito'}}bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300{{/ifCond}}
               {{#ifCond tipo 'interesse_recebido'}}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300{{/ifCond}}
               {{#ifCond tipo 'interesse_confirmado'}}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300{{/ifCond}}
@@ -51,7 +51,7 @@
               {{/ifCond}}
               {{#ifCond tipo 'novo_interesse'}}
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4m16 0l-4 4m4-4l-4-4" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
               {{/ifCond}}
               {{#ifCond tipo 'interesse_aceito'}}
@@ -107,13 +107,22 @@
           {{mensagem}}
         </p>
 
-        {{#unless lida}}
-        <form method="POST" action="/notificacoes/{{id}}/lida">
-          <button type="submit" class="bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] dark:bg-[var(--theme-primary)] dark:hover:bg-[var(--theme-accent)] text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm">
-            Marcar como lida
-          </button>
-        </form>
-        {{/unless}}
+        <div class="flex flex-wrap gap-3">
+          {{#ifCond tipo 'novo_interesse'}}
+          <a href="/ong/interesses?status=pendente"
+            class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-[var(--theme-primary)]/25 bg-[var(--theme-primary)]/10 text-[var(--theme-strong)] dark:text-white text-sm font-semibold hover:bg-[var(--theme-primary)]/15 transition">
+            Ver interesses recebidos
+          </a>
+          {{/ifCond}}
+
+          {{#unless lida}}
+          <form method="POST" action="/notificacoes/{{id}}/lida">
+            <button type="submit" class="bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] dark:bg-[var(--theme-primary)] dark:hover:bg-[var(--theme-accent)] text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm">
+              Marcar como lida
+            </button>
+          </form>
+          {{/unless}}
+        </div>
       </div>
       {{/each}}
     </div>

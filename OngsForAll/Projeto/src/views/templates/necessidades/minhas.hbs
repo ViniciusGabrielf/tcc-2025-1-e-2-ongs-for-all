@@ -8,15 +8,25 @@
                 Minhas necessidades
             </h1>
 
-            <div class="flex gap-3 items-center">
-                <select onchange="window.location.href='/ong/necessidades?status=' + this.value"
-                    class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
-                    <option value="todos" {{#ifCond filtroAtual 'todos'}}selected{{/ifCond}}>Todas</option>
-                    <option value="aberta" {{#ifCond filtroAtual 'aberta'}}selected{{/ifCond}}>Abertas</option>
-                    <option value="em_andamento" {{#ifCond filtroAtual 'em_andamento'}}selected{{/ifCond}}>Em andamento</option>
-                    <option value="concluida" {{#ifCond filtroAtual 'concluida'}}selected{{/ifCond}}>Concluídas</option>
-                    <option value="cancelada" {{#ifCond filtroAtual 'cancelada'}}selected{{/ifCond}}>Canceladas</option>
-                </select>
+            <div class="flex gap-3 items-center flex-wrap justify-end">
+                <form method="GET" action="/ong/necessidades" class="flex gap-3 items-center flex-wrap justify-end">
+                    <input type="text" name="busca" value="{{buscaAtual}}" placeholder="Buscar por titulo, descricao ou categoria"
+                        class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm min-w-[280px] bg-white dark:bg-white/5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6B8F71]" />
+
+                    <select name="status"
+                        class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
+                        <option value="todos" {{#ifCond filtroAtual 'todos'}}selected{{/ifCond}}>Todas</option>
+                        <option value="aberta" {{#ifCond filtroAtual 'aberta'}}selected{{/ifCond}}>Abertas</option>
+                        <option value="em_andamento" {{#ifCond filtroAtual 'em_andamento'}}selected{{/ifCond}}>Em andamento</option>
+                        <option value="concluida" {{#ifCond filtroAtual 'concluida'}}selected{{/ifCond}}>Concluidas</option>
+                        <option value="cancelada" {{#ifCond filtroAtual 'cancelada'}}selected{{/ifCond}}>Canceladas</option>
+                    </select>
+
+                    <button type="submit"
+                        class="bg-[#3F5F45] hover:bg-[#2F3E34] text-white px-4 py-2 rounded-lg font-medium transition shadow text-sm">
+                        Buscar
+                    </button>
+                </form>
 
                 <a href="/necessidades/nova"
                     class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium transition shadow text-sm">
@@ -28,7 +38,7 @@
 
         {{#if success}}
         <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-            Necessidade criada com sucesso.
+            Alteracao realizada com sucesso.
         </div>
         {{/if}}
 
@@ -57,7 +67,7 @@
                         {{#if isVoluntariado}}
                         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">Voluntariado</span>
                         {{else if isServico}}
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#DDEADB] dark:bg-[#6B8F71]/20 text-[#3F5F45] dark:text-[#DDEADB]">Serviço</span>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#DDEADB] dark:bg-[#6B8F71]/20 text-[#3F5F45] dark:text-[#DDEADB]">Servico</span>
                         {{else}}
                         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#EAF3EC] dark:bg-[#6B8F71]/20 text-[#3F5F45] dark:text-[#DDEADB]">Bem</span>
                         {{/if}}
@@ -113,20 +123,27 @@
                     </p>
                 </div>
 
-                <form method="POST" action="/necessidades/{{id}}/status" class="flex gap-2 items-center flex-wrap mt-4">
-                    <select name="status"
-                        class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
-                        <option value="aberta">Aberta</option>
-                        <option value="em_andamento">Em andamento</option>
-                        <option value="concluida">Concluída</option>
-                        <option value="cancelada">Cancelada</option>
-                    </select>
+                <div class="flex gap-2 items-center flex-wrap mt-4">
+                    <a href="/necessidades/{{id}}/editar"
+                        class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        Editar
+                    </a>
 
-                    <button type="submit"
-                        class="bg-[#3F5F45] hover:bg-[#2F3E34] text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                        Atualizar
-                    </button>
-                </form>
+                    <form method="POST" action="/necessidades/{{id}}/status" class="flex gap-2 items-center flex-wrap">
+                        <select name="status"
+                            class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-white dark:bg-white/5 dark:[color-scheme:dark] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]">
+                            <option value="aberta" {{#ifCond status 'aberta'}}selected{{/ifCond}}>Aberta</option>
+                            <option value="em_andamento" {{#ifCond status 'em_andamento'}}selected{{/ifCond}}>Em andamento</option>
+                            <option value="concluida" {{#ifCond status 'concluida'}}selected{{/ifCond}}>Concluida</option>
+                            <option value="cancelada" {{#ifCond status 'cancelada'}}selected{{/ifCond}}>Cancelada</option>
+                        </select>
+
+                        <button type="submit"
+                            class="bg-[#3F5F45] hover:bg-[#2F3E34] text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                            Atualizar
+                        </button>
+                    </form>
+                </div>
 
             </div>
 

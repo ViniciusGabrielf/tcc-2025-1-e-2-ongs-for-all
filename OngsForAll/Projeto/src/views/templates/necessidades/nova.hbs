@@ -6,7 +6,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
       </div>
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Nova necessidade</h1>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{{#if pageTitle}}{{pageTitle}}{{else}}Nova necessidade{{/if}}</h1>
     </div>
 
     {{#if error}}
@@ -18,7 +18,7 @@
     </div>
     {{/if}}
 
-    <form method="POST" action="/necessidades" class="space-y-5">
+    <form method="POST" action="{{#if formAction}}{{formAction}}{{else}}/necessidades{{/if}}" class="space-y-5">
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-2">Tipo de necessidade</label>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -151,7 +151,7 @@
 
       <button type="submit"
         class="w-full bg-gradient-to-r from-[#3F5F45] to-[#2F3E34] hover:opacity-90 text-white py-3 rounded-xl font-semibold transition shadow">
-        Criar necessidade
+        {{#if submitLabel}}{{submitLabel}}{{else}}Criar necessidade{{/if}}
       </button>
     </form>
   </div>

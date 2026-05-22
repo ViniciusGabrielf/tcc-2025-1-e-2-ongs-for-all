@@ -184,13 +184,19 @@ export async function findById(id: number) {
   return rows?.[0] ?? null;
 }
 
-export async function findByOngId(ongId: number, status?: string) {
+export async function findByOngId(ongId: number, status?: string, busca?: string) {
   const params: any[] = [ongId];
   let filtroClause = "";
 
   if (status && status !== "todos") {
-    filtroClause = "AND n.status = ?";
+    filtroClause += " AND n.status = ?";
     params.push(status);
+  }
+
+  if (busca?.trim()) {
+    filtroClause += " AND (n.titulo LIKE ? OR n.descricao LIKE ? OR n.categoria LIKE ?)";
+    const buscaLike = `%${busca.trim()}%`;
+    params.push(buscaLike, buscaLike, buscaLike);
   }
 
   const [rows]: any = await pool.query(
@@ -254,5 +260,50 @@ export async function updateStatus(id: number, ongId: number, status: string) {
     WHERE id = ? AND ong_id = ?
     `,
     [status, id, ongId]
+  );
+}
+
+export async function updateNecessidade(params: {
+  id: number;
+  ongId: number;
+  titulo: string;
+  descricao: string;
+  categoria: string;
+  quantidade: number;
+  tipo_necessidade: "bem" | "servico" | "voluntariado";
+  local_atividade?: string | null;
+  turno?: string | null;
+  data_inicio?: string | null;
+  data_fim?: string | null;
+}) {
+  await pool.query(
+    `
+    UPDATE necessidades
+    SET
+      titulo = ?,
+      descricao = ?,
+      categoria = ?,
+      quantidade = ?,
+      tipo_necessidade = ?,
+      local_atividade = ?,
+      turno = ?,
+      data_inicio = ?,
+      data_fim = ?,
+      atualizado_em = NOW()
+    WHERE id = ? AND ong_id = ?
+    `,
+    [
+      params.titulo,
+      params.descricao,
+      params.categoria,
+      params.quantidade,
+      params.tipo_necessidade,
+      params.local_atividade ?? null,
+      params.turno ?? null,
+      params.data_inicio ?? null,
+      params.data_fim ?? null,
+      params.id,
+      params.ongId,
+    ]
   );
 }
