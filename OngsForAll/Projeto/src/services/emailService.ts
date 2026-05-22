@@ -292,3 +292,56 @@ export async function enviarLembreteEntrega(params: {
         html,
     });
 }
+
+export async function enviarMensagemContato(params: {
+    nome: string;
+    email: string;
+    mensagem: string;
+}) {
+    const html = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr>
+          <td style="background:#2D4BA6;padding:28px 32px;text-align:center;">
+            <h1 style="color:#ffffff;margin:0;font-size:24px;">OngsForAll</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <h2 style="color:#111;margin:0 0 8px;">Nova mensagem de contato</h2>
+            <p style="color:#444;margin:0 0 24px;">Você recebeu uma nova mensagem pelo formulário do site.</p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:6px;padding:16px;margin-bottom:24px;">
+              <tr><td colspan="2" style="padding-bottom:12px;font-weight:700;color:#2D4BA6;border-bottom:1px solid #e5e7eb;margin-bottom:12px;">Dados do remetente</td></tr>
+              <tr><td style="padding:6px 0;color:#555;width:120px;">Nome:</td><td style="padding:6px 0;font-weight:600;">${params.nome}</td></tr>
+              <tr><td style="padding:6px 0;color:#555;">E-mail:</td><td style="padding:6px 0;"><a href="mailto:${params.email}" style="color:#2D4BA6;">${params.email}</a></td></tr>
+            </table>
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:6px;padding:16px;">
+              <tr><td style="padding-bottom:12px;font-weight:700;color:#2D4BA6;border-bottom:1px solid #e5e7eb;">Mensagem</td></tr>
+              <tr><td style="padding-top:12px;color:#444;line-height:1.6;white-space:pre-wrap;">${params.mensagem}</td></tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f9fafb;padding:20px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+            <p style="color:#9ca3af;font-size:12px;margin:0;">Mensagem enviada pelo formulário de contato do site OngsForAll.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+    await transporter.sendMail({
+        from: FROM,
+        to: process.env.EMAIL_USER,
+        replyTo: params.email,
+        subject: `[Contato] Nova mensagem de ${params.nome}`,
+        html,
+    });
+}
