@@ -1,6 +1,7 @@
 import * as interesseRepo from "../repositories/interesseDoacaoRepository";
 import * as doacaoRepo from "../repositories/doacaoRepository";
 import * as notificacaoService from "../services/notificacaoService";
+import * as emailService from "../services/emailService";
 
 function isTodayOrFutureDate(value?: string): boolean {
     if (!value) return true;
@@ -89,7 +90,7 @@ export async function criarInteresse(params: {
         };
     }
 
-    await interesseRepo.createInteresse({
+    const interesseId = await interesseRepo.createInteresse({
         usuarioId: params.userId,
         ongId: Number(necessidade.ong_id),
         necessidadeId: params.necessidadeId,
@@ -98,7 +99,7 @@ export async function criarInteresse(params: {
         dataPrevista: params.dataPrevista || null,
     });
 
-    const usuario = await doacaoRepo.buscarNomeUsuarioPorId(params.userId);
+    const usuario = await doacaoRepo.buscarUsuarioPorId(params.userId);
     const nomeUsuario = usuario?.nome ?? "Um usuario";
 
     await notificacaoService.criarNotificacaoParaOng({
@@ -107,6 +108,35 @@ export async function criarInteresse(params: {
         mensagem: `${nomeUsuario} demonstrou interesse em ajudar a necessidade "${necessidade.titulo}".`,
         tipo: "novo_interesse",
     });
+
+    const ong = await interesseRepo.buscarEmailOngPorId(Number(necessidade.ong_id));
+
+    if (usuario?.email) {
+        emailService.enviarConfirmacaoInteresseUsuario({
+            interesseId,
+            emailUsuario: usuario.email,
+            nomeUsuario,
+            tituloNecessidade: necessidade.titulo,
+            nomeOng: necessidade.nome_ong,
+            quantidade: params.quantidade ?? null,
+            dataPrevista: params.dataPrevista ?? null,
+            observacao: params.observacao ?? null,
+        }).catch((err) => console.error("[EMAIL] Falha ao enviar email para usuário:", err.message));
+    }
+
+    if (ong?.email) {
+        emailService.enviarNotificacaoInteresseOng({
+            interesseId,
+            emailOng: ong.email,
+            nomeOng: ong.nome,
+            nomeUsuario,
+            emailUsuario: usuario?.email ?? "",
+            tituloNecessidade: necessidade.titulo,
+            quantidade: params.quantidade ?? null,
+            dataPrevista: params.dataPrevista ?? null,
+            observacao: params.observacao ?? null,
+        }).catch((err) => console.error("[EMAIL] Falha ao enviar email para ONG:", err.message));
+    }
 
     return { ok: true as const };
 }
@@ -226,6 +256,18 @@ export async function receberInteresse(params: {
         mensagem: `${interesse.nome_ong} confirmou o recebimento da sua doacao para "${interesse.titulo_necessidade}". ${detalhesRecebimento} Obrigado pela ajuda!`,
         tipo: "interesse_recebido",
     });
+
+    if (interesse.email_usuario) {
+        emailService.enviarConfirmacaoRecebimentoUsuario({
+            interesseId: interesse.id,
+            emailUsuario: interesse.email_usuario,
+            nomeUsuario: interesse.nome_usuario,
+            nomeOng: interesse.nome_ong,
+            tituloNecessidade: interesse.titulo_necessidade,
+            quantidadeRecebida: quantidadeRecebida,
+            observacaoRecebimento: observacaoRecebimento ?? null,
+        }).catch((err) => console.error("[EMAIL] Falha ao enviar confirmação de recebimento:", err.message));
+    }
 
     if (quantidadeRecebida > 0) {
         await interesseRepo.atualizarQuantidadeRecebidaNecessidade({
