@@ -6,6 +6,8 @@ import {
   criarNecessidade,
   renderDetalheNecessidadePage,
   renderNecessidadesOngPage,
+  renderEditarNecessidadePage,
+  editarNecessidade,
   alterarStatusNecessidade,
 } from "../controllers/necessidadeController";
 
@@ -22,6 +24,8 @@ export async function necessidadeRoutes(fastify: FastifyInstance) {
 
   // dashboard da ONG com suas necessidades
   fastify.get("/ong/necessidades", { preHandler: ensureAuthenticated }, renderNecessidadesOngPage);
+  fastify.get("/necessidades/:id/editar", { preHandler: ensureAuthenticated }, renderEditarNecessidadePage);
+  fastify.post("/necessidades/:id/editar", { preHandler: ensureAuthenticated }, editarNecessidade);
 
   // alterar status
   fastify.post("/necessidades/:id/status", { preHandler: ensureAuthenticated }, alterarStatusNecessidade);

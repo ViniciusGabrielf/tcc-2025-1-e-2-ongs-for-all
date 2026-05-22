@@ -1,4 +1,4 @@
-// src/controllers/authController.ts
+﻿// src/controllers/authController.ts
 import { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcryptjs";
 import { z, ZodError } from "zod";
@@ -9,7 +9,7 @@ import { validateAndLookupCnpj } from "../services/cnpjService";
 import { pool } from "../config/ds"; // ainda usado em registerUser/registerONG por enquanto (pode refatorar depois)
 
 // =======================
-// Schemas (validação)
+// Schemas (validaÃ§Ã£o)
 // =======================
 const registerUserSchema = z.object({
   nome: z.string().min(1),
@@ -126,7 +126,7 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
     );
 
     if (cpfRows?.length) {
-      return renderRegisterUserError(reply, "CPF já cadastrado.", rawBody);
+      return renderRegisterUserError(reply, "CPF jÃ¡ cadastrado.", rawBody);
     }
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -141,20 +141,24 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
     const loginTarget = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login";
     return reply.redirect(loginTarget);
   } catch (error: any) {
-    console.error("Erro ao registrar usuário:", error);
+    console.error("Erro ao registrar usuÃ¡rio:", error);
 
     if (error instanceof ZodError) {
-      return reply.status(400).send({ message: "Dados inválidos", errors: error.errors });
+      return renderRegisterUserError(
+        reply,
+        error.errors[0]?.message ?? "Dados inválidos.",
+        request.body as Record<string, string>
+      );
     }
 
     if (error?.code === "ER_DUP_ENTRY") {
       const message = getDuplicateFieldMessage(
         error,
         {
-          email: "Email já cadastrado.",
-          cpf: "CPF já cadastrado.",
+          email: "Email jÃ¡ cadastrado.",
+          cpf: "CPF jÃ¡ cadastrado.",
         },
-        "Usuário já cadastrado."
+        "UsuÃ¡rio jÃ¡ cadastrado."
       );
 
       return renderRegisterUserError(reply, message, request.body as Record<string, string>);
@@ -202,7 +206,7 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
     );
 
     if (cnpjRows?.length) {
-      return renderRegisterOngError(reply, "CNPJ da ONG já cadastrado.", body as any);
+      return renderRegisterOngError(reply, "CNPJ da ONG jÃ¡ cadastrado.", body as any);
     }
 
     const hashedPassword = await bcrypt.hash(ong.password, 10);
@@ -220,17 +224,21 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
     console.error("Erro ao cadastrar ONG:", error);
 
     if (error instanceof ZodError) {
-      return reply.status(400).send({ message: "Dados inválidos", errors: error.errors });
+      return renderRegisterOngError(
+        reply,
+        error.errors[0]?.message ?? "Dados inválidos.",
+        request.body as Record<string, string>
+      );
     }
 
     if (error?.code === "ER_DUP_ENTRY") {
       const message = getDuplicateFieldMessage(
         error,
         {
-          email: "Email da ONG já cadastrado.",
-          cnpj: "CNPJ da ONG já cadastrado.",
+          email: "Email da ONG jÃ¡ cadastrado.",
+          cnpj: "CNPJ da ONG jÃ¡ cadastrado.",
         },
-        "ONG já cadastrada."
+        "ONG jÃ¡ cadastrada."
       );
 
       return renderRegisterOngError(reply, message, request.body as Record<string, string>);
@@ -326,7 +334,7 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply): 
   try {
     await request.session.destroy();
   } catch (err) {
-    // sessão já expirada
+    // sessÃ£o jÃ¡ expirada
   }
   if (user) {
     console.log(`[LOGOUT] ${user.tipo.toUpperCase()} | usuario_id=${user.id}`);
@@ -347,9 +355,9 @@ export async function handleForgotPassword(request: FastifyRequest, reply: Fasti
   try {
     const result = await authService.requestPasswordReset(nome, email, cpf);
 
-    // Mensagem neutra (segurança/anti-enumeração)
+    // Mensagem neutra (seguranÃ§a/anti-enumeraÃ§Ã£o)
     const neutralMsg =
-      "Se os dados estiverem corretos, você receberá instruções para redefinir sua senha.";
+      "Se os dados estiverem corretos, vocÃª receberÃ¡ instruÃ§Ãµes para redefinir sua senha.";
 
     if (result.ok && process.env.NODE_ENV !== "production") {
       if (process.env.ALLOW_RESET_LINK_LOG === "true") {
@@ -394,7 +402,7 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
   if (!token) {
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { token: "", error: "Token ausente. Solicite a redefinição novamente." },
+      { token: "", error: "Token ausente. Solicite a redefiniÃ§Ã£o novamente." },
       { layout: "layouts/authLayout" }
     );
   }
@@ -402,7 +410,7 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
   if (!password || password.length < 6) {
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { token, error: "A senha deve ter no mínimo 6 caracteres." },
+      { token, error: "A senha deve ter no mÃ­nimo 6 caracteres." },
       { layout: "layouts/authLayout" }
     );
   }
@@ -410,7 +418,7 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
   if (confirmarSenha !== undefined && password !== confirmarSenha) {
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { token, error: "As senhas não coincidem." },
+      { token, error: "As senhas nÃ£o coincidem." },
       { layout: "layouts/authLayout" }
     );
   }
@@ -421,7 +429,7 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
     if (!result.ok) {
       return reply.view(
         "/templates/auth/resetPassword.hbs",
-        { token, error: "Token inválido ou expirado. Solicite novamente." },
+        { token, error: "Token invÃ¡lido ou expirado. Solicite novamente." },
         { layout: "layouts/authLayout" }
       );
     }

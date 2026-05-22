@@ -305,11 +305,12 @@ export async function renderNecessidadesOngPage(
     return reply.redirect("/dashboard");
   }
 
-  const { status, sucesso } = request.query as { status?: string; sucesso?: string };
+  const { status, sucesso, busca } = request.query as { status?: string; sucesso?: string; busca?: string };
 
   const result = await necessidadeService.listarNecessidadesDaOng(
     Number(sessionUser.id),
-    status
+    status,
+    busca
   );
 
   const naoLidas = await getNaoLidas(sessionUser as any);
@@ -321,10 +322,119 @@ export async function renderNecessidadesOngPage(
       naoLidas,
       necessidades: result.necessidades,
       filtroAtual: result.filtroAtual,
+      buscaAtual: result.buscaAtual,
       success: sucesso === "1",
     },
     { layout: "layouts/ongDashboardLayout" }
   );
+}
+
+export async function renderEditarNecessidadePage(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const sessionUser = request.session.user;
+
+  if (!sessionUser) {
+    return reply.redirect("/login");
+  }
+
+  if (sessionUser.tipo !== "ong") {
+    return reply.redirect("/dashboard");
+  }
+
+  const { id } = request.params as { id: string };
+  const result = await necessidadeService.buscarNecessidadeDaOngParaEdicao(Number(id), Number(sessionUser.id));
+
+  if (!result.ok) {
+    return reply.redirect("/ong/necessidades");
+  }
+
+  const naoLidas = await getNaoLidas(sessionUser as any);
+
+  return reply.view(
+    "/templates/necessidades/nova.hbs",
+    {
+      user: sessionUser,
+      naoLidas,
+      form: result.form,
+      isVoluntariado: result.necessidade.isVoluntariado,
+      isBem: result.necessidade.isBem,
+      isServico: result.necessidade.isServico,
+      necessidadeCatalogoJson: JSON.stringify(NEED_CATALOG),
+      pageTitle: "Editar necessidade",
+      submitLabel: "Salvar alteracoes",
+      formAction: `/necessidades/${id}/editar`,
+      isEditing: true,
+    },
+    { layout: "layouts/ongDashboardLayout" }
+  );
+}
+
+export async function editarNecessidade(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const sessionUser = request.session.user;
+
+  if (!sessionUser) {
+    return reply.redirect("/login");
+  }
+
+  if (sessionUser.tipo !== "ong") {
+    return reply.redirect("/dashboard");
+  }
+
+  const { id } = request.params as { id: string };
+  const rawBody = request.body as Record<string, unknown>;
+  const titulo = getSingleFormValue(rawBody.titulo);
+  const descricao = getSingleFormValue(rawBody.descricao);
+  const categoria = getSingleFormValue(rawBody.categoria);
+  const quantidade = getSingleFormValue(rawBody.quantidade);
+  const tipo_necessidade = getSingleFormValue(rawBody.tipo_necessidade);
+  const local_atividade = getSingleFormValue(rawBody.local_atividade) || undefined;
+  const turno = getSingleFormValue(rawBody.turno) || undefined;
+  const data_inicio = getSingleFormValue(rawBody.data_inicio) || undefined;
+  const data_fim = getSingleFormValue(rawBody.data_fim) || undefined;
+
+  const result = await necessidadeService.editarNecessidade({
+    id: Number(id),
+    ongId: Number(sessionUser.id),
+    titulo,
+    descricao,
+    categoria,
+    quantidade: Number(quantidade),
+    tipo_necessidade: tipo_necessidade || "bem",
+    local_atividade,
+    turno,
+    data_inicio,
+    data_fim,
+  });
+
+  if (!result.ok) {
+    const naoLidas = await getNaoLidas(sessionUser as any);
+
+    return reply.view(
+      "/templates/necessidades/nova.hbs",
+      {
+        user: sessionUser,
+        naoLidas,
+        error: result.error,
+        form: { titulo, descricao, categoria, quantidade, tipo_necessidade, local_atividade, turno, data_inicio, data_fim },
+        isVoluntariado: tipo_necessidade === "voluntariado",
+        isBem: !tipo_necessidade || tipo_necessidade === "bem",
+        isServico: tipo_necessidade === "servico",
+        necessidadeCatalogoJson: JSON.stringify(NEED_CATALOG),
+        pageTitle: "Editar necessidade",
+        submitLabel: "Salvar alteracoes",
+        formAction: `/necessidades/${id}/editar`,
+        isEditing: true,
+      },
+      { layout: "layouts/ongDashboardLayout" }
+    );
+  }
+
+  return reply.redirect("/ong/necessidades?sucesso=1");
 }
 
 export async function alterarStatusNecessidade(

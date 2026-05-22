@@ -53,7 +53,8 @@ export async function createInteresse(params: {
 
 export async function listarInteressesPorOng(
     ongId: number,
-    status?: string
+    status?: string,
+    busca?: string
 ) {
     let query = `
     SELECT
@@ -83,6 +84,19 @@ export async function listarInteressesPorOng(
     if (status && status !== "todos") {
         query += ` AND i.status = ? `;
         params.push(status);
+    }
+
+    if (busca?.trim()) {
+        const buscaNormalizada = busca.trim();
+        const buscaNumerica = Number(buscaNormalizada);
+
+        if (!Number.isNaN(buscaNumerica) && /^\d+$/.test(buscaNormalizada)) {
+            query += ` AND (i.id = ? OR u.nome LIKE ?) `;
+            params.push(buscaNumerica, `%${buscaNormalizada}%`);
+        } else {
+            query += ` AND u.nome LIKE ? `;
+            params.push(`%${buscaNormalizada}%`);
+        }
     }
 
     query += ` ORDER BY i.criado_em DESC `;

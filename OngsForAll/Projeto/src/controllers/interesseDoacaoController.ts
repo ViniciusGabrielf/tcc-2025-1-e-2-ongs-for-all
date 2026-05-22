@@ -103,11 +103,13 @@ export async function renderInteressesOngPage(
 
     const { status } = request.query as {
         status?: string;
+        busca?: string;
     };
 
     const result = await interesseService.listarInteressesDaOng(
         Number(sessionUser.id),
-        status
+        status,
+        (request.query as any)?.busca
     );
 
     const { naoLidas } = await notificacaoService.contarNaoLidas({
@@ -122,7 +124,9 @@ export async function renderInteressesOngPage(
             naoLidas,
             interesses: result.interesses,
             filtroAtual: result.filtroAtual,
+            buscaAtual: result.buscaAtual,
             success: (request.query as any)?.sucesso === "1",
+            error: (request.query as any)?.erro,
         },
         { layout: "layouts/ongDashboardLayout" }
     );
@@ -171,17 +175,23 @@ export async function receberInteresse(
     }
 
     const { id } = request.params as { id: string };
+    const { quantidade_recebida, observacao_recebimento } = request.body as {
+        quantidade_recebida?: string;
+        observacao_recebimento?: string;
+    };
 
     const result = await interesseService.receberInteresse({
         interesseId: Number(id),
         ongId: Number(sessionUser.id),
+        quantidadeRecebida: quantidade_recebida,
+        observacaoRecebimento: observacao_recebimento,
     });
 
     if (!result.ok) {
-        return reply.code(400).send(result.error);
+        return reply.redirect(`/ong/interesses?status=aceito&erro=${encodeURIComponent(result.error)}`);
     }
 
-    return reply.redirect("/ong/interesses?status=aceito&sucesso=1");
+    return reply.redirect("/ong/interesses?status=recebido&sucesso=1");
 }
 
 export async function cancelarInteresse(
@@ -199,15 +209,25 @@ export async function cancelarInteresse(
     }
 
     const { id } = request.params as { id: string };
+    const { motivo_cancelamento, status_retorno } = request.body as {
+        motivo_cancelamento?: string;
+        status_retorno?: string;
+    };
 
     const result = await interesseService.cancelarInteresse({
         interesseId: Number(id),
         ongId: Number(sessionUser.id),
+        motivo: motivo_cancelamento,
     });
 
     if (!result.ok) {
         return reply.code(400).send(result.error);
     }
 
-    return reply.redirect("/ong/interesses?status=pendente&sucesso=1");
+    const statusRetornoNormalizado =
+        status_retorno === "aceito" || status_retorno === "pendente"
+            ? status_retorno
+            : "pendente";
+
+    return reply.redirect(`/ong/interesses?status=${statusRetornoNormalizado}&sucesso=1`);
 }
