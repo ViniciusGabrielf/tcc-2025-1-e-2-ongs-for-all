@@ -9,6 +9,8 @@ import fastifySession from "@fastify/session";
 import path from "path";
 
 import { registerAllRoutes } from "./routes/allRoutes";
+import { verificarConexaoEmail } from "./services/emailService";
+import { registrarJobLembretes } from "./services/lembreteService";
 
 const host = process.env.NODE_APP_HOST || "localhost";
 const port = Number(process.env.PORT || 3000);
@@ -74,4 +76,6 @@ server.listen({ port, host }, (err) => {
     process.exit(1);
   }
   console.log(`\n🟢 Servidor rodando em: http://${host}:${port}\n`);
+  verificarConexaoEmail();
+  registrarJobLembretes();
 });

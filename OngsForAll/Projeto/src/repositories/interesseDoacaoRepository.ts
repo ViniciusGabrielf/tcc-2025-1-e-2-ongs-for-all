@@ -32,8 +32,8 @@ export async function createInteresse(params: {
     quantidade: number | null;
     observacao: string | null;
     dataPrevista: string | null;
-}) {
-    await pool.query(
+}): Promise<number> {
+    const [result]: any = await pool.query(
         `
     INSERT INTO interesses_doacao
       (usuario_id, ong_id, necessidade_id, quantidade, observacao, status, criado_em, data_prevista)
@@ -49,6 +49,7 @@ export async function createInteresse(params: {
             params.dataPrevista,
         ]
     );
+    return result.insertId as number;
 }
 
 export async function listarInteressesPorOng(
@@ -123,7 +124,8 @@ export async function buscarInteressePorId(id: number) {
       n.quantidade_recebida,
       n.status AS necessidade_status,
       o.nome AS nome_ong,
-      u.nome AS nome_usuario
+      u.nome AS nome_usuario,
+      u.email AS email_usuario
     FROM interesses_doacao i
     INNER JOIN necessidades n ON n.id = i.necessidade_id
     INNER JOIN ongs o ON o.ong_id = i.ong_id
@@ -134,6 +136,14 @@ export async function buscarInteressePorId(id: number) {
         [id]
     );
 
+    return rows?.[0] ?? null;
+}
+
+export async function buscarEmailOngPorId(ongId: number) {
+    const [rows]: any = await pool.query(
+        "SELECT nome, email FROM ongs WHERE ong_id = ? LIMIT 1",
+        [ongId]
+    );
     return rows?.[0] ?? null;
 }
 
@@ -179,4 +189,36 @@ export async function concluirNecessidadeSeMetaAtingida(necessidadeId: number): 
     );
 
     return result.affectedRows > 0;
+}
+
+export async function buscarInteressesParaLembrete(tipo: "2dias" | "hoje") {
+    const condicaoData = tipo === "2dias"
+        ? "DATE(i.data_prevista) = DATE_ADD(CURDATE(), INTERVAL 2 DAY) AND i.lembrete_2dias_enviado = 0"
+        : "DATE(i.data_prevista) = CURDATE() AND i.lembrete_dia_enviado = 0";
+
+    const [rows]: any = await pool.query(
+        `
+    SELECT
+      i.id,
+      i.quantidade,
+      i.data_prevista,
+      n.titulo AS titulo_necessidade,
+      o.nome AS nome_ong,
+      u.nome AS nome_usuario,
+      u.email AS email_usuario
+    FROM interesses_doacao i
+    INNER JOIN necessidades n ON n.id = i.necessidade_id
+    INNER JOIN ongs o ON o.ong_id = i.ong_id
+    INNER JOIN usuarios u ON u.id = i.usuario_id
+    WHERE i.status = 'aceito'
+      AND i.data_prevista IS NOT NULL
+      AND ${condicaoData}
+    `
+    );
+    return rows as any[];
+}
+
+export async function marcarLembreteEnviado(id: number, tipo: "2dias" | "hoje") {
+    const coluna = tipo === "2dias" ? "lembrete_2dias_enviado" : "lembrete_dia_enviado";
+    await pool.query(`UPDATE interesses_doacao SET ${coluna} = 1 WHERE id = ?`, [id]);
 }

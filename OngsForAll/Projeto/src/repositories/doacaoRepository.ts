@@ -13,6 +13,14 @@ export async function buscarNomeUsuarioPorId(usuarioId: number) {
   return rows?.[0] ?? null;
 }
 
+export async function buscarUsuarioPorId(usuarioId: number) {
+  const [rows]: any = await pool.query(
+    "SELECT nome, email FROM usuarios WHERE id = ? LIMIT 1",
+    [usuarioId]
+  );
+  return rows?.[0] ?? null;
+}
+
 export async function userExists(userId: number) {
   const [rows]: any = await pool.query(
     "SELECT id FROM usuarios WHERE id = ? LIMIT 1",
