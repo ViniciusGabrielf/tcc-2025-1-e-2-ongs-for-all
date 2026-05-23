@@ -5,6 +5,7 @@ import { z, ZodError } from "zod";
 import { validateLogin } from "../validators/authValidator";
 
 import * as authService from "../services/authService";
+import * as emailService from "../services/emailService";
 import { validateAndLookupCnpj } from "../services/cnpjService";
 import { pool } from "../config/ds"; // ainda usado em registerUser/registerONG por enquanto (pode refatorar depois)
 
@@ -355,24 +356,21 @@ export async function handleForgotPassword(request: FastifyRequest, reply: Fasti
   try {
     const result = await authService.requestPasswordReset(nome, email, cpf);
 
-    // Mensagem neutra (seguranÃ§a/anti-enumeraÃ§Ã£o)
-    const neutralMsg =
-      "Se os dados estiverem corretos, vocÃª receberÃ¡ instruÃ§Ãµes para redefinir sua senha.";
-
-    if (result.ok && process.env.NODE_ENV !== "production") {
-      if (process.env.ALLOW_RESET_LINK_LOG === "true") {
-        const baseUrl = process.env.APP_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
-        console.log(`[RESET SENHA][DEV] ${baseUrl}/redefinir-senha?token=${result.token}`);
-      } else {
-        console.log("[RESET SENHA] Solicitacao valida registrada. Link oculto por seguranca.");
-      }
+    if (!result.ok) {
+      return reply.view(
+        "/templates/auth/forgotPassword.hbs",
+        { error: "Dados incorretos. Verifique seu nome, e-mail e CPF." },
+        { layout: "layouts/authLayout" }
+      );
     }
 
-    return reply.view(
-      "/templates/auth/forgotPassword.hbs",
-      { success: neutralMsg },
-      { layout: "layouts/authLayout" }
-    );
+    emailService.enviarCodigoRedefinicaoSenha({
+      email: email.trim(),
+      nome: nome.trim(),
+      codigo: result.token,
+    }).catch((err) => console.error("[EMAIL] Falha ao enviar código de redefinição:", err.message));
+
+    return reply.redirect("/redefinir-senha?enviado=1");
   } catch (error) {
     console.error("Erro ao gerar reset:", error);
     return reply.status(500).send({ message: "Erro no servidor" });
@@ -383,26 +381,27 @@ export async function handleForgotPassword(request: FastifyRequest, reply: Fasti
 // Redefinir senha (token)
 // =======================
 export async function renderResetPasswordPage(request: FastifyRequest, reply: FastifyReply) {
-  const { token } = request.query as { token?: string };
-
+  const emailEnviado = (request.query as any).enviado === "1";
   return reply.view(
     "/templates/auth/resetPassword.hbs",
-    { token: token ?? "" },
+    { emailEnviado },
     { layout: "layouts/authLayout" }
   );
 }
 
 export async function handleResetPassword(request: FastifyRequest, reply: FastifyReply) {
-  const { token, password, confirmarSenha } = request.body as {
-    token: string;
+  const { codigo, password, confirmarSenha } = request.body as {
+    codigo: string;
     password: string;
     confirmarSenha?: string;
   };
 
-  if (!token) {
+  const codigoNormalizado = (codigo ?? "").trim();
+
+  if (!codigoNormalizado) {
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { token: "", error: "Token ausente. Solicite a redefiniÃ§Ã£o novamente." },
+      { error: "Informe o código recebido por e-mail." },
       { layout: "layouts/authLayout" }
     );
   }
@@ -410,7 +409,7 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
   if (!password || password.length < 6) {
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { token, error: "A senha deve ter no mÃ­nimo 6 caracteres." },
+      { error: "A senha deve ter no mínimo 6 caracteres." },
       { layout: "layouts/authLayout" }
     );
   }
@@ -418,18 +417,18 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
   if (confirmarSenha !== undefined && password !== confirmarSenha) {
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { token, error: "As senhas nÃ£o coincidem." },
+      { error: "As senhas não coincidem." },
       { layout: "layouts/authLayout" }
     );
   }
 
   try {
-    const result = await authService.resetPassword(token, password);
+    const result = await authService.resetPassword(codigoNormalizado, password);
 
     if (!result.ok) {
       return reply.view(
         "/templates/auth/resetPassword.hbs",
-        { token, error: "Token invÃ¡lido ou expirado. Solicite novamente." },
+        { error: "Código inválido ou expirado. Solicite novamente." },
         { layout: "layouts/authLayout" }
       );
     }
@@ -439,7 +438,7 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
     console.error("Erro ao redefinir senha:", error);
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { token, error: "Erro interno ao redefinir. Tente novamente." },
+      { error: "Erro interno ao redefinir. Tente novamente." },
       { layout: "layouts/authLayout" }
     );
   }

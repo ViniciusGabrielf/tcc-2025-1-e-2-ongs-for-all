@@ -20,7 +20,7 @@ export function hashResetToken(token: string): string {
 }
 
 export function generateResetToken(): { token: string; tokenHash: string } {
-  const token = crypto.randomBytes(32).toString("hex");
+  const token = crypto.randomInt(100000, 999999).toString();
   return { token, tokenHash: hashResetToken(token) };
 }
 
