@@ -87,6 +87,7 @@
                 <span class="block text-xs px-1.5 py-0.5 rounded-md mb-0.5 truncate font-medium leading-tight {{corClasse}}"
                       data-tipo="{{tipo}}"
                       data-entidade="{{entidade_nome}}"
+                      data-id="{{id}}"
                       title="{{titulo}}">{{titulo}}</span>
               {{/each}}
 
@@ -176,6 +177,9 @@
 {{! Dados dos eventos para o JS }}
 <script type="application/json" id="eventos-data">{{{eventosJSON}}}</script>
 <script type="application/json" id="user-tipo-data">"{{user.tipo}}"</script>
+{{#if buscarId}}
+<script type="application/json" id="buscar-id-data">"{{buscarId}}"</script>
+{{/if}}
 
 <script>
   var eventosData = {};
@@ -183,6 +187,10 @@
 
   var USER_TIPO = 'usuario';
   try { USER_TIPO = JSON.parse(document.getElementById('user-tipo-data').textContent || '"usuario"'); } catch(e) {}
+
+  var BUSCAR_ID_INICIAL = null;
+  var _buscarIdEl = document.getElementById('buscar-id-data');
+  if (_buscarIdEl) { try { BUSCAR_ID_INICIAL = JSON.parse(_buscarIdEl.textContent || 'null'); } catch(e) {} }
 
   var selectedDate  = null;
   var currentEvents = [];
@@ -292,9 +300,36 @@
     document.querySelectorAll('[data-tipo]').forEach(function(el) {
       var tipo     = el.getAttribute('data-tipo') || '';
       var entidade = el.getAttribute('data-entidade') || null;
-      var ev = { tipo: tipo, entidade_nome: entidade };
+      var id       = el.getAttribute('data-id') ? Number(el.getAttribute('data-id')) : undefined;
+      var ev = { tipo: tipo, entidade_nome: entidade, id: id };
       el.style.display = eventoPassaFiltro(ev) ? '' : 'none';
     });
+  }
+
+  function navegarParaEventoFiltrado() {
+    if (filtroId === '') return false;
+    var dates = Object.keys(eventosData);
+    for (var i = 0; i < dates.length; i++) {
+      var evs = eventosData[dates[i]];
+      for (var j = 0; j < evs.length; j++) {
+        if (String(evs[j].id) === filtroId) {
+          showDay(dates[i]);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function buscarEventoNoServidor() {
+    fetch('/calendario/mes-por-id?id=' + encodeURIComponent(filtroId))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.ok && data.mes) {
+          window.location.href = '/calendario?mes=' + encodeURIComponent(data.mes) + '&buscar_id=' + encodeURIComponent(filtroId);
+        }
+      })
+      .catch(function() {});
   }
 
   // --- Calendário ---
@@ -547,8 +582,12 @@
   function aplicarFiltros() {
     aplicarFiltroCelulas();
     atualizarBadgeFiltro();
-    // Atualiza o painel do dia se estiver aberto
-    if (selectedDate) {
+    if (filtroId !== '') {
+      var found = navegarParaEventoFiltrado();
+      if (!found) {
+        buscarEventoNoServidor();
+      }
+    } else if (selectedDate) {
       currentEvents = getEventosFiltradosDia(selectedDate);
       renderDayView();
     }
@@ -571,5 +610,15 @@
   function fecharFiltro() {
     document.getElementById('filtro-backdrop').classList.add('hidden');
     document.getElementById('painel-filtro').style.transform = 'translateX(100%)';
+  }
+
+  // Auto-navega para o evento se buscar_id veio na URL
+  if (BUSCAR_ID_INICIAL) {
+    filtroId = String(BUSCAR_ID_INICIAL);
+    var found = navegarParaEventoFiltrado();
+    if (found) {
+      aplicarFiltroCelulas();
+      atualizarBadgeFiltro();
+    }
   }
 </script>

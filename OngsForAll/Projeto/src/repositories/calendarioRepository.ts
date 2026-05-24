@@ -187,6 +187,41 @@ export async function buscarEventosEmpresa(empresaId: number, mes: string): Prom
   return rows as EventoBruto[];
 }
 
+export async function buscarMesPorId(
+  id: number,
+  userTipo: string,
+  userId: number
+): Promise<{ mes: string; data: string } | null> {
+  let query = '';
+  let params: any[] = [];
+
+  if (userTipo === 'usuario') {
+    query = `
+      SELECT DATE_FORMAT(i.data_prevista, '%Y-%m') AS mes,
+             DATE_FORMAT(i.data_prevista, '%Y-%m-%d') AS data
+        FROM interesses_doacao i
+       WHERE i.id = ? AND i.usuario_id = ?
+         AND i.data_prevista IS NOT NULL
+       LIMIT 1
+    `;
+    params = [id, userId];
+  } else if (userTipo === 'ong') {
+    query = `
+      SELECT DATE_FORMAT(i.data_prevista, '%Y-%m') AS mes,
+             DATE_FORMAT(i.data_prevista, '%Y-%m-%d') AS data
+        FROM interesses_doacao i
+       WHERE i.id = ? AND i.ong_id = ?
+         AND i.data_prevista IS NOT NULL
+       LIMIT 1
+    `;
+    params = [id, userId];
+  }
+
+  if (!query) return null;
+  const [rows]: any = await pool.query(query, params);
+  return (rows as any[])[0] ?? null;
+}
+
 export async function buscarDetalheEvento(
   tipo: string,
   id: number,

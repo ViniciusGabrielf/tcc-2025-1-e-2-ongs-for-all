@@ -81,6 +81,22 @@ function buildGrid(year: number, month: number, eventos: Evento[]): Celula[][] {
   return semanas;
 }
 
+export async function apiMesPorId(request: FastifyRequest, reply: FastifyReply) {
+  const user = request.session.user;
+  if (!user) return reply.code(401).send({ ok: false });
+
+  const { id } = request.query as { id?: string };
+  if (!id || isNaN(Number(id))) return reply.code(400).send({ ok: false });
+
+  const result = await calendarioService.getMesPorId({
+    id: Number(id),
+    userTipo: user.tipo,
+    userId: Number(user.id),
+  });
+
+  return reply.send(result);
+}
+
 export async function apiDetalheEvento(request: FastifyRequest, reply: FastifyReply) {
   const user = request.session.user;
   if (!user) return reply.code(401).send({ ok: false, error: "Não autenticado" });
@@ -104,7 +120,7 @@ export async function renderCalendarioPage(request: FastifyRequest, reply: Fasti
   const user = request.session.user;
   if (!user) return reply.redirect("/login");
 
-  const { mes } = request.query as { mes?: string };
+  const { mes, buscar_id } = request.query as { mes?: string; buscar_id?: string };
 
   try {
     const result = await calendarioService.getEventos({
@@ -128,6 +144,8 @@ export async function renderCalendarioPage(request: FastifyRequest, reply: Fasti
       }, {})
     );
 
+    const buscarId = buscar_id && /^\d+$/.test(buscar_id) ? buscar_id : null;
+
     return reply.view(
       "/templates/calendario/index.hbs",
       {
@@ -140,6 +158,7 @@ export async function renderCalendarioPage(request: FastifyRequest, reply: Fasti
         mesAnterior: result.mesAnterior,
         mesProximo:  result.mesProximo,
         eventosJSON,
+        buscarId,
       },
       { layout: LAYOUT_POR_TIPO[user.tipo] }
     );
