@@ -1,0 +1,230 @@
+{{! Sub-navegação }}
+<div class="mb-6 border-b border-slate-200 dark:border-white/10 overflow-x-auto">
+  <nav class="flex gap-1 min-w-max pb-0">
+    {{#each secoes}}
+    <a href="{{this.href}}"
+       class="px-4 py-2.5 text-sm font-medium rounded-t-xl transition whitespace-nowrap
+              {{#if this.ativa}}
+                bg-white dark:bg-[#102235] border border-b-white dark:border-white/10 dark:border-b-[#102235] text-[#2F3E34] dark:text-white -mb-px
+              {{else}}
+                text-slate-500 dark:text-white/50 hover:text-[#2F3E34] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5
+              {{/if}}">
+      {{this.label}}
+    </a>
+    {{/each}}
+  </nav>
+</div>
+
+<div class="space-y-8 max-w-7xl">
+
+  {{! Cabeçalho }}
+  <div>
+    <h2 class="text-2xl font-bold text-[#2F3E34] dark:text-white">Impacto social</h2>
+    <p class="text-sm text-slate-500 dark:text-white/60 mt-1">Dados consolidados para prestação de contas e acompanhamento do impacto gerado.</p>
+  </div>
+
+  {{! Filtro de período }}
+  <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm">
+    <form method="GET" action="/ong/relatorios/gerenciais/impacto" class="flex flex-wrap gap-3 items-end">
+      <div class="flex flex-col gap-1 min-w-[130px]">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">De</label>
+        <input type="date" name="de" value="{{filtroAtivo.de}}"
+               class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+      <div class="flex flex-col gap-1 min-w-[130px]">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Até</label>
+        <input type="date" name="ate" value="{{filtroAtivo.ate}}"
+               class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-[#6B8F71] to-[#2F3E34] text-white text-sm font-semibold hover:opacity-90 transition shadow-sm">Filtrar</button>
+        <a href="/ong/relatorios/gerenciais/impacto" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 transition">Limpar</a>
+      </div>
+    </form>
+  </div>
+
+  {{! Cards de indicadores }}
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#6B8F71]">
+      <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Total de apoios</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{dados.totalApoios}}</p>
+    </div>
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-emerald-500">
+      <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Entregas confirmadas</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{dados.confirmadas}}</p>
+    </div>
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#2F3E34]">
+      <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Itens recebidos</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{dados.itensRecebidos}}</p>
+    </div>
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-indigo-400">
+      <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Evidências registradas</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{dados.evidencias}}</p>
+    </div>
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-teal-500">
+      <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Necessidades concluídas</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{dados.necConcluidas}}</p>
+    </div>
+  </div>
+
+  {{! Gráficos }}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    {{! Evolução mensal }}
+    {{#if temEvolucao}}
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-6 shadow-sm">
+      <h3 class="text-base font-bold text-[#2F3E34] dark:text-white mb-4">Evolução mensal de apoios</h3>
+      <div class="relative h-64">
+        <canvas id="chartEvolucao"></canvas>
+      </div>
+    </div>
+    {{else}}
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-6 shadow-sm flex items-center justify-center h-64">
+      <p class="text-slate-400 dark:text-white/40 text-sm">Sem dados de evolução mensal ainda.</p>
+    </div>
+    {{/if}}
+
+    {{! Categorias mais atendidas }}
+    {{#if temCategorias}}
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-6 shadow-sm">
+      <h3 class="text-base font-bold text-[#2F3E34] dark:text-white mb-4">Categorias mais atendidas</h3>
+      <div class="relative h-64">
+        <canvas id="chartCategorias"></canvas>
+      </div>
+    </div>
+    {{else}}
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-6 shadow-sm flex items-center justify-center h-64">
+      <p class="text-slate-400 dark:text-white/40 text-sm">Sem dados de categorias atendidas ainda.</p>
+    </div>
+    {{/if}}
+
+  </div>
+
+</div>
+
+<script type="application/json" id="grafico-evolucao-labels">{{{evolucaoLabels}}}</script>
+<script type="application/json" id="grafico-evolucao-total">{{{evolucaoTotal}}}</script>
+<script type="application/json" id="grafico-evolucao-conf">{{{evolucaoConf}}}</script>
+<script type="application/json" id="grafico-cat-labels">{{{catLabels}}}</script>
+<script type="application/json" id="grafico-cat-totais">{{{catTotais}}}</script>
+
+<script>
+(function () {
+  function parseJson(id) {
+    try { return JSON.parse(document.getElementById(id).textContent || '[]'); } catch(e) { return []; }
+  }
+
+  var isDark = document.documentElement.classList.contains('dark');
+  var textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(47,62,52,0.7)';
+  var gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(47,62,52,0.08)';
+
+  function rebuildCharts() {
+    isDark = document.documentElement.classList.contains('dark');
+    textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(47,62,52,0.7)';
+    gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(47,62,52,0.08)';
+    renderEvolucao();
+    renderCategorias();
+  }
+
+  window.addEventListener('theme:changed', rebuildCharts);
+
+  var chartEvolucao = null;
+  function renderEvolucao() {
+    var ctx = document.getElementById('chartEvolucao');
+    if (!ctx) return;
+    if (chartEvolucao) { chartEvolucao.destroy(); chartEvolucao = null; }
+
+    var labels = parseJson('grafico-evolucao-labels');
+    var total  = parseJson('grafico-evolucao-total');
+    var conf   = parseJson('grafico-evolucao-conf');
+    if (!labels.length) return;
+
+    chartEvolucao = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Total de apoios',
+            data: total,
+            borderColor: '#6B8F71',
+            backgroundColor: 'rgba(107,143,113,0.1)',
+            borderWidth: 2,
+            pointBackgroundColor: '#6B8F71',
+            pointRadius: 4,
+            fill: true,
+            tension: 0.3,
+          },
+          {
+            label: 'Confirmados',
+            data: conf,
+            borderColor: '#3F5F45',
+            backgroundColor: 'rgba(63,95,69,0.08)',
+            borderWidth: 2,
+            borderDash: [5, 3],
+            pointBackgroundColor: '#3F5F45',
+            pointRadius: 4,
+            fill: false,
+            tension: 0.3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: textColor, font: { size: 12 } } },
+        },
+        scales: {
+          x: { ticks: { color: textColor, font: { size: 11 } }, grid: { color: gridColor } },
+          y: { ticks: { color: textColor, font: { size: 11 }, stepSize: 1 }, grid: { color: gridColor }, beginAtZero: true },
+        },
+      },
+    });
+  }
+
+  var chartCat = null;
+  function renderCategorias() {
+    var ctx = document.getElementById('chartCategorias');
+    if (!ctx) return;
+    if (chartCat) { chartCat.destroy(); chartCat = null; }
+
+    var labels = parseJson('grafico-cat-labels');
+    var totais = parseJson('grafico-cat-totais');
+    if (!labels.length) return;
+
+    var PALETTE = ['#6B8F71','#3F5F45','#2F3E34','#8FAF95','#DDEADB','#A8C5AE','#4A6E50','#1E3027'];
+
+    chartCat = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Entregas confirmadas',
+          data: totais,
+          backgroundColor: labels.map(function(_, i) { return PALETTE[i % PALETTE.length]; }),
+          borderRadius: 8,
+          borderSkipped: false,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          x: { ticks: { color: textColor, font: { size: 11 }, stepSize: 1 }, grid: { color: gridColor }, beginAtZero: true },
+          y: { ticks: { color: textColor, font: { size: 11 } }, grid: { color: 'transparent' } },
+        },
+      },
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    renderEvolucao();
+    renderCategorias();
+  });
+})();
+</script>

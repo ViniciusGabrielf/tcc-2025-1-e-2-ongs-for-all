@@ -1,0 +1,209 @@
+{{! Sub-navegação }}
+<div class="mb-6 border-b border-slate-200 dark:border-white/10 overflow-x-auto">
+  <nav class="flex gap-1 min-w-max pb-0">
+    {{#each secoes}}
+    <a href="{{this.href}}"
+       class="px-4 py-2.5 text-sm font-medium rounded-t-xl transition whitespace-nowrap
+              {{#if this.ativa}}
+                bg-white dark:bg-[#102235] border border-b-white dark:border-white/10 dark:border-b-[#102235] text-[#2F3E34] dark:text-white -mb-px
+              {{else}}
+                text-slate-500 dark:text-white/50 hover:text-[#2F3E34] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5
+              {{/if}}">
+      {{this.label}}
+    </a>
+    {{/each}}
+  </nav>
+</div>
+
+<div class="space-y-8 max-w-7xl">
+
+  {{! Cabeçalho }}
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-[#2F3E34] dark:text-white">Visão geral</h2>
+      <p class="text-sm text-slate-500 dark:text-white/60 mt-1">Painel gerencial consolidado de todas as atividades da ONG.</p>
+    </div>
+    <a href="/ong/relatorios/gerenciais/exportar.csv?secao=necessidades"
+       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-sm font-medium text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/10 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      Exportar CSV
+    </a>
+  </div>
+
+  {{! Bloco — Necessidades }}
+  <section>
+    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Necessidades</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#6B8F71]">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Cadastradas</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.necessidades.total}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-blue-400">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Abertas</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.necessidades.abertas}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-emerald-500">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Concluídas</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.necessidades.concluidas}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-red-400">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Canceladas</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.necessidades.canceladas}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#2F3E34]">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Taxa de conclusão</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.necessidades.taxaConclusao}}%</p>
+      </div>
+    </div>
+  </section>
+
+  {{! Bloco — Interesses / Doações }}
+  <section>
+    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Interesses recebidos</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#6B8F71]">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Total recebidos</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.interesses.total}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-orange-400">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Pendentes</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.interesses.pendentes}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-blue-500">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Aceitos</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.interesses.aceitos}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-emerald-500">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Entregas confirmadas</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.interesses.recebidos}}</p>
+      </div>
+    </div>
+  </section>
+
+  {{! Bloco — Voluntariado }}
+  <section>
+    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Voluntariado</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#6B8F71]">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Atividades</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.voluntariado.atividades}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-blue-400">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Inscritos</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.voluntariado.inscritos}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-purple-400">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Aceitos</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.voluntariado.aceitos}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-emerald-500">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Confirmados</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.voluntariado.confirmados}}</p>
+      </div>
+
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#2F3E34]">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Taxa de confirmação</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.voluntariado.taxaConfirmacao}}%</p>
+      </div>
+    </div>
+  </section>
+
+  {{! Bloco — Impacto }}
+  <section>
+    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Impacto</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-indigo-400">
+        <p class="text-xs text-slate-500 dark:text-white/50 mb-1">Evidências registradas</p>
+        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{resumo.impacto.evidencias}}</p>
+      </div>
+    </div>
+  </section>
+
+  {{! Atalhos para sub-relatórios }}
+  <section>
+    <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Relatórios detalhados</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      <a href="/ong/relatorios/gerenciais/necessidades"
+         class="flex items-center gap-4 p-5 bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[#6B8F71]/50 dark:hover:border-[#6B8F71]/40 transition group">
+        <div class="w-11 h-11 rounded-xl bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="font-semibold text-[#2F3E34] dark:text-white group-hover:text-[#3F5F45] dark:group-hover:text-[#6B8F71] transition">Necessidades</p>
+          <p class="text-xs text-slate-400 dark:text-white/40">Progresso, status e categorias</p>
+        </div>
+      </a>
+
+      <a href="/ong/relatorios/gerenciais/doacoes"
+         class="flex items-center gap-4 p-5 bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[#6B8F71]/50 dark:hover:border-[#6B8F71]/40 transition group">
+        <div class="w-11 h-11 rounded-xl bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="font-semibold text-[#2F3E34] dark:text-white group-hover:text-[#3F5F45] dark:group-hover:text-[#6B8F71] transition">Doações</p>
+          <p class="text-xs text-slate-400 dark:text-white/40">Interesses, entregas e doadores</p>
+        </div>
+      </a>
+
+      <a href="/ong/relatorios/gerenciais/voluntariado"
+         class="flex items-center gap-4 p-5 bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[#6B8F71]/50 dark:hover:border-[#6B8F71]/40 transition group">
+        <div class="w-11 h-11 rounded-xl bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="font-semibold text-[#2F3E34] dark:text-white group-hover:text-[#3F5F45] dark:group-hover:text-[#6B8F71] transition">Voluntariado</p>
+          <p class="text-xs text-slate-400 dark:text-white/40">Atividades, inscritos e confirmados</p>
+        </div>
+      </a>
+
+      <a href="/ong/relatorios/gerenciais/atividades"
+         class="flex items-center gap-4 p-5 bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[#6B8F71]/50 dark:hover:border-[#6B8F71]/40 transition group">
+        <div class="w-11 h-11 rounded-xl bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="font-semibold text-[#2F3E34] dark:text-white group-hover:text-[#3F5F45] dark:group-hover:text-[#6B8F71] transition">Atividades</p>
+          <p class="text-xs text-slate-400 dark:text-white/40">Timeline consolidada de eventos</p>
+        </div>
+      </a>
+
+      <a href="/ong/relatorios/gerenciais/impacto"
+         class="flex items-center gap-4 p-5 bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[#6B8F71]/50 dark:hover:border-[#6B8F71]/40 transition group">
+        <div class="w-11 h-11 rounded-xl bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#3F5F45] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="font-semibold text-[#2F3E34] dark:text-white group-hover:text-[#3F5F45] dark:group-hover:text-[#6B8F71] transition">Impacto</p>
+          <p class="text-xs text-slate-400 dark:text-white/40">Gráficos e métricas de impacto social</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</div>
