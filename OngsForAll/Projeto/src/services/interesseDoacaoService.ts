@@ -203,6 +203,23 @@ export async function aceitarInteresse(params: {
             dataPrevista: interesse.data_prevista ?? null,
             quantidade: interesse.quantidade ?? null,
         }).catch((err) => console.error("[EMAIL] Falha ao enviar email de aceitação:", err.message));
+
+        if (interesse.data_prevista) {
+            const dadosLembrete = {
+                interesseId: interesse.id,
+                emailUsuario: interesse.email_usuario,
+                nomeUsuario: interesse.nome_usuario,
+                tituloNecessidade: interesse.titulo_necessidade,
+                nomeOng: interesse.nome_ong,
+                dataPrevista: interesse.data_prevista,
+                quantidade: interesse.quantidade ?? null,
+                tipo: "aceitacao" as const,
+            };
+            setTimeout(() => {
+                emailService.enviarLembreteEntrega(dadosLembrete)
+                    .catch((err) => console.error("[EMAIL] Falha ao enviar lembrete de entrega após aceitação:", err.message));
+            }, 60 * 1000);
+        }
     }
 
     return { ok: true as const };

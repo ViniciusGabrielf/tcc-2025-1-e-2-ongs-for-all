@@ -122,6 +122,17 @@ export async function marcarComoLida(id: number) {
   );
 }
 
+export async function marcarTodasComoLidas(params: {
+  destinatarioId: number;
+  destinatarioTipo: "usuario" | "ong" | "empresa";
+}) {
+  const coluna = params.destinatarioTipo === "ong" ? "ong_id" : "usuario_id";
+  await pool.query(
+    `UPDATE notificacoes SET lida = 1 WHERE ${coluna} = ? AND lida = 0`,
+    [params.destinatarioId]
+  );
+}
+
 export async function listarOngsParaFiltro() {
   const [rows]: any = await pool.query(
     "SELECT ong_id AS id, nome FROM ongs ORDER BY nome ASC"

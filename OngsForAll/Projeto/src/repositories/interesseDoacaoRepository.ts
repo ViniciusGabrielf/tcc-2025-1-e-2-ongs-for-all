@@ -204,7 +204,7 @@ export async function buscarInteressesParaLembrete(tipo: "2dias" | "hoje") {
     SELECT
       i.id,
       i.quantidade,
-      i.data_prevista,
+      DATE_FORMAT(i.data_prevista, '%d/%m/%Y') AS data_prevista,
       n.titulo AS titulo_necessidade,
       o.nome AS nome_ong,
       u.nome AS nome_usuario,

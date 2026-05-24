@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import * as notificacaoService from "../services/notificacaoService";
+import { buildPagination, normalizePage } from "../utils/pagination";
 
 export async function renderNotificacoesPage(
   request: FastifyRequest,
@@ -11,19 +12,30 @@ export async function renderNotificacoesPage(
     return reply.redirect("/login");
   }
 
+  const PAGE_SIZE = 10;
+  const currentPage = normalizePage((request.query as any).pagina);
+
   try {
-    const { notificacoes, naoLidas } = await notificacaoService.listarNotificacoes({
+    const { notificacoes: todas, naoLidas } = await notificacaoService.listarNotificacoes({
       tipoConta: sessionUser.tipo,
       id: Number(sessionUser.id),
     });
 
     if (process.env.NODE_ENV === "test") {
-      return reply.send({
-        user: sessionUser,
-        notificacoes,
-        naoLidas,
-      });
+      return reply.send({ user: sessionUser, notificacoes: todas, naoLidas });
     }
+
+    const pagination = buildPagination({
+      basePath: "/notificacoes",
+      currentPage,
+      totalItems: todas.length,
+      pageSize: PAGE_SIZE,
+    });
+
+    const notificacoes = todas.slice(
+      (pagination.currentPage - 1) * PAGE_SIZE,
+      pagination.currentPage * PAGE_SIZE
+    );
 
     const layout =
       sessionUser.tipo === "ong"
@@ -33,12 +45,7 @@ export async function renderNotificacoesPage(
 
     return reply.view(
       "/templates/notificacoes/notificacoes.hbs",
-      {
-        user: sessionUser,
-        notificacoes,
-        naoLidas,
-        isOngDashboard,
-      },
+      { user: sessionUser, notificacoes, naoLidas, isOngDashboard, pagination },
       { layout }
     );
   } catch (error) {
@@ -166,5 +173,27 @@ export async function marcarNotificacaoComoLida(
   } catch (error) {
     console.error("Erro ao marcar notificação como lida:", error);
     return reply.code(500).send("Erro ao atualizar notificação.");
+  }
+}
+
+export async function marcarTodasNotificacoesComoLidas(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const sessionUser = request.session.user;
+
+  if (!sessionUser) {
+    return reply.redirect("/login");
+  }
+
+  try {
+    await notificacaoService.marcarTodasComoLidas({
+      destinatarioId: Number(sessionUser.id),
+      destinatarioTipo: sessionUser.tipo,
+    });
+    return reply.redirect("/notificacoes");
+  } catch (error) {
+    console.error("Erro ao marcar todas as notificações como lidas:", error);
+    return reply.code(500).send("Erro ao atualizar notificações.");
   }
 }

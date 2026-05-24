@@ -9,25 +9,15 @@ type ValidationResult = {
 };
 
 export function validateLogin(data: LoginData): ValidationResult {
-  const errors: string[] = [];
+  const genericError = "E-mail ou senha incorretos";
 
-  if (!data.email || data.email.trim() === "") {
-    errors.push("O e-mail é obrigatório.");
-  } else {
-    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailValido.test(data.email)) {
-      errors.push("Informe um e-mail válido.");
-    }
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailOk = data.email && data.email.trim() !== "" && emailValido.test(data.email);
+  const passwordOk = data.password && data.password.trim() !== "" && data.password.length >= 6;
+
+  if (!emailOk || !passwordOk) {
+    return { isValid: false, errors: [genericError] };
   }
 
-  if (!data.password || data.password.trim() === "") {
-    errors.push("A senha é obrigatória.");
-  } else if (data.password.length < 6) {
-    errors.push("A senha deve ter pelo menos 6 caracteres.");
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors,
-  };
+  return { isValid: true, errors: [] };
 }

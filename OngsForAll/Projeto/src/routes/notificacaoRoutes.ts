@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   renderNotificacoesPage,
   marcarNotificacaoComoLida,
+  marcarTodasNotificacoesComoLidas,
   renderFeedPage,
 } from "../controllers/notificacaoController";
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
@@ -17,6 +18,12 @@ export async function notificacaoRoutes(fastify: FastifyInstance) {
     "/notificacoes/:id/lida",
     { preHandler: [ensureAuthenticated] },
     marcarNotificacaoComoLida
+  );
+
+  fastify.post(
+    "/notificacoes/todas/lida",
+    { preHandler: [ensureAuthenticated] },
+    marcarTodasNotificacoesComoLidas
   );
 
   fastify.get(
