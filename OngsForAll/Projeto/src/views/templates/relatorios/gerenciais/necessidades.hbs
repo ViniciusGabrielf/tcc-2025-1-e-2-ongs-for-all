@@ -1,0 +1,194 @@
+{{! Sub-navegação }}
+<div class="mb-6 border-b border-slate-200 dark:border-white/10 overflow-x-auto">
+  <nav class="flex gap-1 min-w-max pb-0">
+    {{#each secoes}}
+    <a href="{{this.href}}"
+       class="px-4 py-2.5 text-sm font-medium rounded-t-xl transition whitespace-nowrap
+              {{#if this.ativa}}
+                bg-white dark:bg-[#102235] border border-b-white dark:border-white/10 dark:border-b-[#102235] text-[#2F3E34] dark:text-white -mb-px
+              {{else}}
+                text-slate-500 dark:text-white/50 hover:text-[#2F3E34] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5
+              {{/if}}">
+      {{this.label}}
+    </a>
+    {{/each}}
+  </nav>
+</div>
+
+<div class="space-y-6 max-w-7xl">
+
+  {{! Cabeçalho }}
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-[#2F3E34] dark:text-white">Necessidades</h2>
+      <p class="text-sm text-slate-500 dark:text-white/60 mt-1">Todas as necessidades cadastradas pela sua ONG com progresso e status.</p>
+    </div>
+    <a href="/ong/relatorios/gerenciais/exportar.csv?secao=necessidades{{#if filtroAtivo.de}}&de={{filtroAtivo.de}}{{/if}}{{#if filtroAtivo.ate}}&ate={{filtroAtivo.ate}}{{/if}}"
+       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-sm font-medium text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/10 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      Exportar CSV
+    </a>
+  </div>
+
+  {{! Cards de resumo }}
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#6B8F71]">
+      <p class="text-xs text-slate-500 dark:text-white/50">Total</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white mt-1">{{resumo.total}}</p>
+    </div>
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-blue-400">
+      <p class="text-xs text-slate-500 dark:text-white/50">Abertas</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white mt-1">{{resumo.abertas}}</p>
+    </div>
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-emerald-500">
+      <p class="text-xs text-slate-500 dark:text-white/50">Concluídas</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white mt-1">{{resumo.concluidas}}</p>
+    </div>
+    <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm border-l-4 border-l-[#2F3E34]">
+      <p class="text-xs text-slate-500 dark:text-white/50">Taxa conclusão</p>
+      <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white mt-1">{{resumo.taxaConclusao}}%</p>
+    </div>
+  </div>
+
+  {{! Filtros }}
+  <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm">
+    <form method="GET" action="/ong/relatorios/gerenciais/necessidades" class="flex flex-wrap gap-3 items-end">
+
+      <div class="flex flex-col gap-1 min-w-[130px]">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">De</label>
+        <input type="date" name="de" value="{{filtroAtivo.de}}"
+               class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+
+      <div class="flex flex-col gap-1 min-w-[130px]">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Até</label>
+        <input type="date" name="ate" value="{{filtroAtivo.ate}}"
+               class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Tipo</label>
+        <select name="tipo"
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40">
+          <option value="">Todos</option>
+          <option value="bem"          {{#ifCond filtroAtivo.tipo '==' 'bem'}}selected{{/ifCond}}>Doação de bem</option>
+          <option value="servico"      {{#ifCond filtroAtivo.tipo '==' 'servico'}}selected{{/ifCond}}>Serviço</option>
+          <option value="voluntariado" {{#ifCond filtroAtivo.tipo '==' 'voluntariado'}}selected{{/ifCond}}>Voluntariado</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Categoria</label>
+        <select name="categoria"
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40">
+          <option value="">Todas</option>
+          {{#each categorias}}
+          <option value="{{this}}" {{#ifCond ../filtroAtivo.categoria '==' this}}selected{{/ifCond}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Status</label>
+        <select name="status"
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40">
+          <option value="">Todos</option>
+          <option value="aberta"    {{#ifCond filtroAtivo.status '==' 'aberta'}}selected{{/ifCond}}>Aberta</option>
+          <option value="concluida" {{#ifCond filtroAtivo.status '==' 'concluida'}}selected{{/ifCond}}>Concluída</option>
+          <option value="cancelada" {{#ifCond filtroAtivo.status '==' 'cancelada'}}selected{{/ifCond}}>Cancelada</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1 flex-1 min-w-[160px]">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Buscar</label>
+        <input type="text" name="busca" value="{{filtroAtivo.busca}}" placeholder="Título da necessidade"
+               class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit"
+                class="px-4 py-2 rounded-xl bg-gradient-to-r from-[#6B8F71] to-[#2F3E34] text-white text-sm font-semibold hover:opacity-90 transition shadow-sm">
+          Filtrar
+        </button>
+        <a href="/ong/relatorios/gerenciais/necessidades"
+           class="px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 transition">
+          Limpar
+        </a>
+      </div>
+    </form>
+  </div>
+
+  {{! Tabela }}
+  <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
+    {{#if dados.length}}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
+          <tr>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70">Título</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70">Tipo</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70">Categoria</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70 text-right">Qtd.</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70 text-right">Recebido</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70 text-right">Pendente</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70">Progresso</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70">Status</th>
+            <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/70">Criado em</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+          {{#each dados}}
+          <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+            <td class="px-4 py-3">
+              <a href="/necessidades/{{this.id}}" class="font-medium text-[#2F3E34] dark:text-white hover:text-[#6B8F71] dark:hover:text-[#6B8F71] transition">
+                {{this.titulo}}
+              </a>
+            </td>
+            <td class="px-4 py-3 text-slate-600 dark:text-white/70">
+              {{#ifCond this.tipo_necessidade '==' 'bem'}}Doação de bem{{/ifCond}}
+              {{#ifCond this.tipo_necessidade '==' 'servico'}}Serviço{{/ifCond}}
+              {{#ifCond this.tipo_necessidade '==' 'voluntariado'}}Voluntariado{{/ifCond}}
+            </td>
+            <td class="px-4 py-3 text-slate-600 dark:text-white/70">{{this.categoria}}</td>
+            <td class="px-4 py-3 text-right text-slate-700 dark:text-white/80 font-medium">{{this.quantidade}}</td>
+            <td class="px-4 py-3 text-right text-emerald-600 dark:text-emerald-400 font-medium">{{this.quantidade_recebida}}</td>
+            <td class="px-4 py-3 text-right text-orange-500 dark:text-orange-400 font-medium">{{this.pendente}}</td>
+            <td class="px-4 py-3 min-w-[120px]">
+              <div class="flex items-center gap-2">
+                <div class="flex-1 bg-slate-200 dark:bg-white/10 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-[#6B8F71] to-[#3F5F45] rounded-full h-2 transition-all" style="width:{{this.percentual}}%"></div>
+                </div>
+                <span class="text-xs font-bold text-[#2F3E34] dark:text-white whitespace-nowrap">{{this.percentual}}%</span>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              {{#ifCond this.status '==' 'aberta'}}
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">Aberta</span>
+              {{/ifCond}}
+              {{#ifCond this.status '==' 'concluida'}}
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Concluída</span>
+              {{/ifCond}}
+              {{#ifCond this.status '==' 'cancelada'}}
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">Cancelada</span>
+              {{/ifCond}}
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-slate-500 dark:text-white/50 text-xs">{{this.criado_em}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{else}}
+    <div class="py-16 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-slate-300 dark:text-white/20 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <p class="text-slate-400 dark:text-white/40 font-medium">Nenhuma necessidade encontrada.</p>
+      <p class="text-sm text-slate-400 dark:text-white/30 mt-1">Ajuste os filtros ou cadastre novas necessidades.</p>
+    </div>
+    {{/if}}
+  </div>
+
+</div>

@@ -1,0 +1,175 @@
+{{! Sub-navegação }}
+<div class="mb-6 border-b border-slate-200 dark:border-white/10 overflow-x-auto">
+  <nav class="flex gap-1 min-w-max pb-0">
+    {{#each secoes}}
+    <a href="{{this.href}}"
+       class="px-4 py-2.5 text-sm font-medium rounded-t-xl transition whitespace-nowrap
+              {{#if this.ativa}}
+                bg-white dark:bg-[#102235] border border-b-white dark:border-white/10 dark:border-b-[#102235] text-[#2F3E34] dark:text-white -mb-px
+              {{else}}
+                text-slate-500 dark:text-white/50 hover:text-[#2F3E34] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5
+              {{/if}}">
+      {{this.label}}
+    </a>
+    {{/each}}
+  </nav>
+</div>
+
+<div class="space-y-6 max-w-5xl">
+
+  {{! Cabeçalho }}
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-[#2F3E34] dark:text-white">Atividades</h2>
+      <p class="text-sm text-slate-500 dark:text-white/60 mt-1">Timeline consolidada de todos os eventos relevantes da sua ONG.</p>
+    </div>
+    <a href="/ong/relatorios/gerenciais/exportar.csv?secao=atividades{{#if filtroAtivo.de}}&de={{filtroAtivo.de}}{{/if}}{{#if filtroAtivo.ate}}&ate={{filtroAtivo.ate}}{{/if}}"
+       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-sm font-medium text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/10 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      Exportar CSV
+    </a>
+  </div>
+
+  {{! Filtros }}
+  <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm">
+    <form method="GET" action="/ong/relatorios/gerenciais/atividades" class="flex flex-wrap gap-3 items-end">
+      <div class="flex flex-col gap-1 min-w-[130px]">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">De</label>
+        <input type="date" name="de" value="{{filtroAtivo.de}}"
+               class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+      <div class="flex flex-col gap-1 min-w-[130px]">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Até</label>
+        <input type="date" name="ate" value="{{filtroAtivo.ate}}"
+               class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Tipo de atividade</label>
+        <select name="tipo"
+                class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40">
+          <option value="">Todos</option>
+          <option value="necessidade_criada"   {{#ifCond filtroAtivo.tipo '==' 'necessidade_criada'}}selected{{/ifCond}}>Necessidade criada</option>
+          <option value="interesse_pendente"   {{#ifCond filtroAtivo.tipo '==' 'interesse_pendente'}}selected{{/ifCond}}>Interesse recebido</option>
+          <option value="interesse_aceito"     {{#ifCond filtroAtivo.tipo '==' 'interesse_aceito'}}selected{{/ifCond}}>Interesse aceito</option>
+          <option value="entrega_recebida"     {{#ifCond filtroAtivo.tipo '==' 'entrega_recebida'}}selected{{/ifCond}}>Entrega confirmada</option>
+          <option value="interesse_cancelado"  {{#ifCond filtroAtivo.tipo '==' 'interesse_cancelado'}}selected{{/ifCond}}>Interesse cancelado</option>
+          <option value="evidencia_registrada" {{#ifCond filtroAtivo.tipo '==' 'evidencia_registrada'}}selected{{/ifCond}}>Evidência registrada</option>
+        </select>
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-[#6B8F71] to-[#2F3E34] text-white text-sm font-semibold hover:opacity-90 transition shadow-sm">Filtrar</button>
+        <a href="/ong/relatorios/gerenciais/atividades" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 transition">Limpar</a>
+      </div>
+    </form>
+  </div>
+
+  {{! Timeline }}
+  {{#if dados.length}}
+  <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm divide-y divide-slate-100 dark:divide-white/5">
+    {{#each dados}}
+    <div class="flex items-start gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+
+      {{! Ícone por tipo }}
+      <div class="shrink-0 mt-0.5">
+        {{#ifCond this.tipo '==' 'necessidade_criada'}}
+        <div class="w-9 h-9 rounded-full bg-[#EAF3EC] dark:bg-[#6B8F71]/20 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#3F5F45] dark:text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+        {{/ifCond}}
+        {{#ifCond this.tipo '==' 'interesse_pendente'}}
+        <div class="w-9 h-9 rounded-full bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        {{/ifCond}}
+        {{#ifCond this.tipo '==' 'interesse_aceito'}}
+        <div class="w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+          </svg>
+        </div>
+        {{/ifCond}}
+        {{#ifCond this.tipo '==' 'entrega_recebida'}}
+        <div class="w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        {{/ifCond}}
+        {{#ifCond this.tipo '==' 'interesse_cancelado'}}
+        <div class="w-9 h-9 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        {{/ifCond}}
+        {{#ifCond this.tipo '==' 'evidencia_registrada'}}
+        <div class="w-9 h-9 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        {{/ifCond}}
+      </div>
+
+      {{! Conteúdo }}
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-[#2F3E34] dark:text-white truncate">{{this.titulo}}</p>
+            {{#if this.doador_nome}}
+            <p class="text-xs text-slate-500 dark:text-white/50 mt-0.5">Por: {{this.doador_nome}}</p>
+            {{/if}}
+          </div>
+          <div class="shrink-0 text-right">
+            {{#if this.data_evento}}
+            <p class="text-xs text-slate-400 dark:text-white/40 whitespace-nowrap">{{this.data_evento}}</p>
+            {{/if}}
+            {{#if this.link}}
+            <a href="{{this.link}}" class="text-xs text-[#6B8F71] hover:underline">Ver detalhes</a>
+            {{/if}}
+          </div>
+        </div>
+        {{! Badge de tipo }}
+        <div class="mt-1.5">
+          {{#ifCond this.tipo '==' 'necessidade_criada'}}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-[#EAF3EC] text-[#3F5F45] dark:bg-[#6B8F71]/20 dark:text-[#DDEADB] font-medium">Necessidade criada</span>
+          {{/ifCond}}
+          {{#ifCond this.tipo '==' 'interesse_pendente'}}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 font-medium">Interesse recebido</span>
+          {{/ifCond}}
+          {{#ifCond this.tipo '==' 'interesse_aceito'}}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">Interesse aceito</span>
+          {{/ifCond}}
+          {{#ifCond this.tipo '==' 'entrega_recebida'}}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-medium">Entrega confirmada</span>
+          {{/ifCond}}
+          {{#ifCond this.tipo '==' 'interesse_cancelado'}}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 font-medium">Interesse cancelado</span>
+          {{/ifCond}}
+          {{#ifCond this.tipo '==' 'evidencia_registrada'}}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 font-medium">Evidência registrada</span>
+          {{/ifCond}}
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+
+  {{else}}
+  <div class="bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm py-16 text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-slate-300 dark:text-white/20 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+    <p class="text-slate-400 dark:text-white/40 font-medium">Nenhuma atividade encontrada.</p>
+    <p class="text-sm text-slate-400 dark:text-white/30 mt-1">Ajuste o período ou o tipo de atividade nos filtros.</p>
+  </div>
+  {{/if}}
+
+</div>
