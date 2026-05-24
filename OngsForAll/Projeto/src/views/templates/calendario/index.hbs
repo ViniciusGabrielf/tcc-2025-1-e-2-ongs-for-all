@@ -1,0 +1,575 @@
+<div class="max-w-5xl mx-auto">
+
+  {{! Navegação de mês }}
+  <div class="flex items-center justify-between mb-6">
+    <a href="/calendario?mes={{mesAnterior}}"
+       class="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/20 shadow-sm transition text-[#2D4BA6] dark:text-white"
+       title="Mês anterior">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </a>
+
+    <div class="text-center">
+      <h2 class="text-xl font-bold text-[#2D4BA6] dark:text-white">{{mesTitulo}}</h2>
+      <a href="/calendario" class="text-xs text-slate-400 dark:text-white/40 hover:text-[#2D4BA6] dark:hover:text-white transition">Hoje</a>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a href="/calendario?mes={{mesProximo}}"
+         class="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/20 shadow-sm transition text-[#2D4BA6] dark:text-white"
+         title="Próximo mês">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+      <button id="btn-filtro" onclick="abrirFiltro()"
+              class="relative flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/20 shadow-sm transition text-slate-500 dark:text-white/70"
+              title="Filtrar eventos">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+        </svg>
+        <span id="filtro-badge" style="display:none" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#4886D9] text-white text-[10px] font-bold flex items-center justify-center">!</span>
+      </button>
+    </div>
+  </div>
+
+  {{! Legenda de tipos }}
+  <div class="flex flex-wrap gap-2 mb-4 text-xs">
+    <span class="px-2 py-1 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 font-medium">● Entrega pendente</span>
+    <span class="px-2 py-1 rounded-full bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300 font-medium">● Entrega recebida</span>
+    <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">● Interesse</span>
+    <span class="px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 font-medium">● Voluntariado</span>
+    <span class="px-2 py-1 rounded-full bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300 font-medium">● Necessidade</span>
+    <span class="px-2 py-1 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-medium">● Relatório</span>
+    <span class="px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 font-medium">● Evidência</span>
+    <span class="px-2 py-1 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 font-medium">● Marketplace</span>
+  </div>
+
+  {{! Grade do calendário }}
+  <div class="bg-white dark:bg-[#102235] rounded-2xl shadow border border-slate-200 dark:border-white/10 overflow-hidden">
+
+    {{! Cabeçalho dos dias da semana }}
+    <div class="grid grid-cols-7 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0D1B2A]/40">
+      {{#each diasSemana}}
+      <div class="py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50">
+        {{this}}
+      </div>
+      {{/each}}
+    </div>
+
+    {{! Células }}
+    <div class="grid grid-cols-7 divide-x divide-y divide-slate-100 dark:divide-white/5">
+      {{#each semanas}}
+        {{#each this}}
+          {{#if isOutroMes}}
+            <div class="min-h-[5.5rem] p-1.5 bg-slate-50/60 dark:bg-[#0D1B2A]/30"></div>
+          {{else}}
+            <div class="min-h-[5.5rem] p-1.5 cursor-pointer select-none transition-colors hover:bg-[#2D4BA6]/5 dark:hover:bg-white/5
+                        {{#if isHoje}}bg-blue-50 dark:bg-blue-900/40 dark:ring-1 dark:ring-inset dark:ring-blue-500/50{{/if}}"
+                 data-date="{{data}}"
+                 onclick="showDay('{{data}}')">
+
+              {{! Número do dia }}
+              <div class="flex items-center justify-between mb-1">
+                {{#if isHoje}}
+                  <span class="w-6 h-6 rounded-full bg-[#2D4BA6] text-white text-xs font-bold flex items-center justify-center">{{dia}}</span>
+                {{else}}
+                  <span class="text-sm font-medium text-slate-700 dark:text-white/80">{{dia}}</span>
+                {{/if}}
+                {{#if temDestaque}}
+                  <span class="w-2 h-2 rounded-full bg-orange-400 shrink-0" title="Entrega pendente neste dia"></span>
+                {{/if}}
+              </div>
+
+              {{! Até 2 eventos visíveis }}
+              {{#each eventosMostrar}}
+                <span class="block text-xs px-1.5 py-0.5 rounded-md mb-0.5 truncate font-medium leading-tight {{corClasse}}"
+                      data-tipo="{{tipo}}"
+                      data-entidade="{{entidade_nome}}"
+                      title="{{titulo}}">{{titulo}}</span>
+              {{/each}}
+
+              {{! Indicador de eventos adicionais }}
+              {{#if eventosExtra}}
+                <span class="text-xs text-slate-400 dark:text-white/40 pl-1">+{{eventosExtra}} mais</span>
+              {{/if}}
+
+            </div>
+          {{/if}}
+        {{/each}}
+      {{/each}}
+    </div>
+  </div>
+
+  {{! Painel de detalhes do dia / evento }}
+  <div id="detail-panel"
+       class="hidden mt-5 bg-white dark:bg-[#102235] rounded-2xl shadow border border-slate-200 dark:border-white/10 p-5">
+
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2 min-w-0">
+        <button id="detail-back-btn"
+                onclick="backToDay()"
+                style="display:none"
+                class="shrink-0 flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-white/50 hover:text-[#2D4BA6] dark:hover:text-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Voltar
+        </button>
+        <h3 id="detail-title" class="text-base font-bold text-[#2D4BA6] dark:text-white truncate"></h3>
+      </div>
+      <button onclick="closeDetail()"
+              class="shrink-0 flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/20 transition"
+              title="Fechar">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div id="detail-content"></div>
+  </div>
+
+</div>
+
+{{! Backdrop do filtro }}
+<div id="filtro-backdrop" class="hidden fixed inset-0 bg-black/20 dark:bg-black/40 z-20" onclick="fecharFiltro()"></div>
+
+{{! Painel de filtro }}
+<div id="painel-filtro"
+     class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-[#102235] shadow-2xl border-l border-slate-200 dark:border-white/10 z-30 flex flex-col"
+     style="transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);">
+
+  {{! Header do filtro }}
+  <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/10">
+    <div class="flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+      </svg>
+      <h3 class="text-sm font-bold text-slate-800 dark:text-white">Filtros</h3>
+    </div>
+    <button onclick="fecharFiltro()"
+            class="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/20 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  {{! Corpo do filtro (scrollável) }}
+  <div id="filtro-corpo" class="flex-1 overflow-y-auto px-5 py-4 space-y-5"></div>
+
+  {{! Footer do filtro }}
+  <div class="px-5 py-4 border-t border-slate-100 dark:border-white/10 flex gap-2">
+    <button onclick="limparFiltros()"
+            class="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition">
+      Limpar filtros
+    </button>
+    <button onclick="fecharFiltro()"
+            class="flex-1 px-4 py-2 rounded-xl bg-[#4886D9] hover:bg-[#2D4BA6] text-white text-sm font-medium transition">
+      Aplicar
+    </button>
+  </div>
+</div>
+
+{{! Dados dos eventos para o JS }}
+<script type="application/json" id="eventos-data">{{{eventosJSON}}}</script>
+<script type="application/json" id="user-tipo-data">"{{user.tipo}}"</script>
+
+<script>
+  var eventosData = {};
+  try { eventosData = JSON.parse(document.getElementById('eventos-data').textContent || '{}'); } catch(e) {}
+
+  var USER_TIPO = 'usuario';
+  try { USER_TIPO = JSON.parse(document.getElementById('user-tipo-data').textContent || '"usuario"'); } catch(e) {}
+
+  var selectedDate  = null;
+  var currentEvents = [];
+
+  // Filtros ativos
+  var filtroTipos     = new Set();
+  var filtroEntidades = new Set();
+  var filtroId        = '';
+
+  var DIAS_PT  = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  var MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  var TIPO_LABELS = {
+    entrega_aceita:     'Entrega pendente',
+    entrega_recebida:   'Entrega recebida',
+    interesse:          'Interesse',
+    voluntariado:       'Voluntariado (início)',
+    voluntariado_fim:   'Voluntariado (fim)',
+    necessidade_inicio: 'Necessidade (início)',
+    necessidade_fim:    'Necessidade (fim)',
+    relatorio:          'Relatório',
+    evidencia:          'Evidência',
+    marketplace:        'Item publicado',
+  };
+
+  var TIPO_CORES = {
+    entrega_aceita:     '#f97316',
+    entrega_recebida:   '#84cc16',
+    interesse:          '#3b82f6',
+    voluntariado:       '#22c55e',
+    voluntariado_fim:   '#10b981',
+    necessidade_inicio: '#14b8a6',
+    necessidade_fim:    '#94a3b8',
+    relatorio:          '#a855f7',
+    evidencia:          '#6366f1',
+    marketplace:        '#8b5cf6',
+  };
+
+  var ENTIDADE_LABEL = {
+    usuario: 'ONG',
+    ong:     'Doador',
+    empresa: null,
+  };
+
+  // --- Helpers ---
+
+  function formatDate(dateStr) {
+    var parts = dateStr.split('-');
+    var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    return DIAS_PT[d.getDay()] + ', ' + d.getDate() + ' de ' + MESES_PT[d.getMonth()] + ' de ' + parts[0];
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function eventoPassaFiltro(ev) {
+    if (filtroTipos.size > 0 && !filtroTipos.has(ev.tipo)) return false;
+    if (filtroEntidades.size > 0 && ev.entidade_nome && !filtroEntidades.has(ev.entidade_nome)) return false;
+    if (filtroId !== '' && String(ev.id) !== filtroId) return false;
+    return true;
+  }
+
+  function getEventosFiltradosDia(date) {
+    return (eventosData[date] || []).filter(eventoPassaFiltro);
+  }
+
+  function isFiltroAtivo() {
+    return filtroTipos.size > 0 || filtroEntidades.size > 0 || filtroId !== '';
+  }
+
+  function getAvatarColor(nome) {
+    var colors = ['#ef4444','#f97316','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f59e0b'];
+    var hash = 0;
+    for (var i = 0; i < nome.length; i++) hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  function getInitials(nome) {
+    var parts = nome.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return nome.slice(0, 2).toUpperCase();
+  }
+
+  function filtrarEntidadesVisiveis(query) {
+    var q = query.toLowerCase().trim();
+    document.querySelectorAll('.filtro-entidade-item').forEach(function(el) {
+      var nome = el.querySelector('.filtro-entidade-nome').textContent.toLowerCase();
+      el.style.display = (!q || nome.includes(q)) ? '' : 'none';
+    });
+  }
+
+  function onIdChange(value) {
+    filtroId = value.trim().replace(/\D/g, '');
+    aplicarFiltros();
+  }
+
+  function atualizarBadgeFiltro() {
+    document.getElementById('filtro-badge').style.display = isFiltroAtivo() ? '' : 'none';
+  }
+
+  function aplicarFiltroCelulas() {
+    document.querySelectorAll('[data-tipo]').forEach(function(el) {
+      var tipo     = el.getAttribute('data-tipo') || '';
+      var entidade = el.getAttribute('data-entidade') || null;
+      var ev = { tipo: tipo, entidade_nome: entidade };
+      el.style.display = eventoPassaFiltro(ev) ? '' : 'none';
+    });
+  }
+
+  // --- Calendário ---
+
+  function showDay(date) {
+    selectedDate  = date;
+    currentEvents = getEventosFiltradosDia(date);
+    renderDayView();
+
+    var panel = document.getElementById('detail-panel');
+    panel.classList.remove('hidden');
+
+    document.querySelectorAll('[data-date]').forEach(function(el) {
+      el.classList.remove('ring-2', 'ring-inset', 'ring-[#4886D9]');
+    });
+    var sel = document.querySelector('[data-date="' + date + '"]');
+    if (sel) sel.classList.add('ring-2', 'ring-inset', 'ring-[#4886D9]');
+
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function renderDayView() {
+    var title   = document.getElementById('detail-title');
+    var content = document.getElementById('detail-content');
+    var backBtn = document.getElementById('detail-back-btn');
+
+    title.textContent = formatDate(selectedDate);
+    backBtn.style.display = 'none';
+
+    var events = currentEvents;
+
+    if (events.length === 0) {
+      var msg = isFiltroAtivo()
+        ? 'Nenhum evento corresponde aos filtros ativos neste dia.'
+        : 'Nenhum evento neste dia.';
+      content.innerHTML = '<p class="text-sm text-slate-400 dark:text-white/40 py-2">' + escHtml(msg) + '</p>';
+      return;
+    }
+
+    var items = events.map(function(ev, idx) {
+      var badge = ev.destaque
+        ? '<span class="shrink-0 text-xs bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 px-2 py-0.5 rounded-full font-semibold">Pendente</span>'
+        : '';
+      var chevron = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0 text-slate-300 dark:text-white/20 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>';
+      return '<div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 transition cursor-pointer mb-1.5" onclick="showEventDetail(' + idx + ')">'
+           + '<span class="flex-1 text-sm font-medium text-[#2D4BA6] dark:text-white min-w-0 truncate">' + escHtml(ev.titulo) + '</span>'
+           + badge
+           + chevron
+           + '</div>';
+    }).join('');
+
+    content.innerHTML = '<div>' + items + '</div>';
+  }
+
+  function showEventDetail(idx) {
+    var ev = currentEvents[idx];
+    if (!ev) return;
+
+    var title   = document.getElementById('detail-title');
+    var content = document.getElementById('detail-content');
+    var backBtn = document.getElementById('detail-back-btn');
+
+    title.textContent = ev.titulo;
+    backBtn.style.display = '';
+
+    content.innerHTML = '<div class="flex items-center justify-center py-6">'
+      + '<svg class="animate-spin w-5 h-5 text-slate-300 dark:text-white/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">'
+      + '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>'
+      + '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>'
+      + '</svg></div>';
+
+    fetch('/calendario/evento?tipo=' + encodeURIComponent(ev.tipo) + '&id=' + encodeURIComponent(ev.id))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.ok) {
+          content.innerHTML = '<p class="text-sm text-red-500 dark:text-red-400 px-1 py-2">Não foi possível carregar os detalhes.</p>';
+          return;
+        }
+
+        var rows = data.campos.map(function(c) {
+          return '<div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100 dark:border-white/5 last:border-0">'
+               + '<span class="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-white/40 shrink-0 pt-0.5">' + escHtml(c.label) + '</span>'
+               + '<span class="text-sm text-slate-800 dark:text-white font-medium text-right">' + escHtml(c.valor) + '</span>'
+               + '</div>';
+        }).join('');
+
+        var maisDetalhes = (data.link && data.link !== '#')
+          ? '<div class="mt-4 pt-3 border-t border-slate-100 dark:border-white/10 flex justify-end">'
+            + '<a href="' + escHtml(data.link) + '" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#4886D9] dark:text-blue-400 hover:underline">'
+            + escHtml(data.linkTexto)
+            + ' <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>'
+            + '</a></div>'
+          : '';
+
+        content.innerHTML = '<div>' + rows + '</div>' + maisDetalhes;
+      })
+      .catch(function() {
+        content.innerHTML = '<p class="text-sm text-red-500 dark:text-red-400 px-1 py-2">Erro de conexão ao carregar detalhes.</p>';
+      });
+  }
+
+  function backToDay() {
+    currentEvents = getEventosFiltradosDia(selectedDate);
+    renderDayView();
+  }
+
+  function closeDetail() {
+    document.getElementById('detail-panel').classList.add('hidden');
+    if (selectedDate) {
+      var sel = document.querySelector('[data-date="' + selectedDate + '"]');
+      if (sel) sel.classList.remove('ring-2', 'ring-inset', 'ring-[#4886D9]');
+    }
+    selectedDate  = null;
+    currentEvents = [];
+  }
+
+  // --- Filtros ---
+
+  function getTodosEventos() {
+    var todos = [];
+    Object.values(eventosData).forEach(function(evs) { todos = todos.concat(evs); });
+    return todos;
+  }
+
+  function construirPainelFiltro() {
+    var corpo = document.getElementById('filtro-corpo');
+    var todos = getTodosEventos();
+
+    var tiposSet = {}, entidadesSet = {};
+    todos.forEach(function(ev) {
+      tiposSet[ev.tipo] = true;
+      if (ev.entidade_nome) entidadesSet[ev.entidade_nome] = true;
+    });
+    var tipos     = Object.keys(tiposSet);
+    var entidades = Object.keys(entidadesSet).sort();
+
+    var html = '';
+    var inputCls = 'w-full px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#4886D9]/40';
+
+    // Seção: ID da solicitação
+    html += '<div>'
+          + '<p class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-2">ID da solicitação</p>'
+          + '<input type="text" id="filtro-id-input" inputmode="numeric" pattern="[0-9]*"'
+          + ' value="' + escHtml(filtroId) + '" placeholder="Ex: 43"'
+          + ' oninput="onIdChange(this.value)"'
+          + ' class="' + inputCls + '">'
+          + '</div>';
+
+    // Seção: Tipo de atividade
+    html += '<div>'
+          + '<p class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Tipo de atividade</p>'
+          + '<div class="space-y-1.5">';
+
+    if (tipos.length === 0) {
+      html += '<p class="text-xs text-slate-400 dark:text-white/40">Nenhum evento neste mês.</p>';
+    } else {
+      tipos.forEach(function(tipo) {
+        var label   = TIPO_LABELS[tipo] || tipo;
+        var cor     = TIPO_CORES[tipo]  || '#94a3b8';
+        var checked = filtroTipos.size === 0 || filtroTipos.has(tipo) ? 'checked' : '';
+        html += '<label class="flex items-center gap-2.5 cursor-pointer px-1 py-1 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">'
+              + '<input type="checkbox" value="' + escHtml(tipo) + '" ' + checked
+              + ' onchange="onTipoChange(this)" class="rounded border-slate-300 dark:border-white/20 text-[#4886D9] focus:ring-[#4886D9] bg-white dark:bg-white/5">'
+              + '<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color:' + cor + '"></span>'
+              + '<span class="text-sm text-slate-700 dark:text-white/80">' + escHtml(label) + '</span>'
+              + '</label>';
+      });
+    }
+    html += '</div></div>';
+
+    // Seção: Entidade (ONG / Doador) com busca e avatares
+    var entidadeLabel = ENTIDADE_LABEL[USER_TIPO];
+    if (entidadeLabel && entidades.length > 0) {
+      html += '<div>'
+            + '<p class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-2">' + escHtml(entidadeLabel) + '</p>'
+            + '<div class="relative mb-2">'
+            + '<input type="text" id="filtro-entidade-busca" placeholder="Pesquisar"'
+            + ' oninput="filtrarEntidadesVisiveis(this.value)"'
+            + ' class="w-full pl-8 pr-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#4886D9]/40">'
+            + '<svg class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400 dark:text-white/30 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">'
+            + '<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>'
+            + '</svg></div>'
+            + '<div id="filtro-entidade-lista" class="space-y-0.5 max-h-52 overflow-y-auto">';
+
+      entidades.forEach(function(nome) {
+        var checked  = filtroEntidades.size === 0 || filtroEntidades.has(nome) ? 'checked' : '';
+        var initials = getInitials(nome);
+        var cor      = getAvatarColor(nome);
+        html += '<label class="filtro-entidade-item flex items-center gap-2.5 cursor-pointer px-1 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">'
+              + '<input type="checkbox" value="' + escHtml(nome) + '" ' + checked
+              + ' onchange="onEntidadeChange(this)" class="rounded border-slate-300 dark:border-white/20 text-[#4886D9] focus:ring-[#4886D9] bg-white dark:bg-white/5">'
+              + '<span class="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold select-none" style="background-color:' + cor + '">'
+              + escHtml(initials)
+              + '</span>'
+              + '<span class="filtro-entidade-nome text-sm text-slate-700 dark:text-white/80 truncate">' + escHtml(nome) + '</span>'
+              + '</label>';
+      });
+
+      html += '</div></div>';
+    }
+
+    corpo.innerHTML = html;
+  }
+
+  function onTipoChange(cb) {
+    if (!cb.checked) {
+      // Se desmarcou, garante que o Set tem todos os outros
+      var todos = getTodosEventos();
+      var tiposSet = {};
+      todos.forEach(function(ev) { tiposSet[ev.tipo] = true; });
+      var tipos = Object.keys(tiposSet);
+
+      if (filtroTipos.size === 0) {
+        // Estava "tudo ativo" → agora remove esse tipo
+        tipos.forEach(function(t) { if (t !== cb.value) filtroTipos.add(t); });
+      } else {
+        filtroTipos.delete(cb.value);
+        if (filtroTipos.size === tipos.length) filtroTipos.clear(); // todos marcados = sem filtro
+      }
+    } else {
+      filtroTipos.add(cb.value);
+      // Verifica se todos estão marcados agora
+      var allChecked = document.querySelectorAll('#filtro-corpo input[type=checkbox][onchange="onTipoChange(this)"]:not(:checked)').length === 0;
+      if (allChecked) filtroTipos.clear();
+    }
+    aplicarFiltros();
+  }
+
+  function onEntidadeChange(cb) {
+    if (!cb.checked) {
+      var todos = getTodosEventos();
+      var nomesSet = {};
+      todos.forEach(function(ev) { if (ev.entidade_nome) nomesSet[ev.entidade_nome] = true; });
+      var nomes = Object.keys(nomesSet);
+
+      if (filtroEntidades.size === 0) {
+        nomes.forEach(function(n) { if (n !== cb.value) filtroEntidades.add(n); });
+      } else {
+        filtroEntidades.delete(cb.value);
+        if (filtroEntidades.size === nomes.length) filtroEntidades.clear();
+      }
+    } else {
+      filtroEntidades.add(cb.value);
+      var allChecked = document.querySelectorAll('#filtro-corpo input[type=checkbox][onchange="onEntidadeChange(this)"]:not(:checked)').length === 0;
+      if (allChecked) filtroEntidades.clear();
+    }
+    aplicarFiltros();
+  }
+
+  function aplicarFiltros() {
+    aplicarFiltroCelulas();
+    atualizarBadgeFiltro();
+    // Atualiza o painel do dia se estiver aberto
+    if (selectedDate) {
+      currentEvents = getEventosFiltradosDia(selectedDate);
+      renderDayView();
+    }
+  }
+
+  function limparFiltros() {
+    filtroTipos.clear();
+    filtroEntidades.clear();
+    filtroId = '';
+    construirPainelFiltro();
+    aplicarFiltros();
+  }
+
+  function abrirFiltro() {
+    construirPainelFiltro();
+    document.getElementById('filtro-backdrop').classList.remove('hidden');
+    document.getElementById('painel-filtro').style.transform = 'translateX(0)';
+  }
+
+  function fecharFiltro() {
+    document.getElementById('filtro-backdrop').classList.add('hidden');
+    document.getElementById('painel-filtro').style.transform = 'translateX(100%)';
+  }
+</script>
