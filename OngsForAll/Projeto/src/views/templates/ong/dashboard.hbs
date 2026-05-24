@@ -197,20 +197,15 @@
     </div>
     {{/if}}
 
-    <!-- Gráficos -->
-    <div id="chartsWrap" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="min-w-0 overflow-hidden bg-white dark:bg-white/5 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Total recebido por mês</h2>
-        <div class="relative h-56 sm:h-64 min-w-0">
-          <canvas id="graficoRecebidoMes"></canvas>
-        </div>
+    <!-- Cards de resumo -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#6B8F71] hover:shadow-md transition-shadow duration-200">
+        <p class="text-sm text-slate-500 dark:text-white/60">Total de interesses</p>
+        <p class="text-4xl font-extrabold text-[#2F3E34] dark:text-white mt-2">{{totalInteressesOng}}</p>
       </div>
-
-      <div class="min-w-0 overflow-hidden bg-white dark:bg-white/5 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Doações por tipo</h2>
-        <div class="relative h-56 sm:h-64 min-w-0">
-          <canvas id="graficoTipos"></canvas>
-        </div>
+      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-orange-400 hover:shadow-md transition-shadow duration-200">
+        <p class="text-sm text-slate-500 dark:text-white/60">Entregas pendentes</p>
+        <p class="text-4xl font-extrabold text-[#2F3E34] dark:text-white mt-2">{{entregasPendentesOng}}</p>
       </div>
     </div>
 
@@ -379,115 +374,5 @@
       if (inputAte.value) inputDe.max = inputAte.value;
     })();
 
-    (function () {
-      const labelsMes = {{{ labelsMes }}};
-      const valoresMes = {{{ valoresMes }}};
-      const labelsTipo = {{{ labelsTipo }}};
-      const valoresTipo = {{{ valoresTipo }}};
-
-      const html = document.documentElement;
-
-      const getTextColor = () => (html.classList.contains('dark') ? '#FFFFFF' : '#2F3E34');
-      const getGridColor = () => (html.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(146,64,14,0.12)');
-
-      const hasDataMes = Array.isArray(valoresMes) && valoresMes.length > 0 && valoresMes.some(v => Number(v) > 0);
-      const hasDataTipo = Array.isArray(valoresTipo) && valoresTipo.length > 0 && valoresTipo.some(v => Number(v) > 0);
-      const hasData = hasDataMes || hasDataTipo;
-
-      let chartMes = null;
-      let chartTipos = null;
-
-      function destroyCharts() {
-        if (chartMes) chartMes.destroy();
-        if (chartTipos) chartTipos.destroy();
-        chartMes = null;
-        chartTipos = null;
-      }
-
-      function renderCharts() {
-        destroyCharts();
-
-        const baseOptions = {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: getTextColor() } } },
-          scales: {
-            x: { ticks: { color: getTextColor() }, grid: { color: getGridColor() } },
-            y: { ticks: { color: getTextColor() }, grid: { color: getGridColor() } }
-          }
-        };
-
-        const barOptions = {
-          ...baseOptions,
-          scales: {
-            ...baseOptions.scales,
-            y: {
-              beginAtZero: true,
-              ticks: {
-                color: getTextColor(),
-                callback: (value) => 'R$ ' + Number(value).toFixed(0)
-              },
-              grid: { color: getGridColor() }
-            }
-          }
-        };
-
-        const canvasMes = document.getElementById('graficoRecebidoMes');
-        if (canvasMes && hasDataMes) {
-          chartMes = new Chart(canvasMes, {
-            type: 'bar',
-            data: {
-              labels: labelsMes,
-              datasets: [{
-                label: 'Total recebido (R$)',
-                data: valoresMes,
-                backgroundColor: '#6B8F71',
-                borderRadius: 8
-              }]
-            },
-            options: barOptions
-          });
-        }
-
-        const canvasTipos = document.getElementById('graficoTipos');
-        if (canvasTipos && hasDataTipo) {
-          chartTipos = new Chart(canvasTipos, {
-            type: 'doughnut',
-            data: {
-              labels: labelsTipo,
-              datasets: [{
-                data: valoresTipo,
-                backgroundColor: ['#6B8F71', '#DDEADB', '#2F3E34', '#EAF3EC']
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { labels: { color: getTextColor() } } }
-            }
-          });
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        if (!hasData) {
-          const wrap = document.getElementById('chartsWrap');
-          if (wrap) {
-            wrap.innerHTML =
-              '<div class="md:col-span-2 bg-white dark:bg-white/5 p-8 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm text-center">' +
-              '<h2 class="text-xl font-bold mb-2">Sem dados ainda</h2>' +
-              '<p class="text-slate-400 dark:text-white/50">Quando a ONG receber doações, os gráficos aparecerão aqui.</p>' +
-              '</div>';
-          }
-          return;
-        }
-        renderCharts();
-      });
-
-      window.addEventListener('theme:changed', () => {
-        destroyCharts();
-        renderCharts();
-      });
-    })();
   </script>
 </section>
