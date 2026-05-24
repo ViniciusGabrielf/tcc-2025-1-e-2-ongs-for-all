@@ -59,6 +59,13 @@ export async function marcarComoLida(id: number) {
     await notificacaoRepository.marcarComoLida(id);
 }
 
+export async function marcarTodasComoLidas(params: {
+    destinatarioId: number;
+    destinatarioTipo: "usuario" | "ong" | "empresa";
+}) {
+    await notificacaoRepository.marcarTodasComoLidas(params);
+}
+
 export async function contarNaoLidas(params: {
     tipoConta: "usuario" | "ong" | "empresa";
     id: number;

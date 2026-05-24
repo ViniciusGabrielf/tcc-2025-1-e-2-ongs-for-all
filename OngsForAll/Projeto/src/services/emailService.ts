@@ -232,15 +232,19 @@ export async function enviarLembreteEntrega(params: {
     nomeOng: string;
     dataPrevista: string;
     quantidade?: number | null;
-    tipo: "2dias" | "hoje";
+    tipo: "aceitacao" | "2dias" | "hoje";
 }) {
     const titulo = params.tipo === "hoje"
         ? "Hoje é o dia da sua entrega!"
-        : "Sua entrega é em 2 dias!";
+        : params.tipo === "2dias"
+        ? "Sua entrega é em 2 dias!"
+        : "Lembrete: data de entrega agendada";
 
     const subtitulo = params.tipo === "hoje"
         ? `Olá, <strong>${params.nomeUsuario}</strong>! Hoje é o dia combinado para entregar sua doação à ONG <strong>${params.nomeOng}</strong>.`
-        : `Olá, <strong>${params.nomeUsuario}</strong>! Daqui a 2 dias é o prazo combinado para entregar sua doação à ONG <strong>${params.nomeOng}</strong>.`;
+        : params.tipo === "2dias"
+        ? `Olá, <strong>${params.nomeUsuario}</strong>! Daqui a 2 dias é o prazo combinado para entregar sua doação à ONG <strong>${params.nomeOng}</strong>.`
+        : `Olá, <strong>${params.nomeUsuario}</strong>! Seu interesse foi aceito pela ONG <strong>${params.nomeOng}</strong>. Não esqueça da data combinada para a entrega!`;
 
     const detalheQuantidade = params.quantidade
         ? `<tr><td style="padding:6px 0;color:#555;">Quantidade combinada:</td><td style="padding:6px 0;font-weight:600;">${params.quantidade}</td></tr>`
@@ -288,7 +292,9 @@ export async function enviarLembreteEntrega(params: {
     await transporter.sendMail({
         from: FROM,
         to: params.emailUsuario,
-        subject: `Lembrete: ${titulo} — ${params.tituloNecessidade}`,
+        subject: params.tipo === "aceitacao"
+            ? `Lembrete de entrega — ${params.tituloNecessidade}`
+            : `Lembrete: ${titulo} — ${params.tituloNecessidade}`,
         html,
     });
 }
