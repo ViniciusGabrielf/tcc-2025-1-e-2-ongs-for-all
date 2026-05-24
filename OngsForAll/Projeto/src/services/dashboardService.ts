@@ -130,7 +130,6 @@ export async function getOngDashboardData(ongId: number, de?: string, ate?: stri
     interessesRecebidos,
     necessidadesQuaseCompletas,
     necessidadeMaisAvancada,
-    atividadesRecentes,
   ] = await Promise.all([
     dashboardRepository.getNecessidadesCriadasOng(ongId, de, ate),
     dashboardRepository.getNecessidadesConcluidasOng(ongId, de, ate),
@@ -139,7 +138,6 @@ export async function getOngDashboardData(ongId: number, de?: string, ate?: stri
     dashboardRepository.getInteressesPorStatusOng(ongId, "recebido", de, ate),
     dashboardRepository.getNecessidadesQuaseCompletasOng(ongId),
     dashboardRepository.getNecessidadeMaisAvancadaOng(ongId),
-    dashboardRepository.getAtividadesRecentesOng(ongId, de, ate),
   ]);
 
   const taxaConclusao = necessidadesCriadas > 0
@@ -163,6 +161,5 @@ export async function getOngDashboardData(ongId: number, de?: string, ate?: stri
     interessesRecebidos,
     necessidadesQuaseCompletas,
     necessidadeMaisAvancada,
-    atividadesRecentes,
   };
 }
