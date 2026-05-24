@@ -15,6 +15,7 @@ import { ongDocumentoRoutes } from "./ongDocumentoRoutes";
 import { mensagemRoutes } from "./mensagemRoutes";
 import { empresaRoutes } from "./empresaRoutes";
 import { marketplaceRoutes } from "./marketplaceRoutes";
+import { calendarioRoutes } from "./calendarioRoutes";
 
 export async function registerAllRoutes(fastify: FastifyInstance) {
   await authRoutes(fastify)
@@ -33,4 +34,5 @@ export async function registerAllRoutes(fastify: FastifyInstance) {
   await mensagemRoutes(fastify);
   await empresaRoutes(fastify);
   await marketplaceRoutes(fastify);
+  await calendarioRoutes(fastify);
 }

@@ -1,8 +1,8 @@
 node_modules/
 .env
-
+.env.*
 *.pem
-
-.env
-
-node_modules/
+bash.exe.stackdump
+dist/
+coverage/
+.claude

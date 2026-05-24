@@ -254,7 +254,7 @@ export async function receberInteresse(params: {
         };
     }
 
-    await interesseRepo.atualizarStatusInteresse(interesse.id, "recebido");
+    await interesseRepo.atualizarStatusInteresse(interesse.id, "recebido", quantidadeRecebida);
 
     const observacaoRecebimento = params.observacaoRecebimento?.trim();
     const detalhesRecebimento = [
