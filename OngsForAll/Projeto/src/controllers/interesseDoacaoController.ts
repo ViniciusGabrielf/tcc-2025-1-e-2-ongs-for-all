@@ -1,6 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import * as interesseService from "../services/interesseDoacaoService";
 import * as notificacaoService from "../services/notificacaoService";
+import { buildPagination, normalizePage } from "../utils/pagination";
+
+const PAGE_SIZE_INTERESSES = 10;
 
 export async function renderNovaPaginaInteresse(
     request: FastifyRequest,
@@ -101,15 +104,34 @@ export async function renderInteressesOngPage(
         return reply.redirect("/dashboard");
     }
 
-    const { status } = request.query as {
+    const { status, pagina } = request.query as {
         status?: string;
         busca?: string;
+        pagina?: string;
     };
+
+    const currentPage = normalizePage(pagina);
 
     const result = await interesseService.listarInteressesDaOng(
         Number(sessionUser.id),
         status,
         (request.query as any)?.busca
+    );
+
+    const pagination = buildPagination({
+        basePath: "/ong/interesses",
+        currentPage,
+        totalItems: result.interesses.length,
+        pageSize: PAGE_SIZE_INTERESSES,
+        extraParams: {
+            status: result.filtroAtual,
+            busca: result.buscaAtual || undefined,
+        },
+    });
+
+    const interessesPaginados = result.interesses.slice(
+        (pagination.currentPage - 1) * PAGE_SIZE_INTERESSES,
+        pagination.currentPage * PAGE_SIZE_INTERESSES
     );
 
     const { naoLidas } = await notificacaoService.contarNaoLidas({
@@ -122,9 +144,10 @@ export async function renderInteressesOngPage(
         {
             user: sessionUser,
             naoLidas,
-            interesses: result.interesses,
+            interesses: interessesPaginados,
             filtroAtual: result.filtroAtual,
             buscaAtual: result.buscaAtual,
+            pagination,
             success: (request.query as any)?.sucesso === "1",
             error: (request.query as any)?.erro,
         },

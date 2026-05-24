@@ -113,7 +113,6 @@ export async function renderDashboardOngPage(
         entregasPendentesOng: data.interessesAceitos ?? 0,
         necessidadesQuaseCompletas: data.necessidadesQuaseCompletas ?? [],
         necessidadeMaisAvancada: data.necessidadeMaisAvancada ?? null,
-        atividadesRecentes: data.atividadesRecentes ?? [],
 
         // filtro de período
         filtroDe: de ?? "",

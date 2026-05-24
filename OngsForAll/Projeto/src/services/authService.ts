@@ -3,12 +3,12 @@ import crypto from "crypto";
 import {
   findUserByEmail,
   insertLoginLog,
-  findUserIdByNomeEmailCpf,
-  setResetTokenHash,
-  findUserIdByValidResetTokenHash,
-  updatePasswordAndClearReset,
   findOngByEmail,
   findEmpresaByEmailAuth,
+  findAccountByNomeEmailDocumento,
+  setPasswordResetToken,
+  findAccountByValidResetToken,
+  updatePasswordByAccount,
 } from "../repositories/authRepository";
 
 function normalizeDigits(value: string): string {
@@ -60,24 +60,24 @@ export async function login(email: string, password: string, ip: string) {
   };
 }
 
-export async function requestPasswordReset(nome: string, email: string, cpf: string) {
-  const userId = await findUserIdByNomeEmailCpf(nome.trim(), email.trim(), normalizeDigits(cpf));
-  if (!userId) return { ok: false as const };
+export async function requestPasswordReset(nome: string, email: string, documento: string) {
+  const account = await findAccountByNomeEmailDocumento(nome.trim(), email.trim(), normalizeDigits(documento));
+  if (!account) return { ok: false as const };
 
   const { token, tokenHash } = generateResetToken();
-  await setResetTokenHash(userId, tokenHash);
+  await setPasswordResetToken(account, tokenHash);
 
   return { ok: true as const, token };
 }
 
 export async function resetPassword(token: string, password: string) {
   const tokenHash = hashResetToken(token);
-  const userId = await findUserIdByValidResetTokenHash(tokenHash);
+  const account = await findAccountByValidResetToken(tokenHash);
 
-  if (!userId) return { ok: false as const };
+  if (!account) return { ok: false as const };
 
   const passwordHash = await bcrypt.hash(password, 10);
-  await updatePasswordAndClearReset(userId, passwordHash);
+  await updatePasswordByAccount(account, passwordHash);
 
   return { ok: true as const };
 }

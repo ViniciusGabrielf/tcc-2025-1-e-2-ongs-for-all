@@ -351,15 +351,15 @@ export async function renderForgotPasswordPage(request: FastifyRequest, reply: F
 }
 
 export async function handleForgotPassword(request: FastifyRequest, reply: FastifyReply) {
-  const { nome, email, cpf } = request.body as { nome: string; email: string; cpf: string };
+  const { nome, email, cpf_cnpj } = request.body as { nome: string; email: string; cpf_cnpj: string };
 
   try {
-    const result = await authService.requestPasswordReset(nome, email, cpf);
+    const result = await authService.requestPasswordReset(nome, email, cpf_cnpj);
 
     if (!result.ok) {
       return reply.view(
         "/templates/auth/forgotPassword.hbs",
-        { error: "Dados incorretos. Verifique seu nome, e-mail e CPF." },
+        { error: "Dados incorretos. Verifique seu nome, e-mail e CPF/CNPJ." },
         { layout: "layouts/authLayout" }
       );
     }
