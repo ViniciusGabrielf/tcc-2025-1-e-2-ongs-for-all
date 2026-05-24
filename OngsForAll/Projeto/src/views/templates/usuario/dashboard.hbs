@@ -197,27 +197,15 @@
     </div>
     {{/if}}
 
-    <!-- Gráficos -->
-    <div id="chartsWrap" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="min-w-0 overflow-hidden bg-white dark:bg-white/5 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">ONGs apoiadas (por mês)</h2>
-        <div class="relative h-56 sm:h-64 min-w-0">
-          <canvas id="ongsChart"></canvas>
-        </div>
+    <!-- Cards de resumo -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#4886D9] hover:shadow-md transition-shadow duration-200">
+        <p class="text-sm text-slate-500 dark:text-white/60">Total de interesses</p>
+        <p class="text-4xl font-extrabold text-[#2D4BA6] dark:text-white mt-2">{{totalInteresses}}</p>
       </div>
-
-      <div class="min-w-0 overflow-hidden bg-white dark:bg-white/5 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Interesses por mês</h2>
-        <div class="relative h-56 sm:h-64 min-w-0">
-          <canvas id="graficoInteressesMes"></canvas>
-        </div>
-      </div>
-
-      <div class="min-w-0 overflow-hidden bg-white dark:bg-white/5 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-        <h2 class="text-center font-semibold mb-4 text-slate-700 dark:text-white">Contribuições por tipo</h2>
-        <div class="relative h-56 sm:h-64 min-w-0">
-          <canvas id="categoriasChart"></canvas>
-        </div>
+      <div class="bg-white dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-orange-400 hover:shadow-md transition-shadow duration-200">
+        <p class="text-sm text-slate-500 dark:text-white/60">Entregas pendentes</p>
+        <p class="text-4xl font-extrabold text-[#2D4BA6] dark:text-white mt-2">{{entregasPendentes}}</p>
       </div>
     </div>
 
@@ -357,159 +345,5 @@
       }
     })();
 
-    // Dados vindos do servidor
-    const labelsMes = {{{ labelsMes }}};
-    const valoresInteressesMes = {{{ valoresInteressesMes }}};
-    const valoresOngsMes = {{{ valoresOngsMes }}};
-    const labelsTipo = {{{ labelsTipo }}};
-    const valoresTipo = {{{ valoresTipo }}};
-
-    const hasData =
-      (Array.isArray(valoresInteressesMes) && valoresInteressesMes.length > 0 && valoresInteressesMes.some(v => Number(v) > 0)) ||
-      (Array.isArray(valoresTipo) && valoresTipo.length > 0 && valoresTipo.some(v => Number(v) > 0));
-
-    const html = document.documentElement;
-    const getTextColor = () => html.classList.contains('dark') ? '#FFFFFF' : '#2D4BA6';
-    const getGridColor = () => html.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(45,75,166,0.1)';
-
-    let chartOngs = null;
-    let chartMes = null;
-    let chartTipos = null;
-
-    function destroyCharts() {
-      if (chartOngs) chartOngs.destroy();
-      if (chartMes) chartMes.destroy();
-      if (chartTipos) chartTipos.destroy();
-      chartOngs = chartMes = chartTipos = null;
-    }
-
-    function renderCharts() {
-      destroyCharts();
-
-      const baseOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: getTextColor() } }
-        },
-        scales: {
-          x: { ticks: { color: getTextColor() }, grid: { color: getGridColor() } },
-          y: { ticks: { color: getTextColor() }, grid: { color: getGridColor() } }
-        }
-      };
-
-      const lineOptions = {
-        ...baseOptions,
-        scales: {
-          ...baseOptions.scales,
-          y: {
-            beginAtZero: true,
-            ticks: { color: getTextColor(), precision: 0 },
-            grid: { color: getGridColor() }
-          }
-        }
-      };
-
-      const barOptions = {
-        ...baseOptions,
-        scales: {
-          ...baseOptions.scales,
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: getTextColor(),
-              stepSize: 10,
-              callback: (value) => Number(value).toFixed(0)
-            },
-            grid: { color: getGridColor() }
-          }
-        },
-        plugins: {
-          ...baseOptions.plugins,
-          tooltip: {
-            callbacks: {
-              label: (ctx) => {
-                const v = Number(ctx.raw || 0);
-                return 'Interesses: ' + v;
-              }
-            }
-          }
-        }
-      };
-
-      const ongsCanvas = document.getElementById('ongsChart');
-      const barrasCanvas = document.getElementById('graficoInteressesMes');
-      const tiposCanvas = document.getElementById('categoriasChart');
-
-      if (!ongsCanvas || !barrasCanvas || !tiposCanvas) return;
-
-      chartOngs = new Chart(ongsCanvas, {
-        type: 'line',
-        data: {
-          labels: labelsMes,
-          datasets: [{
-            label: 'ONGs apoiadas',
-            data: valoresOngsMes,
-            borderColor: '#4886D9',
-            backgroundColor: 'rgba(72,134,217,0.15)',
-            fill: true,
-            tension: 0.4
-          }]
-        },
-        options: lineOptions
-      });
-
-      chartMes = new Chart(barrasCanvas, {
-        type: 'bar',
-        data: {
-          labels: labelsMes,
-          datasets: [{
-            label: 'Interesses por mês',
-            data: valoresInteressesMes,
-            backgroundColor: '#2D4BA6',
-            borderRadius: 8
-          }]
-        },
-        options: barOptions
-      });
-
-      chartTipos = new Chart(tiposCanvas, {
-        type: 'doughnut',
-        data: {
-          labels: labelsTipo,
-          datasets: [{
-            data: valoresTipo,
-            backgroundColor: ['#4886D9', '#E83FBA', '#2D4BA6', '#F59E0B']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: getTextColor() } } }
-        }
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!hasData) {
-        const wrap = document.getElementById("chartsWrap");
-        if (wrap) {
-          wrap.innerHTML =
-            '<div class="md:col-span-3 bg-white dark:bg-white/5 p-8 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm text-center">' +
-            '<h2 class="text-xl font-bold mb-2">Sem dados ainda</h2>' +
-            '<p class="text-slate-400 dark:text-white/50 mb-6">Demonstre interesse em uma necessidade para começar a acompanhar seu impacto.</p>' +
-            '<a href="/necessidades" class="inline-block bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white font-bold px-6 py-3 rounded-xl shadow hover:opacity-90 transition">Explorar necessidades</a>' +
-            '</div>';
-        }
-        return;
-      }
-
-      renderCharts();
-    });
-
-    window.addEventListener('theme:changed', () => {
-      destroyCharts();
-      renderCharts();
-    });
   </script>
 </section>

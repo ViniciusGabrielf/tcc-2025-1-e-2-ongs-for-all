@@ -198,6 +198,16 @@ export async function getInteressesRecebidosUsuario(userId: number, de?: string,
   return Number(rows[0]?.total ?? 0);
 }
 
+export async function getInteressesAceitosUsuario(userId: number, de?: string, ate?: string) {
+  const params: any[] = [userId];
+  const dateFilter = buildDateFilter(params, de, ate, "criado_em");
+  const [rows]: any = await pool.query(
+    `SELECT COUNT(*) AS total FROM interesses_doacao WHERE usuario_id = ? AND status = 'aceito'${dateFilter}`,
+    params
+  );
+  return Number(rows[0]?.total ?? 0);
+}
+
 export async function getAtividadesRecentesUsuario(userId: number, de?: string, ate?: string, limite = 10) {
   const params: any[] = [userId];
   let dateFilterInteresses = "";

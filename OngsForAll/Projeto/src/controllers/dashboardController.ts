@@ -34,16 +34,9 @@ export async function renderDashBoardPage(
         naoLidas,
         // cards
         totalInteresses: data.totalInteresses ?? 0,
+        entregasPendentes: data.entregasPendentes ?? 0,
         qtdTipos: data.qtdTipos ?? 0,
         qtdMesesComAtividade: data.qtdMesesComAtividade ?? 0,
-
-        // gráficos
-        labelsMes: JSON.stringify(data.labelsMes ?? []),
-        valoresInteressesMes: JSON.stringify(data.valoresInteressesMes ?? []),
-        valoresOngsMes: JSON.stringify(data.valoresOngsMes ?? []),
-
-        labelsTipo: JSON.stringify(data.labelsTipo ?? []),
-        valoresTipo: JSON.stringify(data.valoresTipo ?? []),
 
         // métricas de impacto
         necessidadesApoiadas: data.necessidadesApoiadas ?? 0,
@@ -106,13 +99,6 @@ export async function renderDashboardOngPage(
         qtdDoacoes: data.qtdDoacoes ?? 0,
         qtdDoadores: data.qtdDoadores ?? 0,
 
-        // gráficos
-        labelsMes: JSON.stringify(data.labelsMes ?? []),
-        valoresMes: JSON.stringify(data.valoresMes ?? []),
-
-        labelsTipo: JSON.stringify(data.labelsTipo ?? []),
-        valoresTipo: JSON.stringify(data.valoresTipo ?? []),
-
         // tabela
         ultimasDoacoes: data.ultimasDoacoes ?? [],
 
@@ -123,6 +109,8 @@ export async function renderDashboardOngPage(
         interessesPendentes: data.interessesPendentes ?? 0,
         interessesAceitos: data.interessesAceitos ?? 0,
         interessesRecebidos: data.interessesRecebidos ?? 0,
+        totalInteressesOng: (data.interessesPendentes ?? 0) + (data.interessesAceitos ?? 0) + (data.interessesRecebidos ?? 0),
+        entregasPendentesOng: data.interessesAceitos ?? 0,
         necessidadesQuaseCompletas: data.necessidadesQuaseCompletas ?? [],
         necessidadeMaisAvancada: data.necessidadeMaisAvancada ?? null,
         atividadesRecentes: data.atividadesRecentes ?? [],

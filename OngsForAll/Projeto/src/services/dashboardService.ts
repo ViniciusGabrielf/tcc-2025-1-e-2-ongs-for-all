@@ -74,12 +74,13 @@ export async function getDashboardData(userId: number, de?: string, ate?: string
   const qtdTipos = labelsTipo.length;
 
   // Métricas de impacto
-  const [necessidadesApoiadas, ongsApoiadas, interessesCriados, interessesRecebidos, atividadesRecentes] =
+  const [necessidadesApoiadas, ongsApoiadas, interessesCriados, interessesRecebidos, entregasPendentes, atividadesRecentes] =
     await Promise.all([
       dashboardRepository.getNecessidadesApoiadasUsuario(userId, de, ate),
       dashboardRepository.getOngsApoiadasUsuario(userId, de, ate),
       dashboardRepository.getInteressesCriadosUsuario(userId, de, ate),
       dashboardRepository.getInteressesRecebidosUsuario(userId, de, ate),
+      dashboardRepository.getInteressesAceitosUsuario(userId, de, ate),
       dashboardRepository.getAtividadesRecentesUsuario(userId, de, ate),
     ]);
 
@@ -96,6 +97,7 @@ export async function getDashboardData(userId: number, de?: string, ate?: string
     ongsApoiadas,
     interessesCriados,
     interessesRecebidos,
+    entregasPendentes,
     atividadesRecentes,
   };
 }
