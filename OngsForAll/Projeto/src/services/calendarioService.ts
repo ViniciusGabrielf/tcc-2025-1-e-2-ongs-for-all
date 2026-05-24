@@ -117,6 +117,7 @@ function buildCampos(
   let linkTexto = "Mais detalhes";
 
   if (userTipo === "usuario") {
+    campos.push({ label: "ID da solicitação", valor: `#${fmt(row.id)}` });
     campos.push({ label: "Necessidade", valor: fmt(row.necessidade_titulo) });
     campos.push({ label: "Tipo", valor: TIPO_NEC_LABEL[row.tipo_necessidade] ?? fmt(row.tipo_necessidade) });
     if (row.categoria) campos.push({ label: "Categoria", valor: fmt(row.categoria) });
@@ -133,6 +134,7 @@ function buildCampos(
     link = `/necessidades/${row.necessidade_id}`;
     linkTexto = "Ver necessidade";
   } else if (userTipo === "ong" && (tipo === "entrega_aceita" || tipo === "entrega_recebida")) {
+    campos.push({ label: "ID da solicitação", valor: `#${fmt(row.id)}` });
     campos.push({ label: "Necessidade", valor: fmt(row.necessidade_titulo) });
     campos.push({ label: "Tipo", valor: TIPO_NEC_LABEL[row.tipo_necessidade] ?? fmt(row.tipo_necessidade) });
     if (row.categoria) campos.push({ label: "Categoria", valor: fmt(row.categoria) });
@@ -145,6 +147,7 @@ function buildCampos(
     link = `/ong/interesses`;
     linkTexto = "Ver todos os interesses";
   } else if (userTipo === "ong" && ["necessidade_inicio", "necessidade_fim"].includes(tipo)) {
+    campos.push({ label: "ID da necessidade", valor: `#${fmt(row.id)}` });
     campos.push({ label: "Necessidade", valor: fmt(row.titulo) });
     campos.push({ label: "Tipo", valor: TIPO_NEC_LABEL[row.tipo_necessidade] ?? fmt(row.tipo_necessidade) });
     if (row.categoria) campos.push({ label: "Categoria", valor: fmt(row.categoria) });
@@ -159,6 +162,7 @@ function buildCampos(
     link = `/necessidades/${row.id}`;
     linkTexto = "Ver necessidade";
   } else if (userTipo === "ong" && tipo === "relatorio") {
+    campos.push({ label: "ID do relatório", valor: `#${fmt(row.id)}` });
     campos.push({ label: "Título", valor: fmt(row.titulo) });
     campos.push({ label: "Status", valor: STATUS_LABEL[row.status] ?? fmt(row.status) });
     if (row.data_publicacao) campos.push({ label: "Publicado em", valor: fmt(row.data_publicacao) });
@@ -173,6 +177,7 @@ function buildCampos(
     link = `/necessidades/${row.necessidade_id}`;
     linkTexto = "Ver necessidade";
   } else if (userTipo === "empresa" && tipo === "marketplace") {
+    campos.push({ label: "ID do item", valor: `#${fmt(row.id)}` });
     campos.push({ label: "Título", valor: fmt(row.titulo) });
     campos.push({ label: "Tipo", valor: fmt(row.tipo) });
     campos.push({ label: "Status", valor: STATUS_LABEL[row.status_publicacao] ?? fmt(row.status_publicacao) });
@@ -185,6 +190,16 @@ function buildCampos(
   }
 
   return { campos, link, linkTexto };
+}
+
+export async function getMesPorId(params: {
+  id: number;
+  userTipo: string;
+  userId: number;
+}): Promise<{ ok: boolean; mes?: string; data?: string }> {
+  const row = await calendarioRepo.buscarMesPorId(params.id, params.userTipo, params.userId);
+  if (!row) return { ok: false };
+  return { ok: true, mes: row.mes, data: row.data };
 }
 
 export async function getDetalheEvento(params: {
