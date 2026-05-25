@@ -126,7 +126,29 @@
         </div>
       </div>
       {{else}}
-        {{#if canRegistrarInteresse}}
+        {{#if canApoiarEmpresa}}
+        <div class="flex gap-3 flex-wrap border-t border-slate-100 dark:border-white/10 pt-5">
+          {{#if jaApoiouEmpresa}}
+          <div class="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-5 py-3 rounded-xl font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Apoio registrado
+          </div>
+          {{else}}
+          <form method="POST" action="/empresa/necessidades/{{necessidade.id}}/apoiar">
+            <input type="hidden" name="observacao" value="" />
+            <button type="submit"
+              class="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-700 hover:opacity-90 text-white px-5 py-3 rounded-xl font-medium transition shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              Apoiar esta necessidade
+            </button>
+          </form>
+          {{/if}}
+        </div>
+      {{else if canRegistrarInteresse}}
         <div class="flex gap-3 flex-wrap border-t border-slate-100 dark:border-white/10 pt-5">
           {{#if necessidade.isVoluntariado}}
           <a href="/interesses/nova?necessidade_id={{necessidade.id}}"

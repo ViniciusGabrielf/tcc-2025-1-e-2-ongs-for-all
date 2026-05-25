@@ -4,6 +4,7 @@ import * as necessidadeService from "../services/necessidadeService";
 import * as notificacaoService from "../services/notificacaoService";
 import * as ongAprovacaoRepo from "../repositories/ongAprovacaoRepository";
 import { buildPagination, normalizePage } from "../utils/pagination";
+import { jaApoiou } from "../repositories/empresaRepository";
 
 const NECESSIDADES_PAGE_SIZE = 9;
 const ONG_NECESSIDADES_PAGE_SIZE = 5;
@@ -262,15 +263,22 @@ export async function renderDetalheNecessidadePage(
   const user = request.session.user;
   const naoLidas = user ? await getNaoLidas(user as any) : 0;
   const isOngDashboard = user?.tipo === "ong";
+  const isEmpresaDashboard = user?.tipo === "empresa";
   const layout = !user
     ? "layouts/main"
     : isOngDashboard
     ? "layouts/ongDashboardLayout"
+    : isEmpresaDashboard
+    ? "layouts/empresaDashboardLayout"
     : "layouts/dashboardLayout";
   const isPropriaOng = isOngDashboard && Number(user?.id) === Number(result.necessidade.ong_id);
   const canRegistrarInteresse = user?.tipo === "usuario";
   const canViewNeedMetrics = isPropriaOng;
   const interesseRedirectPath = buildInteresseRedirectPath(Number(result.necessidade.id));
+  const canApoiarEmpresa = isEmpresaDashboard && result.necessidade.status === "aberta";
+  const jaApoiouEmpresa = canApoiarEmpresa
+    ? await jaApoiou(Number(user!.id), Number(result.necessidade.id))
+    : false;
 
   return reply.view(
     "/templates/necessidades/detalhe.hbs",
@@ -283,6 +291,8 @@ export async function renderDetalheNecessidadePage(
       isPropriaOng,
       canRegistrarInteresse,
       canViewNeedMetrics,
+      canApoiarEmpresa,
+      jaApoiouEmpresa,
       isPublicGuest: !user,
       interesseRedirectPath,
       loginRedirectUrl: `/login?redirect=${encodeURIComponent(interesseRedirectPath)}`,

@@ -4,6 +4,8 @@ import { getNeedCategoryDisplayName, getNeedFilterCategories } from "../constant
 import * as empresaService from "../services/empresaService";
 import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
+import * as ongService from "../services/ongService";
+import { buildPagination, normalizePage } from "../utils/pagination";
 import path from "path";
 import fs from "fs";
 import { pipeline } from "stream/promises";
@@ -65,14 +67,85 @@ export async function renderDashboardEmpresa(request: FastifyRequest, reply: Fas
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
+  const { status, busca, pagina } = request.query as { status?: string; busca?: string; pagina?: string };
+  const currentPage = Math.max(1, parseInt(pagina || "1", 10) || 1);
+  const PAGE_SIZE = 5;
+
   const [data, naoLidas] = await Promise.all([
-    empresaService.getDashboardData(Number(sessionUser.id)),
+    empresaService.getDashboardData(Number(sessionUser.id), status, busca),
     getNaoLidas(Number(sessionUser.id)),
   ]);
 
+  const totalItems = data.apoios.length;
+  const apoiosPaginados = data.apoios.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+
+  const pagination = {
+    currentPage,
+    totalPages,
+    hasPrev: currentPage > 1,
+    hasNext: currentPage < totalPages,
+    prevPage: currentPage - 1,
+    nextPage: currentPage + 1,
+    basePath: "/empresa/dashboard",
+    extraParams: {
+      status: data.statusFiltro || undefined,
+      busca: data.buscaAtual || undefined,
+    },
+  };
+
   return reply.view(
     "/templates/empresa/dashboard.hbs",
-    { user: sessionUser, naoLidas, ...data },
+    { user: sessionUser, naoLidas, ...data, apoios: apoiosPaginados, pagination },
+    { layout: "layouts/empresaDashboardLayout" }
+  );
+}
+
+export async function renderApoiosEmpresa(request: FastifyRequest, reply: FastifyReply) {
+  const sessionUser = request.session.user;
+  if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const { status, busca, pagina } = request.query as { status?: string; busca?: string; pagina?: string };
+  const currentPage = Math.max(1, parseInt(pagina || "1", 10) || 1);
+  const PAGE_SIZE = 10;
+
+  const [apoiosData, naoLidas] = await Promise.all([
+    empresaService.listarApoiosEmpresa(Number(sessionUser.id), status, busca),
+    getNaoLidas(Number(sessionUser.id)),
+  ]);
+
+  const totalItems = apoiosData.apoios.length;
+  const apoiosPaginados = apoiosData.apoios.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+
+  const pagination = {
+    currentPage,
+    totalPages,
+    hasPrev: currentPage > 1,
+    hasNext: currentPage < totalPages,
+    prevPage: currentPage - 1,
+    nextPage: currentPage + 1,
+    basePath: "/empresa/apoios",
+    extraParams: {
+      status: apoiosData.statusFiltro || undefined,
+      busca: apoiosData.buscaAtual || undefined,
+    },
+  };
+
+  return reply.view(
+    "/templates/empresa/apoios.hbs",
+    {
+      user: sessionUser,
+      naoLidas,
+      ...apoiosData,
+      apoios: apoiosPaginados,
+      pagination,
+      isTabTodos: !apoiosData.statusFiltro,
+      isTabPendentes: apoiosData.statusFiltro === "aberta",
+      isTabAndamento: apoiosData.statusFiltro === "em_andamento",
+      isTabConcluidas: apoiosData.statusFiltro === "concluida",
+      isTabCancelados: apoiosData.statusFiltro === "cancelada",
+    },
     { layout: "layouts/empresaDashboardLayout" }
   );
 }
@@ -137,15 +210,31 @@ export async function renderNecessidadesParaApoiar(request: FastifyRequest, repl
   const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
   if (bloqueio) return bloqueio;
 
-  const { tipo, categoria } = request.query as { tipo?: string; categoria?: string };
+  const { tipo, categoria, q } = request.query as { tipo?: string; categoria?: string; q?: string };
   const categoriaFiltro = categoria || "";
   const categoriasFiltro = getNeedFilterCategories(tipo);
 
-  const rows = await empresaRepo.listarNecessidadesAbertas(
+  const buscaNorm = q?.trim().toLowerCase() ?? "";
+
+  let rows = await empresaRepo.listarNecessidadesAbertas(
     Number(sessionUser.id),
     tipo,
     categoriaFiltro ? getNeedCategoryDisplayName(tipo || "", categoriaFiltro) : undefined
   );
+
+  if (buscaNorm) {
+    rows = rows.filter((n: any) =>
+      n.titulo?.toLowerCase().includes(buscaNorm) ||
+      n.nome_ong?.toLowerCase().includes(buscaNorm) ||
+      n.descricao?.toLowerCase().includes(buscaNorm)
+    );
+  }
+
+  function fmtDate(d: any) {
+    if (!d) return null;
+    const dt = new Date(d);
+    return isNaN(dt.getTime()) ? null : dt.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  }
 
   const necessidades = rows.map((n: any) => ({
     ...n,
@@ -153,8 +242,10 @@ export async function renderNecessidadesParaApoiar(request: FastifyRequest, repl
     isBem: n.tipo_necessidade === "bem",
     isServico: n.tipo_necessidade === "servico",
     isVoluntariado: n.tipo_necessidade === "voluntariado",
-    tipoLabel: n.tipo_necessidade === "bem" ? "Doação" : n.tipo_necessidade === "servico" ? "Serviço" : "Voluntariado",
+    tipoLabel: n.tipo_necessidade === "bem" ? "Doação de bem" : n.tipo_necessidade === "servico" ? "Serviço" : "Voluntariado",
     progresso: n.quantidade > 0 ? Math.min(100, Math.round((n.quantidade_recebida / n.quantidade) * 100)) : 0,
+    data_inicio_display: fmtDate(n.data_inicio),
+    data_fim_display: fmtDate(n.data_fim),
   }));
 
   const [empresa, naoLidas] = await Promise.all([
@@ -170,6 +261,7 @@ export async function renderNecessidadesParaApoiar(request: FastifyRequest, repl
       necessidades,
       filtroTipo: tipo ?? "",
       filtroCategoria: categoriaFiltro,
+      filtroBusca: buscaNorm,
       categoriasFiltro,
       filtroBem: tipo === "bem",
       filtroServico: tipo === "servico",
@@ -804,6 +896,44 @@ export async function reenviarItemMarketplace(request: FastifyRequest, reply: Fa
     return reply.redirect(`/empresa/vitrine?erro=${encodeURIComponent(result.error)}`);
   }
   return reply.redirect("/empresa/vitrine?reenviado=1");
+}
+
+const ONGS_PAGE_SIZE = 9;
+
+export async function renderExplorarOngsEmpresa(request: FastifyRequest, reply: FastifyReply) {
+  const sessionUser = request.session.user;
+  if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
+
+  const { busca, pagina } = request.query as { busca?: string; pagina?: string };
+  const naoLidas = await getNaoLidas(Number(sessionUser.id));
+  const requestedPage = normalizePage(pagina);
+
+  let result = await ongService.listOngs({ search: busca, page: requestedPage, pageSize: ONGS_PAGE_SIZE });
+
+  let pagination = buildPagination({
+    basePath: "/empresa/ongs",
+    currentPage: requestedPage,
+    totalItems: result.total,
+    pageSize: ONGS_PAGE_SIZE,
+    extraParams: { busca: busca || undefined },
+  });
+
+  if (pagination.currentPage !== requestedPage) {
+    result = await ongService.listOngs({ search: busca, page: pagination.currentPage, pageSize: ONGS_PAGE_SIZE });
+    pagination = buildPagination({
+      basePath: "/empresa/ongs",
+      currentPage: pagination.currentPage,
+      totalItems: result.total,
+      pageSize: ONGS_PAGE_SIZE,
+      extraParams: { busca: busca || undefined },
+    });
+  }
+
+  return reply.view(
+    "/templates/empresa/ongs.hbs",
+    { user: sessionUser, naoLidas, ongs: result.items, busca: busca || "", totalOngs: result.total, pagination },
+    { layout: "layouts/empresaDashboardLayout" }
+  );
 }
 
 export async function renderNotificacoesEmpresa(request: FastifyRequest, reply: FastifyReply) {

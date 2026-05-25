@@ -281,6 +281,7 @@ export async function verificarElegibilidade(empresaId: number): Promise<boolean
 export async function listarNecessidadesAbertas(empresaId: number, tipo?: string, categoria?: string) {
   let query = `
     SELECT n.id, n.titulo, n.descricao, n.tipo_necessidade, n.categoria, n.quantidade, n.quantidade_recebida, n.status,
+           n.local_atividade, n.data_inicio, n.data_fim,
            o.nome AS nome_ong, o.ong_id,
            (SELECT 1 FROM empresa_apoios ea WHERE ea.empresa_id = ? AND ea.necessidade_id = n.id LIMIT 1) AS ja_apoiou
     FROM necessidades n
