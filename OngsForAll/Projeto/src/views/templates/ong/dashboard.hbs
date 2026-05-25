@@ -22,52 +22,24 @@
     </div>
 
     <!-- Cards de resumo — necessidades -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#6B8F71]">
+    <div class="flex gap-4">
+      <div class="flex-1 bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-[#6B8F71]">
         <p class="text-xs font-semibold text-slate-500 dark:text-white/50 mb-1">Total</p>
         <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{necessidadesCriadas}}</p>
       </div>
-      <div class="bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-blue-500">
+      <div class="flex-1 bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-blue-500">
         <p class="text-xs font-semibold text-slate-500 dark:text-white/50 mb-1">Abertas</p>
         <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{necessidadesAbertas}}</p>
       </div>
-      <div class="bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-emerald-500">
+      <div class="flex-1 bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-emerald-500">
         <p class="text-xs font-semibold text-slate-500 dark:text-white/50 mb-1">Concluídas</p>
         <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{necessidadesConcluidas}}</p>
-      </div>
-      <div class="bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-slate-300">
-        <p class="text-xs font-semibold text-slate-500 dark:text-white/50 mb-1">Taxa conclusão</p>
-        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{taxaConclusao}}%</p>
-      </div>
-    </div>
-
-    <!-- Cards de interesses -->
-    <div class="grid grid-cols-2 gap-4">
-      <div class="bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-amber-400">
-        <p class="text-xs font-semibold text-slate-500 dark:text-white/50 mb-1">Interesses pendentes</p>
-        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{interessesPendentes}}</p>
-      </div>
-      <div class="bg-white dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-blue-400">
-        <p class="text-xs font-semibold text-slate-500 dark:text-white/50 mb-1">Em andamento</p>
-        <p class="text-3xl font-extrabold text-[#2F3E34] dark:text-white">{{interessesAceitos}}</p>
       </div>
     </div>
 
     <!-- Filtros -->
     <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
       <form method="GET" action="/dashboard/ong" class="flex flex-wrap items-end gap-3">
-
-        <div class="flex flex-col gap-1 min-w-[120px]">
-          <label class="text-xs font-semibold text-slate-500 dark:text-white/50">De</label>
-          <input type="date" name="de" value="{{filtroDe}}"
-            class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
-        </div>
-
-        <div class="flex flex-col gap-1 min-w-[120px]">
-          <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Até</label>
-          <input type="date" name="ate" value="{{filtroAte}}"
-            class="border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-sm bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
-        </div>
 
         <div class="flex flex-col gap-1">
           <label class="text-xs font-semibold text-slate-500 dark:text-white/50">Tipo</label>
@@ -134,7 +106,6 @@
               <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/60 text-right">Qtd.</th>
               <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/60 text-right">Recebido</th>
               <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/60 text-right">Pendente</th>
-              <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/60">Progresso</th>
               <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/60">Status</th>
               <th class="px-4 py-3 font-semibold text-slate-600 dark:text-white/60">Criado em</th>
             </tr>
@@ -150,17 +121,6 @@
               <td class="px-4 py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">{{this.quantidade_recebida}}</td>
               <td class="px-4 py-3 text-right text-slate-600 dark:text-white/60">{{this.pendente}}</td>
               <td class="px-4 py-3">
-                <div class="flex items-center gap-2 min-w-[100px]">
-                  <div class="flex-1 bg-slate-200 dark:bg-white/10 rounded-full h-2 overflow-hidden">
-                    <div class="h-2 rounded-full transition-all
-                      {{#if this.isConcluida}}bg-emerald-500{{else}}bg-gradient-to-r from-[#6B8F71] to-[#3F5F45]{{/if}}"
-                      style="width: {{this.percentual}}%">
-                    </div>
-                  </div>
-                  <span class="text-xs font-bold text-slate-600 dark:text-white/60 whitespace-nowrap">{{this.percentual}}%</span>
-                </div>
-              </td>
-              <td class="px-4 py-3">
                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap
                   {{#if this.isAberta}}bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300{{/if}}
                   {{#if this.isEmAndamento}}bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300{{/if}}
@@ -174,6 +134,7 @@
           </tbody>
         </table>
       </div>
+      {{> paginationControls}}
       {{else}}
       <div class="flex flex-col items-center justify-center py-16 text-center">
         <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/8 flex items-center justify-center mb-3">
