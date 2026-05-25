@@ -1,11 +1,14 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import * as evidenciaService from "../services/evidenciaService";
 import * as notificacaoService from "../services/notificacaoService";
+import { processarUploadComModeracao } from "../services/moderacaoImagemService";
+import { detectMimeFromFile } from "../utils/magicBytes";
 import path from "path";
 import fs from "fs";
 import { pipeline } from "stream/promises";
 
 const UPLOADS_DIR = path.join(__dirname, "..", "..", "public", "uploads", "evidencias");
+const TEMP_DIR = path.join(__dirname, "..", "..", "private", "temp");
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 3 * 1024 * 1024; // 3MB
 
@@ -28,10 +31,11 @@ export async function renderNovaEvidenciaPage(
   const naoLidas = await getNaoLidas(sessionUser as any);
 
   const success = (request.query as any)?.sucesso === "1";
+  const erroModeracao = (request.query as any)?.erro === "moderacao";
 
   return reply.view(
     "/templates/evidencias/nova.hbs",
-    { user: sessionUser, naoLidas, interesseId: id, success },
+    { user: sessionUser, naoLidas, interesseId: id, success, erroModeracao },
     { layout: "layouts/ongDashboardLayout" }
   );
 }
@@ -56,25 +60,45 @@ export async function uploadEvidencia(
       return reply.redirect(`/ong/interesses/${id}/evidencia?erro=formato`);
     }
 
-    if (!fs.existsSync(UPLOADS_DIR)) {
-      fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-    }
-
     const legenda = (data.fields as any)?.legenda?.value ?? "";
     const ext = path.extname(data.filename).toLowerCase() || ".jpg";
     const filename = `evidencia_${id}_${Date.now()}${ext}`;
-    const filepath = path.join(UPLOADS_DIR, filename);
 
-    const writeStream = fs.createWriteStream(filepath);
+    if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
+    const tempFilePath = path.join(TEMP_DIR, filename);
+
+    const writeStream = fs.createWriteStream(tempFilePath);
     await pipeline(data.file, writeStream);
 
-    const stats = fs.statSync(filepath);
+    const stats = fs.statSync(tempFilePath);
     if (stats.size > MAX_SIZE) {
-      fs.unlinkSync(filepath);
+      fs.unlinkSync(tempFilePath);
       return reply.redirect(`/ong/interesses/${id}/evidencia?erro=tamanho`);
     }
 
-    const imagemUrl = `/public/uploads/evidencias/${filename}`;
+    const realMime = detectMimeFromFile(tempFilePath);
+    if (!realMime || !ALLOWED_MIMES.includes(realMime)) {
+      fs.unlinkSync(tempFilePath);
+      return reply.redirect(`/ong/interesses/${id}/evidencia?erro=formato`);
+    }
+
+    if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+    const modResult = await processarUploadComModeracao({
+      tempPath: tempFilePath,
+      publicDir: UPLOADS_DIR,
+      publicUrlBase: "/public/uploads/evidencias",
+      filename,
+      mimeType: realMime,
+      tipo: "evidencia",
+      referenciaId: Number(id),
+    });
+
+    if (!modResult.ok) {
+      return reply.redirect(`/ong/interesses/${id}/evidencia?erro=${modResult.rejeitado ? "moderacao" : "interno"}`);
+    }
+
+    const imagemUrl = modResult.publicUrl;
 
     const result = await evidenciaService.uploadEvidencia({
       interesseId: Number(id),
@@ -84,7 +108,6 @@ export async function uploadEvidencia(
     });
 
     if (!result.ok) {
-      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
       return reply.redirect(`/ong/interesses/${id}/evidencia?erro=negocio`);
     }
 

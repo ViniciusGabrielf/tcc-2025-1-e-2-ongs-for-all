@@ -1,20 +1,90 @@
 <div class="max-w-3xl mx-auto space-y-6">
 
   <!-- Cabeçalho -->
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between flex-wrap gap-3">
     <div>
       <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Mensagens</h2>
       <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Conversas com ONGs que você acompanha</p>
     </div>
+    {{#if totalNaoLidas}}
+    <span class="px-3 py-1 rounded-full bg-[#4886D9]/10 dark:bg-[#4886D9]/20 text-[#2D4BA6] dark:text-white text-xs font-bold">
+      {{totalNaoLidas}} não {{#if isOneNaoLida}}lida{{else}}lidas{{/if}}
+    </span>
+    {{/if}}
   </div>
 
+  <!-- Flash: arquivado -->
+  {{#if successArquivado}}
+  <div id="flash-msg" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm font-medium">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    Conversa arquivada. <a href="?filtro=arquivadas" class="underline underline-offset-2 ml-1">Ver arquivadas</a>
+  </div>
+  {{/if}}
+  {{#if successDesarquivado}}
+  <div id="flash-msg" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm font-medium">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    Conversa restaurada para as ativas.
+  </div>
+  {{/if}}
+
+  <!-- Barra de busca + botão de filtro -->
+  <div class="flex items-center gap-2">
+    <form method="GET" action="/mensagens" class="flex items-center gap-1.5 flex-1">
+      {{#if filtro}}<input type="hidden" name="filtro" value="{{filtro}}" />{{/if}}
+      <input type="text" id="busca-input" name="busca" value="{{busca}}"
+        placeholder="Buscar por nome da ONG..."
+        class="flex-1 px-3 py-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9] transition" />
+      <button type="submit"
+        class="shrink-0 p-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-500 dark:text-white/50 hover:text-[#4886D9] hover:border-[#4886D9]/40 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+      {{#if busca}}
+      <a href="/mensagens{{#if filtro}}?filtro={{filtro}}{{/if}}"
+        class="shrink-0 p-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-400 hover:text-red-500 hover:border-red-300 transition" title="Limpar busca">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </a>
+      {{/if}}
+    </form>
+
+    <!-- Botão filtro -->
+    <button id="btn-filtro" onclick="abrirFiltro()"
+      class="relative flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/20 shadow-sm transition text-slate-500 dark:text-white/70 shrink-0"
+      title="Filtrar conversas">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+      </svg>
+      {{#if filtroBadgeAtivo}}
+      <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#4886D9] text-white text-[10px] font-bold flex items-center justify-center">!</span>
+      {{/if}}
+    </button>
+  </div>
+
+  <!-- Indicador de filtro ativo -->
+  {{#if filtroArquivadas}}
+  <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-white/50">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+    </svg>
+    Exibindo conversas arquivadas
+    <a href="/mensagens" class="text-[#4886D9] hover:underline">Ver todas as ativas</a>
+  </div>
+  {{/if}}
+
+  <!-- Lista de conversas -->
   {{#if conversas.length}}
   <div class="space-y-3">
     {{#each conversas}}
     <a href="/mensagens/{{id}}"
       class="flex items-center gap-4 p-4 bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow-md hover:border-[#4886D9]/40 dark:hover:border-[#4886D9]/40 transition-all duration-200 group">
 
-      <!-- Avatar ONG -->
       {{#if logo_ong}}
       <img src="{{logo_ong}}" alt="{{nome_ong}}"
         class="w-12 h-12 shrink-0 rounded-2xl object-cover border border-slate-200 dark:border-white/10 shadow-sm" />
@@ -24,7 +94,6 @@
       </div>
       {{/if}}
 
-      <!-- Conteúdo -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-2">
           <span class="font-semibold text-[#2D4BA6] dark:text-white truncate">{{nome_ong}}</span>
@@ -40,7 +109,6 @@
         </p>
       </div>
 
-      <!-- Badge não lidas -->
       {{#if temNaoLidas}}
       <span class="shrink-0 w-2.5 h-2.5 rounded-full bg-[#4886D9]"></span>
       {{/if}}
@@ -51,19 +119,164 @@
   {{else}}
   <div class="flex flex-col items-center justify-center py-20 text-center">
     <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mb-4">
+      {{#if filtroArquivadas}}
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-400 dark:text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+      </svg>
+      {{else}}
       <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-400 dark:text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
+      {{/if}}
     </div>
-    <p class="text-slate-500 dark:text-white/50 font-medium">Nenhuma conversa ainda</p>
-    <p class="text-sm text-slate-400 dark:text-white/30 mt-1">
-      Inicie uma conversa a partir da página de uma ONG ou necessidade.
+    <p class="text-slate-500 dark:text-white/50 font-medium">
+      {{#if filtroArquivadas}}
+        {{#if busca}}Nenhuma conversa arquivada encontrada para "{{busca}}"{{else}}Nenhuma conversa arquivada{{/if}}
+      {{else}}
+        {{#if busca}}Nenhuma conversa encontrada para "{{busca}}"{{else}}Nenhuma conversa ainda{{/if}}
+      {{/if}}
     </p>
+    <p class="text-sm text-slate-400 dark:text-white/30 mt-1">
+      {{#if filtroArquivadas}}
+        {{#unless busca}}Conversas arquivadas aparecerão aqui.{{/unless}}
+      {{else}}
+        {{#unless busca}}Inicie uma conversa a partir da página de uma ONG ou necessidade.{{/unless}}
+      {{/if}}
+    </p>
+    {{#unless filtroArquivadas}}
+    {{#unless busca}}
     <a href="/ongs"
       class="mt-5 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#4886D9] to-[#2D4BA6] text-white text-sm font-semibold shadow hover:opacity-90 transition">
       Explorar ONGs
     </a>
+    {{/unless}}
+    {{/unless}}
   </div>
   {{/if}}
 
 </div>
+
+<!-- Backdrop do filtro -->
+<div id="filtro-backdrop" class="hidden fixed inset-0 bg-black/20 dark:bg-black/40 z-20" onclick="fecharFiltro()"></div>
+
+<!-- Painel de filtro -->
+<div id="painel-filtro"
+  class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-[#102235] shadow-2xl border-l border-slate-200 dark:border-white/10 z-30 flex flex-col"
+  style="transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/10">
+    <div class="flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#4886D9]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+      </svg>
+      <h3 class="text-sm font-bold text-slate-800 dark:text-white">Filtros</h3>
+    </div>
+    <button onclick="fecharFiltro()"
+      class="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:bg-slate-200 dark:hover:bg-white/20 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+
+    <!-- Seção: Status -->
+    <div>
+      <p class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Status</p>
+      <div class="space-y-2">
+        <label class="flex items-center gap-3 cursor-pointer px-1 py-1 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">
+          <input type="radio" name="f-status" value="ativas" onchange="atualizarSecoes()"
+            {{#unless filtroArquivadas}}checked{{/unless}}
+            class="text-[#4886D9] border-slate-300 dark:border-white/20 focus:ring-[#4886D9] bg-white dark:bg-white/5">
+          <span class="text-sm text-slate-700 dark:text-white/80">Ativas</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer px-1 py-1 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">
+          <input type="radio" name="f-status" value="arquivadas" onchange="atualizarSecoes()"
+            {{#if filtroArquivadas}}checked{{/if}}
+            class="text-[#4886D9] border-slate-300 dark:border-white/20 focus:ring-[#4886D9] bg-white dark:bg-white/5">
+          <span class="text-sm text-slate-700 dark:text-white/80">Arquivadas</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Seção: Leitura -->
+    <div id="secao-leitura">
+      <p class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">Leitura</p>
+      <div class="space-y-2">
+        <label class="flex items-center gap-3 cursor-pointer px-1 py-1 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">
+          <input type="radio" name="f-leitura" value="todas"
+            {{#unless filtroNaoLidas}}checked{{/unless}}
+            class="text-[#4886D9] border-slate-300 dark:border-white/20 focus:ring-[#4886D9] bg-white dark:bg-white/5">
+          <span class="text-sm text-slate-700 dark:text-white/80">Todas</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer px-1 py-1 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5">
+          <input type="radio" name="f-leitura" value="nao_lidas"
+            {{#if filtroNaoLidas}}checked{{/if}}
+            class="text-[#4886D9] border-slate-300 dark:border-white/20 focus:ring-[#4886D9] bg-white dark:bg-white/5">
+          <span class="text-sm text-slate-700 dark:text-white/80">Não lidas</span>
+        </label>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="px-5 py-4 border-t border-slate-100 dark:border-white/10 flex gap-2">
+    <button onclick="limparFiltros()"
+      class="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-medium text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition">
+      Limpar filtros
+    </button>
+    <button onclick="aplicarFiltros()"
+      class="flex-1 px-4 py-2 rounded-xl bg-[#4886D9] hover:bg-[#2D4BA6] text-white text-sm font-medium transition">
+      Aplicar
+    </button>
+  </div>
+</div>
+
+<script>
+  function abrirFiltro() {
+    document.getElementById('filtro-backdrop').classList.remove('hidden');
+    document.getElementById('painel-filtro').style.transform = 'translateX(0)';
+    atualizarSecoes();
+  }
+
+  function fecharFiltro() {
+    document.getElementById('filtro-backdrop').classList.add('hidden');
+    document.getElementById('painel-filtro').style.transform = 'translateX(100%)';
+  }
+
+  function atualizarSecoes() {
+    var status = document.querySelector('input[name="f-status"]:checked')?.value;
+    var isArquivadas = status === 'arquivadas';
+    var leitura = document.getElementById('secao-leitura');
+    if (leitura) { leitura.style.opacity = isArquivadas ? '0.4' : '1'; leitura.style.pointerEvents = isArquivadas ? 'none' : ''; }
+  }
+
+  function aplicarFiltros() {
+    var status = document.querySelector('input[name="f-status"]:checked')?.value || 'ativas';
+    var params = new URLSearchParams();
+
+    if (status === 'arquivadas') {
+      params.set('filtro', 'arquivadas');
+    } else {
+      var leitura = document.querySelector('input[name="f-leitura"]:checked')?.value || 'todas';
+      if (leitura === 'nao_lidas') params.set('filtro', 'nao_lidas');
+    }
+
+    var busca = document.getElementById('busca-input')?.value.trim();
+    if (busca) params.set('busca', busca);
+
+    var qs = params.toString();
+    window.location.href = '/mensagens' + (qs ? '?' + qs : '');
+  }
+
+  function limparFiltros() {
+    window.location.href = '/mensagens';
+  }
+
+  var flashEl = document.getElementById('flash-msg');
+  if (flashEl) setTimeout(function() { flashEl.style.display = 'none'; }, 4000);
+</script>

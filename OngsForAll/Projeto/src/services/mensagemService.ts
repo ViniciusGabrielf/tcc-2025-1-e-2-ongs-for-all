@@ -17,28 +17,49 @@ async function buscarNomeEmpresa(empresaId: number): Promise<string> {
   return rows[0]?.nome_fantasia ?? "Empresa";
 }
 
-export async function listarConversasDoUsuario(usuarioId: number) {
-  const conversas = await mensagemRepo.listarConversasDoUsuario(usuarioId);
+export async function listarConversasDoUsuario(usuarioId: number, arquivado: 0 | 1 = 0) {
+  const conversas = await mensagemRepo.listarConversasDoUsuario(usuarioId, arquivado);
   return conversas.map((c) => ({
     ...c,
     temNaoLidas: Number(c.nao_lidas) > 0,
   }));
 }
 
-export async function listarConversasDaOng(ongId: number) {
-  const conversas = await mensagemRepo.listarConversasDaOng(ongId);
+export async function listarConversasDaOng(ongId: number, arquivado: 0 | 1 = 0) {
+  const conversas = await mensagemRepo.listarConversasDaOng(ongId, arquivado);
+  return conversas.map((c) => ({
+    ...c,
+    temNaoLidas: Number(c.nao_lidas) > 0,
+    isEmpresa: c.tipo_remetente === "empresa",
+  }));
+}
+
+export async function listarConversasEmpresa(empresaId: number, arquivado: 0 | 1 = 0) {
+  const conversas = await mensagemRepo.listarConversasDaEmpresa(empresaId, arquivado);
   return conversas.map((c) => ({
     ...c,
     temNaoLidas: Number(c.nao_lidas) > 0,
   }));
 }
 
-export async function listarConversasEmpresa(empresaId: number) {
-  const conversas = await mensagemRepo.listarConversasDaEmpresa(empresaId);
-  return conversas.map((c) => ({
-    ...c,
-    temNaoLidas: Number(c.nao_lidas) > 0,
-  }));
+export async function arquivarConversa(params: {
+  conversaId: number;
+  tipoConta: "usuario" | "ong" | "empresa";
+  contaId: number;
+  arquivar: boolean;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const conversa = await mensagemRepo.buscarConversaPorId(params.conversaId);
+  if (!conversa) return { ok: false, error: "Conversa não encontrada." };
+
+  const pertence =
+    (params.tipoConta === "usuario" && Number(conversa.usuario_id) === params.contaId) ||
+    (params.tipoConta === "empresa" && Number(conversa.empresa_id) === params.contaId) ||
+    (params.tipoConta === "ong" && Number(conversa.ong_id) === params.contaId);
+
+  if (!pertence) return { ok: false, error: "Acesso negado." };
+
+  await mensagemRepo.arquivarConversa(params.conversaId, params.tipoConta, params.arquivar ? 1 : 0);
+  return { ok: true };
 }
 
 export async function abrirOuCriarConversa(params: {
@@ -110,6 +131,14 @@ export async function enviarMensagem(params: {
     remetenteId: params.contaId,
     conteudo,
   });
+
+  // Auto-desarquivar o destinatário quando recebe nova mensagem
+  if (params.tipoConta === "ong") {
+    if (conversa.usuario_id) await mensagemRepo.arquivarConversa(params.conversaId, "usuario", 0);
+    if (conversa.empresa_id) await mensagemRepo.arquivarConversa(params.conversaId, "empresa", 0);
+  } else {
+    await mensagemRepo.arquivarConversa(params.conversaId, "ong", 0);
+  }
 
   if (params.tipoConta === "ong") {
     const nomeOng = await buscarNomeOng(params.contaId);

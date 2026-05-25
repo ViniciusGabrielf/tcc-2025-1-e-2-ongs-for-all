@@ -6,12 +6,15 @@ import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
 import * as ongService from "../services/ongService";
 import { buildPagination, normalizePage } from "../utils/pagination";
+import { processarUploadComModeracao } from "../services/moderacaoImagemService";
+import { detectMimeFromFile } from "../utils/magicBytes";
 import path from "path";
 import fs from "fs";
 import { pipeline } from "stream/promises";
 
 const UPLOADS_DIR = path.join(__dirname, "..", "..", "public", "uploads", "empresa_logos");
 const MARKETPLACE_UPLOADS_DIR = path.join(__dirname, "..", "..", "public", "uploads", "marketplace_itens");
+const TEMP_DIR = path.join(__dirname, "..", "..", "private", "temp");
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 3 * 1024 * 1024;
 
@@ -68,7 +71,6 @@ export async function renderDashboardEmpresa(request: FastifyRequest, reply: Fas
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
   const { status, busca, pagina } = request.query as { status?: string; busca?: string; pagina?: string };
-  const currentPage = Math.max(1, parseInt(pagina || "1", 10) || 1);
   const PAGE_SIZE = 5;
 
   const [data, naoLidas] = await Promise.all([
@@ -77,22 +79,19 @@ export async function renderDashboardEmpresa(request: FastifyRequest, reply: Fas
   ]);
 
   const totalItems = data.apoios.length;
+  const currentPage = normalizePage(pagina);
   const apoiosPaginados = data.apoios.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
-  const pagination = {
-    currentPage,
-    totalPages,
-    hasPrev: currentPage > 1,
-    hasNext: currentPage < totalPages,
-    prevPage: currentPage - 1,
-    nextPage: currentPage + 1,
+  const pagination = buildPagination({
     basePath: "/empresa/dashboard",
+    currentPage,
+    totalItems,
+    pageSize: PAGE_SIZE,
     extraParams: {
       status: data.statusFiltro || undefined,
       busca: data.buscaAtual || undefined,
     },
-  };
+  });
 
   return reply.view(
     "/templates/empresa/dashboard.hbs",
@@ -306,16 +305,18 @@ export async function renderVitrineEmpresa(request: FastifyRequest, reply: Fasti
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
-  const bloqueio = await redirectIfEmpresaComAtividadesBloqueadas(reply, Number(sessionUser.id));
-  if (bloqueio) return bloqueio;
-
-  const [empresa, naoLidas] = await Promise.all([
+  const [empresa, cnpjStatus, naoLidas] = await Promise.all([
     empresaRepo.findEmpresaById(Number(sessionUser.id)),
+    empresaService.getEmpresaCnpjStatus(Number(sessionUser.id)),
     getNaoLidas(Number(sessionUser.id)),
   ]);
+
+  const cnpjBloqueado = cnpjStatus.bloqueiaAtividades;
   const isBloqueada = empresa?.status_marketplace === "bloqueada";
 
-  const itens = isBloqueada ? [] : await empresaService.listarItensEmpresa(Number(sessionUser.id));
+  const itens = isBloqueada || cnpjBloqueado
+    ? []
+    : await empresaService.listarItensEmpresa(Number(sessionUser.id));
 
   return reply.view(
     "/templates/empresa/vitrine.hbs",
@@ -325,6 +326,7 @@ export async function renderVitrineEmpresa(request: FastifyRequest, reply: Fasti
       empresa,
       itens,
       isBloqueada,
+      cnpjBloqueado,
       isElegivel: empresa?.status_marketplace === "elegivel",
       isAtiva: empresa?.status_marketplace === "ativa",
       success: (request.query as any)?.sucesso === "1",
@@ -414,15 +416,16 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
           );
         }
 
+        if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
         if (!fs.existsSync(MARKETPLACE_UPLOADS_DIR)) fs.mkdirSync(MARKETPLACE_UPLOADS_DIR, { recursive: true });
         const ext = path.extname(data.filename).toLowerCase() || ".jpg";
         const filename = `item_${Date.now()}${ext}`;
-        const filepath = path.join(MARKETPLACE_UPLOADS_DIR, filename);
-        await pipeline(data.file, fs.createWriteStream(filepath));
+        const tempFilePath = path.join(TEMP_DIR, filename);
+        await pipeline(data.file, fs.createWriteStream(tempFilePath));
 
-        const stats = fs.statSync(filepath);
+        const stats = fs.statSync(tempFilePath);
         if (stats.size > MAX_SIZE) {
-          fs.unlinkSync(filepath);
+          fs.unlinkSync(tempFilePath);
           return renderNovoItemComErro(
             reply,
             Number(sessionUser.id),
@@ -432,7 +435,39 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
           );
         }
 
-        imagemUrl = `/public/uploads/marketplace_itens/${filename}`;
+        const realMime = detectMimeFromFile(tempFilePath);
+        if (!realMime || !ALLOWED_MIMES.includes(realMime)) {
+          fs.unlinkSync(tempFilePath);
+          return renderNovoItemComErro(
+            reply,
+            Number(sessionUser.id),
+            sessionUser,
+            "Formato de arquivo inválido. O conteúdo não corresponde a uma imagem suportada.",
+            { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco }
+          );
+        }
+
+        const modResult = await processarUploadComModeracao({
+          tempPath: tempFilePath,
+          publicDir: MARKETPLACE_UPLOADS_DIR,
+          publicUrlBase: "/public/uploads/marketplace_itens",
+          filename,
+          mimeType: realMime,
+          tipo: "marketplace_item",
+          referenciaId: Number(sessionUser.id),
+        });
+
+        if (!modResult.ok) {
+          return renderNovoItemComErro(
+            reply,
+            Number(sessionUser.id),
+            sessionUser,
+            modResult.rejeitado ? modResult.motivo : modResult.erro,
+            { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco }
+          );
+        }
+
+        imagemUrl = modResult.publicUrl;
       }
     } else {
       const body = request.body as any;
@@ -548,16 +583,33 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
       setor = fields.setor?.value ?? "";
 
       if (data.filename && ALLOWED_MIMES.includes(data.mimetype)) {
+        if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
         if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
         const ext = path.extname(data.filename).toLowerCase() || ".jpg";
         const filename = `empresa_${sessionUser.id}_${Date.now()}${ext}`;
-        const filepath = path.join(UPLOADS_DIR, filename);
-        await pipeline(data.file, fs.createWriteStream(filepath));
-        const stats = fs.statSync(filepath);
-        if (stats.size <= MAX_SIZE) {
-          logoUrl = `/public/uploads/empresa_logos/${filename}`;
+        const tempFilePath = path.join(TEMP_DIR, filename);
+        await pipeline(data.file, fs.createWriteStream(tempFilePath));
+        const stats = fs.statSync(tempFilePath);
+        if (stats.size > MAX_SIZE) {
+          fs.unlinkSync(tempFilePath);
+          // silently skip oversized logo (profile still saves)
         } else {
-          fs.unlinkSync(filepath);
+          const realMime = detectMimeFromFile(tempFilePath);
+          if (realMime && ALLOWED_MIMES.includes(realMime)) {
+            const modResult = await processarUploadComModeracao({
+              tempPath: tempFilePath,
+              publicDir: UPLOADS_DIR,
+              publicUrlBase: "/public/uploads/empresa_logos",
+              filename,
+              mimeType: realMime,
+              tipo: "logo_empresa",
+              referenciaId: Number(sessionUser.id),
+            });
+            if (modResult.ok) logoUrl = modResult.publicUrl;
+            else if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
+          } else {
+            fs.unlinkSync(tempFilePath);
+          }
         }
       }
     } else {
@@ -743,19 +795,44 @@ export async function editarItemMarketplace(request: FastifyRequest, reply: Fast
           return renderEditarComErro(reply, sessionUser, itemId, "Formato de imagem inválido. Use JPG, PNG ou WebP.", { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco });
         }
 
+        if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
         if (!fs.existsSync(MARKETPLACE_UPLOADS_DIR)) fs.mkdirSync(MARKETPLACE_UPLOADS_DIR, { recursive: true });
         const ext = path.extname(data.filename).toLowerCase() || ".jpg";
         const filename = `item_${itemId}_${Date.now()}${ext}`;
-        const filepath = path.join(MARKETPLACE_UPLOADS_DIR, filename);
-        await pipeline(data.file, fs.createWriteStream(filepath));
+        const tempFilePath = path.join(TEMP_DIR, filename);
+        await pipeline(data.file, fs.createWriteStream(tempFilePath));
 
-        const stats = fs.statSync(filepath);
+        const stats = fs.statSync(tempFilePath);
         if (stats.size > MAX_SIZE) {
-          fs.unlinkSync(filepath);
+          fs.unlinkSync(tempFilePath);
           return renderEditarComErro(reply, sessionUser, itemId, "A imagem excede o limite de 3MB. Envie um arquivo menor.", { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco });
         }
 
-        novaImagemUrl = `/public/uploads/marketplace_itens/${filename}`;
+        const realMime = detectMimeFromFile(tempFilePath);
+        if (!realMime || !ALLOWED_MIMES.includes(realMime)) {
+          fs.unlinkSync(tempFilePath);
+          return renderEditarComErro(reply, sessionUser, itemId, "Formato de arquivo inválido. O conteúdo não corresponde a uma imagem suportada.", { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco });
+        }
+
+        const modResult = await processarUploadComModeracao({
+          tempPath: tempFilePath,
+          publicDir: MARKETPLACE_UPLOADS_DIR,
+          publicUrlBase: "/public/uploads/marketplace_itens",
+          filename,
+          mimeType: realMime,
+          tipo: "marketplace_item",
+          referenciaId: itemId,
+        });
+
+        if (!modResult.ok) {
+          return renderEditarComErro(
+            reply, sessionUser, itemId,
+            modResult.rejeitado ? modResult.motivo : modResult.erro,
+            { titulo, descricao, tipo, categoriaId, linkExterno, modoPreco, preco }
+          );
+        }
+
+        novaImagemUrl = modResult.publicUrl;
       }
     } else {
       const body = request.body as any;
