@@ -47,10 +47,10 @@ function buildTabs(statusFiltro?: string) {
   };
 }
 
-export async function getAtividades(userId: number, statusFiltro?: string) {
+export async function getAtividades(userId: number, statusFiltro?: string, busca?: string) {
   const [resumo, lista] = await Promise.all([
     atividadesRepo.buscarResumoAtividades(userId),
-    atividadesRepo.buscarAtividadesUsuario(userId, statusFiltro),
+    atividadesRepo.buscarAtividadesUsuario(userId, statusFiltro, busca),
   ]);
 
   return {

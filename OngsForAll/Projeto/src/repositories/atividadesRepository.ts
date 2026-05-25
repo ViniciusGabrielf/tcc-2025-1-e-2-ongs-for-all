@@ -46,17 +46,30 @@ export async function buscarResumoAtividades(userId: number): Promise<ResumoAtiv
 
 export async function buscarAtividadesUsuario(
   userId: number,
-  status?: string
+  status?: string,
+  busca?: string
 ): Promise<AtividadeUsuario[]> {
   const params: any[] = [userId];
-  const statusFilter = status ? ` AND i.status = ?` : "";
-  if (status) params.push(status);
+  let filter = "";
+  if (status) { filter += ` AND i.status = ?`; params.push(status); }
+  if (busca?.trim()) {
+    const b = busca.trim();
+    const bNum = Number(b);
+    if (!Number.isNaN(bNum) && /^\d+$/.test(b)) {
+      filter += ` AND (i.id = ? OR n.titulo LIKE ? OR o.nome LIKE ?)`;
+      params.push(bNum, `%${b}%`, `%${b}%`);
+    } else {
+      filter += ` AND (n.titulo LIKE ? OR o.nome LIKE ?)`;
+      params.push(`%${b}%`, `%${b}%`);
+    }
+  }
 
   const [rows]: any = await pool.query(
     `SELECT
        i.id,
        i.status,
        i.quantidade,
+       i.observacao,
        DATE_FORMAT(i.data_prevista, '%d/%m/%Y') AS data_prevista,
        DATE_FORMAT(i.criado_em,     '%d/%m/%Y') AS criado_em,
        n.id                                     AS necessidade_id,
@@ -71,7 +84,7 @@ export async function buscarAtividadesUsuario(
      FROM interesses_doacao i
      INNER JOIN necessidades n ON n.id = i.necessidade_id
      INNER JOIN ongs o         ON o.ong_id = n.ong_id
-     WHERE i.usuario_id = ?${statusFilter}
+     WHERE i.usuario_id = ?${filter}
      ORDER BY i.criado_em DESC
      LIMIT 100`,
     params
