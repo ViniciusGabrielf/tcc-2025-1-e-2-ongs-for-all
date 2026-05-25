@@ -59,16 +59,16 @@
             <span class="font-medium text-slate-800 dark:text-white capitalize">{{necessidade.turno}}</span>
           </div>
           {{/if}}
-          {{#if necessidade.data_inicio}}
+          {{#if necessidade.data_inicio_display}}
           <div>
             <span class="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-1">Data de inicio</span>
-            <span class="font-medium text-slate-800 dark:text-white">{{necessidade.data_inicio}}</span>
+            <span class="font-medium text-slate-800 dark:text-white">{{necessidade.data_inicio_display}}</span>
           </div>
           {{/if}}
-          {{#if necessidade.data_fim}}
+          {{#if necessidade.data_fim_display}}
           <div>
             <span class="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-1">Data de termino</span>
-            <span class="font-medium text-slate-800 dark:text-white">{{necessidade.data_fim}}</span>
+            <span class="font-medium text-slate-800 dark:text-white">{{necessidade.data_fim_display}}</span>
           </div>
           {{/if}}
           {{#if canViewNeedMetrics}}

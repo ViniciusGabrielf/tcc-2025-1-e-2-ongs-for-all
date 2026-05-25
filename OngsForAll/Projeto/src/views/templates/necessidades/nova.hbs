@@ -278,7 +278,19 @@
   const di = document.querySelector('input[name="data_inicio"]');
   const df = document.querySelector('input[name="data_fim"]');
   if (di && df) {
-    di.addEventListener('change', () => { if (di.value) df.min = di.value; });
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    const todayDate = today.toISOString().slice(0, 10);
+
+    di.min = todayDate;
+    df.min = di.value && di.value > todayDate ? di.value : todayDate;
+
+    di.addEventListener('change', () => {
+      df.min = di.value && di.value > todayDate ? di.value : todayDate;
+      if (df.value && df.value < df.min) {
+        df.value = '';
+      }
+    });
     df.addEventListener('change', () => { if (df.value) di.max = df.value; });
   }
 })();

@@ -125,10 +125,16 @@
                 <span class="font-medium text-right text-slate-700 dark:text-slate-100 capitalize">{{local_atividade}}</span>
               </div>
               {{/if}}
-              {{#if data_inicio}}
+              {{#if data_inicio_display}}
               <div class="flex justify-between gap-3">
                 <span>Inicio</span>
-                <span class="font-medium text-right text-slate-700 dark:text-slate-100">{{data_inicio}}</span>
+                <span class="font-medium text-right text-slate-700 dark:text-slate-100">{{data_inicio_display}}</span>
+              </div>
+              {{/if}}
+              {{#if data_fim_display}}
+              <div class="flex justify-between gap-3">
+                <span>Termino</span>
+                <span class="font-medium text-right text-slate-700 dark:text-slate-100">{{data_fim_display}}</span>
               </div>
               {{/if}}
             {{/if}}
