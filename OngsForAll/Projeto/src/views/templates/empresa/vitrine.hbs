@@ -6,10 +6,12 @@
       <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Gerencie seus itens publicados no marketplace</p>
     </div>
     {{#unless isBloqueada}}
+    {{#unless cnpjBloqueado}}
     <a href="/empresa/vitrine/novo"
       class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-bold shadow hover:opacity-90 transition">
       + Novo item
     </a>
+    {{/unless}}
     {{/unless}}
   </div>
 
@@ -58,7 +60,28 @@
   </div>
   {{/if}}
 
-  {{#if isBloqueada}}
+  {{#if cnpjBloqueado}}
+  <div class="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <div>
+      <p class="font-semibold">CNPJ pendente de validação</p>
+      <p class="mt-0.5 text-red-600 dark:text-red-400">Sua vitrine está bloqueada até que o CNPJ seja aprovado pelo admin. Regularize seu cadastro para publicar itens.</p>
+      <a href="/empresa/perfil" class="inline-block mt-2 text-xs font-bold underline underline-offset-2">Ir para o perfil →</a>
+    </div>
+  </div>
+  <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-10 shadow-sm text-center opacity-50 pointer-events-none select-none">
+    <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-400 dark:text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+    </div>
+    <p class="text-slate-600 dark:text-white/70 font-semibold">Vitrine bloqueada</p>
+    <p class="text-sm text-slate-400 dark:text-white/40 mt-2 max-w-sm mx-auto">Disponível após aprovação do CNPJ.</p>
+  </div>
+
+  {{else if isBloqueada}}
   <div class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-10 shadow-sm text-center">
     <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-400 dark:text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">

@@ -147,3 +147,6 @@ dist
 
 # Contexto interno do projeto (não subir no repositório)
 docs/CLAUDE_PROJECT_CONTEXT.md
+
+# Diretório de arquivos temporários de upload (nunca servidos via HTTP)
+private/

@@ -10,6 +10,12 @@ async function getNaoLidas(user: { tipo: string; id: number }) {
   return naoLidas;
 }
 
+function listaUrlPorTipo(tipo: string) {
+  if (tipo === "ong") return "/ong/mensagens";
+  if (tipo === "empresa") return "/empresa/mensagens";
+  return "/mensagens";
+}
+
 // GET /empresa/mensagens — lista conversas da empresa
 export async function renderListaMensagensEmpresa(
   request: FastifyRequest,
@@ -18,12 +24,43 @@ export async function renderListaMensagensEmpresa(
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
+  const { filtro, busca, arquivado: arquivadoFlash, desarquivado: desarquivadoFlash } =
+    request.query as { filtro?: string; busca?: string; arquivado?: string; desarquivado?: string };
+
   const naoLidas = await getNaoLidas(sessionUser as any);
-  const conversas = await mensagemService.listarConversasEmpresa(Number(sessionUser.id));
+  const filtroArquivadas = filtro === "arquivadas";
+  const arquivadoParam: 0 | 1 = filtroArquivadas ? 1 : 0;
+
+  const todasAtivas = await mensagemService.listarConversasEmpresa(Number(sessionUser.id), 0);
+  const totalNaoLidas = todasAtivas.filter((c) => c.temNaoLidas).length;
+
+  let conversas = filtroArquivadas
+    ? await mensagemService.listarConversasEmpresa(Number(sessionUser.id), 1)
+    : todasAtivas;
+
+  if (filtro === "nao_lidas" && !filtroArquivadas) conversas = conversas.filter((c) => c.temNaoLidas);
+
+  if (busca?.trim()) {
+    const term = busca.trim().toLowerCase();
+    conversas = conversas.filter((c) => c.nome_ong?.toLowerCase().includes(term));
+  }
 
   return reply.view(
     "/templates/mensagens/lista-empresa.hbs",
-    { user: sessionUser, naoLidas, conversas },
+    {
+      user: sessionUser,
+      naoLidas,
+      conversas,
+      filtro: filtro || null,
+      busca: busca?.trim() || null,
+      filtroNaoLidas: filtro === "nao_lidas",
+      filtroArquivadas,
+      totalNaoLidas,
+      isOneNaoLida: totalNaoLidas === 1,
+      filtroBadgeAtivo: !!filtro || !!(busca?.trim()),
+      successArquivado: arquivadoFlash === "1",
+      successDesarquivado: desarquivadoFlash === "1",
+    },
     { layout: "layouts/empresaDashboardLayout" }
   );
 }
@@ -36,12 +73,42 @@ export async function renderListaMensagensUsuario(
   const sessionUser = request.session.user;
   if (!sessionUser) return reply.redirect("/login");
 
+  const { filtro, busca, arquivado: arquivadoFlash, desarquivado: desarquivadoFlash } =
+    request.query as { filtro?: string; busca?: string; arquivado?: string; desarquivado?: string };
+
   const naoLidas = await getNaoLidas(sessionUser as any);
-  const conversas = await mensagemService.listarConversasDoUsuario(Number(sessionUser.id));
+  const filtroArquivadas = filtro === "arquivadas";
+
+  const todasAtivas = await mensagemService.listarConversasDoUsuario(Number(sessionUser.id), 0);
+  const totalNaoLidas = todasAtivas.filter((c) => c.temNaoLidas).length;
+
+  let conversas = filtroArquivadas
+    ? await mensagemService.listarConversasDoUsuario(Number(sessionUser.id), 1)
+    : todasAtivas;
+
+  if (filtro === "nao_lidas" && !filtroArquivadas) conversas = conversas.filter((c) => c.temNaoLidas);
+
+  if (busca?.trim()) {
+    const term = busca.trim().toLowerCase();
+    conversas = conversas.filter((c) => c.nome_ong?.toLowerCase().includes(term));
+  }
 
   return reply.view(
     "/templates/mensagens/lista-usuario.hbs",
-    { user: sessionUser, naoLidas, conversas },
+    {
+      user: sessionUser,
+      naoLidas,
+      conversas,
+      filtro: filtro || null,
+      busca: busca?.trim() || null,
+      filtroNaoLidas: filtro === "nao_lidas",
+      filtroArquivadas,
+      totalNaoLidas,
+      isOneNaoLida: totalNaoLidas === 1,
+      filtroBadgeAtivo: !!filtro || !!(busca?.trim()),
+      successArquivado: arquivadoFlash === "1",
+      successDesarquivado: desarquivadoFlash === "1",
+    },
     { layout: "layouts/dashboardLayout" }
   );
 }
@@ -54,17 +121,53 @@ export async function renderListaMensagensOng(
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "ong") return reply.redirect("/login");
 
+  const { filtro, busca, arquivado: arquivadoFlash, desarquivado: desarquivadoFlash } =
+    request.query as { filtro?: string; busca?: string; arquivado?: string; desarquivado?: string };
+
   const naoLidas = await getNaoLidas(sessionUser as any);
-  const conversas = await mensagemService.listarConversasDaOng(Number(sessionUser.id));
+  const filtroArquivadas = filtro === "arquivadas";
+
+  const todasAtivas = await mensagemService.listarConversasDaOng(Number(sessionUser.id), 0);
+  const totalNaoLidas = todasAtivas.filter((c) => c.temNaoLidas).length;
+
+  let conversas = filtroArquivadas
+    ? await mensagemService.listarConversasDaOng(Number(sessionUser.id), 1)
+    : todasAtivas;
+
+  if (!filtroArquivadas) {
+    if (filtro === "nao_lidas") conversas = conversas.filter((c) => c.temNaoLidas);
+    else if (filtro === "usuario") conversas = conversas.filter((c) => !c.isEmpresa);
+    else if (filtro === "empresa") conversas = conversas.filter((c) => c.isEmpresa);
+  }
+
+  if (busca?.trim()) {
+    const term = busca.trim().toLowerCase();
+    conversas = conversas.filter((c) => c.nome_remetente?.toLowerCase().includes(term));
+  }
 
   return reply.view(
     "/templates/mensagens/lista-ong.hbs",
-    { user: sessionUser, naoLidas, conversas },
+    {
+      user: sessionUser,
+      naoLidas,
+      conversas,
+      filtro: filtro || null,
+      busca: busca?.trim() || null,
+      filtroNaoLidas: filtro === "nao_lidas",
+      filtroUsuario: filtro === "usuario",
+      filtroEmpresa: filtro === "empresa",
+      filtroArquivadas,
+      totalNaoLidas,
+      isOneNaoLida: totalNaoLidas === 1,
+      filtroBadgeAtivo: !!filtro || !!(busca?.trim()),
+      successArquivado: arquivadoFlash === "1",
+      successDesarquivado: desarquivadoFlash === "1",
+    },
     { layout: "layouts/ongDashboardLayout" }
   );
 }
 
-// GET /mensagens/:id — ver conversa (usuário ou ONG)
+// GET /mensagens/:id — ver conversa
 export async function renderConversa(
   request: FastifyRequest,
   reply: FastifyReply
@@ -73,7 +176,7 @@ export async function renderConversa(
   if (!sessionUser) return reply.redirect("/login");
 
   const { id } = request.params as { id: string };
-  const { rascunho } = request.query as { rascunho?: string };
+  const { rascunho, erro } = request.query as { rascunho?: string; erro?: string };
   const naoLidas = await getNaoLidas(sessionUser as any);
 
   const result = await mensagemService.visualizarConversa({
@@ -93,12 +196,7 @@ export async function renderConversa(
       ? "layouts/empresaDashboardLayout"
       : "layouts/dashboardLayout";
 
-  const listaUrl =
-    sessionUser.tipo === "ong"
-      ? "/ong/mensagens"
-      : sessionUser.tipo === "empresa"
-      ? "/empresa/mensagens"
-      : "/mensagens";
+  const listaUrl = listaUrlPorTipo(sessionUser.tipo);
 
   const isEmpresa = sessionUser.tipo === "empresa";
   const nomeOutro = isEmpresa
@@ -106,6 +204,17 @@ export async function renderConversa(
     : sessionUser.tipo === "ong"
     ? (result.conversa.nome_empresa || result.conversa.nome_usuario)
     : result.conversa.nome_ong;
+
+  const arquivadoField =
+    sessionUser.tipo === "ong" ? "arquivado_ong" :
+    sessionUser.tipo === "empresa" ? "arquivado_empresa" :
+    "arquivado_usuario";
+  const isArquivada = Number(result.conversa[arquivadoField]) === 1;
+
+  const erroMsg =
+    erro === "arquivamento_falhou" ? "Não foi possível arquivar a conversa. Tente novamente." :
+    erro === "desarquivamento_falhou" ? "Não foi possível restaurar a conversa. Tente novamente." :
+    null;
 
   return reply.view(
     "/templates/mensagens/conversa.hbs",
@@ -117,6 +226,8 @@ export async function renderConversa(
       isOng: sessionUser.tipo === "ong",
       listaUrl,
       draftMessage: rascunho?.trim() || "",
+      isArquivada,
+      erroMsg,
     },
     { layout }
   );
@@ -144,14 +255,52 @@ export async function enviarMensagem(
     return reply.status(400).send({ message: result.error });
   }
 
-  const redirectBase =
-    sessionUser.tipo === "ong"
-      ? `/mensagens/${id}`
-      : sessionUser.tipo === "empresa"
-      ? `/empresa/mensagens/${id}`
-      : `/mensagens/${id}`;
-
+  const redirectBase = `${listaUrlPorTipo(sessionUser.tipo)}/${id}`;
   return reply.redirect(redirectBase);
+}
+
+// POST /mensagens/:id/arquivar — arquivar conversa
+export async function arquivarConversaHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const sessionUser = request.session.user;
+  if (!sessionUser) return reply.redirect("/login");
+
+  const { id } = request.params as { id: string };
+  const listaUrl = listaUrlPorTipo(sessionUser.tipo);
+
+  const result = await mensagemService.arquivarConversa({
+    conversaId: Number(id),
+    tipoConta: sessionUser.tipo as "usuario" | "ong" | "empresa",
+    contaId: Number(sessionUser.id),
+    arquivar: true,
+  });
+
+  if (!result.ok) return reply.redirect(`${listaUrl}/${id}?erro=arquivamento_falhou`);
+  return reply.redirect(`${listaUrl}?arquivado=1`);
+}
+
+// POST /mensagens/:id/desarquivar — desarquivar conversa
+export async function desarquivarConversaHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const sessionUser = request.session.user;
+  if (!sessionUser) return reply.redirect("/login");
+
+  const { id } = request.params as { id: string };
+  const listaUrl = listaUrlPorTipo(sessionUser.tipo);
+
+  const result = await mensagemService.arquivarConversa({
+    conversaId: Number(id),
+    tipoConta: sessionUser.tipo as "usuario" | "ong" | "empresa",
+    contaId: Number(sessionUser.id),
+    arquivar: false,
+  });
+
+  if (!result.ok) return reply.redirect(`${listaUrl}/${id}?erro=desarquivamento_falhou`);
+  return reply.redirect(`${listaUrl}?desarquivado=1`);
 }
 
 // POST /mensagens/iniciar — usuário ou empresa inicia conversa com uma ONG

@@ -22,6 +22,8 @@ import {
   renderListaMensagensEmpresa,
   renderConversa,
   enviarMensagem,
+  arquivarConversaHandler,
+  desarquivarConversaHandler,
 } from "../controllers/mensagemController";
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 import { ensureEmpresa } from "../middlewares/ensureEmpresa";
@@ -64,4 +66,6 @@ export async function empresaRoutes(fastify: FastifyInstance) {
   fastify.get("/empresa/mensagens", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderListaMensagensEmpresa);
   fastify.get("/empresa/mensagens/:id", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderConversa);
   fastify.post("/empresa/mensagens/:id/enviar", { preHandler: [ensureAuthenticated, ensureEmpresa] }, enviarMensagem);
+  fastify.post("/empresa/mensagens/:id/arquivar", { preHandler: [ensureAuthenticated, ensureEmpresa] }, arquivarConversaHandler);
+  fastify.post("/empresa/mensagens/:id/desarquivar", { preHandler: [ensureAuthenticated, ensureEmpresa] }, desarquivarConversaHandler);
 }

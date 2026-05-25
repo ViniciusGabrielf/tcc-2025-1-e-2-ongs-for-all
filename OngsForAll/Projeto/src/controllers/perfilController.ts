@@ -2,11 +2,14 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import * as perfilService from "../services/perfilService";
 import * as notificacaoService from "../services/notificacaoService";
 import * as perfilRepo from "../repositories/perfilRepository";
+import { processarUploadComModeracao } from "../services/moderacaoImagemService";
+import { detectMimeFromFile } from "../utils/magicBytes";
 import path from "path";
 import fs from "fs";
 import { pipeline } from "stream/promises";
 
 const UPLOADS_DIR = path.join(__dirname, "..", "..", "public", "uploads", "logos");
+const TEMP_DIR = path.join(__dirname, "..", "..", "private", "temp");
 
 async function getNaoLidas(user: { tipo: "usuario" | "ong" | "empresa"; id: number }) {
   const { naoLidas } = await notificacaoService.contarNaoLidas({
@@ -110,22 +113,42 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
 
           const ext = path.extname(data.filename).toLowerCase() || ".jpg";
           const filename = `ong_${userId}_${Date.now()}${ext}`;
-          const filepath = path.join(UPLOADS_DIR, filename);
 
-          if (!fs.existsSync(UPLOADS_DIR)) {
-            fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-          }
+          if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
+          const tempFilePath = path.join(TEMP_DIR, filename);
 
-          const writeStream = fs.createWriteStream(filepath);
+          const writeStream = fs.createWriteStream(tempFilePath);
           await pipeline(data.file, writeStream);
 
-          const stats = fs.statSync(filepath);
+          const stats = fs.statSync(tempFilePath);
           if (stats.size > MAX_FILE_SIZE) {
-            fs.unlinkSync(filepath);
+            fs.unlinkSync(tempFilePath);
             throw new Error("Imagem muito grande. O tamanho máximo é 2MB.");
           }
 
-          logoPath = `/public/uploads/logos/${filename}`;
+          const realMime = detectMimeFromFile(tempFilePath);
+          if (!realMime || !ALLOWED_MIMES.includes(realMime)) {
+            fs.unlinkSync(tempFilePath);
+            throw new Error("Formato de arquivo inválido. O conteúdo não corresponde a uma imagem suportada.");
+          }
+
+          if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+          const modResult = await processarUploadComModeracao({
+            tempPath: tempFilePath,
+            publicDir: UPLOADS_DIR,
+            publicUrlBase: "/public/uploads/logos",
+            filename,
+            mimeType: realMime,
+            tipo: "logo_ong",
+            referenciaId: userId,
+          });
+
+          if (!modResult.ok) {
+            throw new Error(modResult.rejeitado ? modResult.motivo : modResult.erro);
+          }
+
+          logoPath = modResult.publicUrl;
         }
       } else {
         const body = request.body as any;
