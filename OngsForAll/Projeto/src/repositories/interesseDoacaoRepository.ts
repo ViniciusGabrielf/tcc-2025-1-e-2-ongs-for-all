@@ -64,6 +64,7 @@ export async function listarInteressesPorOng(
       i.ong_id,
       i.necessidade_id,
       i.quantidade,
+      i.quantidade_confirmada,
       i.observacao,
       i.status,
       DATE_FORMAT(i.criado_em, '%d/%m/%Y %H:%i') AS criado_em,

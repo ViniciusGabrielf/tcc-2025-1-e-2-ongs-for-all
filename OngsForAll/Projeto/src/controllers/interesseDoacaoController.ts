@@ -119,6 +119,37 @@ export async function renderInteressesOngPage(
         status,
         (request.query as any)?.busca
     );
+    const resumoResult = result.filtroAtual === "todos"
+        ? result
+        : await interesseService.listarInteressesDaOng(
+            Number(sessionUser.id),
+            "todos",
+            (request.query as any)?.busca
+        );
+    const resumoInteresses = resumoResult.interesses.reduce(
+        (
+            acc: { total: number; pendentes: number; aceitos: number; recebidos: number; cancelados: number },
+            interesse: any
+        ) => {
+            acc.total += 1;
+            if (interesse.status === "pendente") acc.pendentes += 1;
+            if (interesse.status === "aceito") acc.aceitos += 1;
+            if (interesse.status === "recebido") acc.recebidos += 1;
+            if (interesse.status === "cancelado") acc.cancelados += 1;
+            return acc;
+        },
+        { total: 0, pendentes: 0, aceitos: 0, recebidos: 0, cancelados: 0 }
+    );
+    const buscaParam = result.buscaAtual
+        ? `&busca=${encodeURIComponent(result.buscaAtual)}`
+        : "";
+    const resumoLinks = {
+        todos: `/ong/interesses?status=todos${buscaParam}`,
+        pendente: `/ong/interesses?status=pendente${buscaParam}`,
+        aceito: `/ong/interesses?status=aceito${buscaParam}`,
+        recebido: `/ong/interesses?status=recebido${buscaParam}`,
+        cancelado: `/ong/interesses?status=cancelado${buscaParam}`,
+    };
 
     const pagination = buildPagination({
         basePath: "/ong/interesses",
@@ -149,6 +180,8 @@ export async function renderInteressesOngPage(
             interesses: interessesPaginados,
             filtroAtual: result.filtroAtual,
             buscaAtual: result.buscaAtual,
+            resumoInteresses,
+            resumoLinks,
             pagination,
             success: (request.query as any)?.sucesso === "1",
             error: (request.query as any)?.erro,

@@ -3,12 +3,35 @@ import { findNeedCategory, getNeedCategoryDisplayName } from "../constants/neces
 import { notificarTodosUsuarios } from "./notificacaoService";
 import { validateNecessidade, validateStatus } from "../validators/necessidadeValidator";
 
+function formatDateForDisplay(value: unknown) {
+  if (!value) return "";
+
+  if (value instanceof Date) {
+    const day = `${value.getDate()}`.padStart(2, "0");
+    const month = `${value.getMonth() + 1}`.padStart(2, "0");
+    const year = value.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
+  const text = `${value}`.trim();
+  const isoDate = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (isoDate) {
+    return `${isoDate[3]}/${isoDate[2]}/${isoDate[1]}`;
+  }
+
+  return text;
+}
+
 function enrichNecessidade(n: any) {
   return {
     ...n,
     isVoluntariado: n.tipo_necessidade === "voluntariado",
     isBem: n.tipo_necessidade === "bem",
     isServico: n.tipo_necessidade === "servico",
+    data_inicio_display: formatDateForDisplay(n.data_inicio),
+    data_fim_display: formatDateForDisplay(n.data_fim),
     tipoLabel:
       n.tipo_necessidade === "voluntariado"
         ? "Voluntariado"

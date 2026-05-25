@@ -6,6 +6,7 @@ import * as ongAprovacaoRepo from "../repositories/ongAprovacaoRepository";
 import { buildPagination, normalizePage } from "../utils/pagination";
 
 const NECESSIDADES_PAGE_SIZE = 9;
+const ONG_NECESSIDADES_PAGE_SIZE = 5;
 
 function buildInteresseRedirectPath(necessidadeId: number) {
   return `/interesses/nova?necessidade_id=${necessidadeId}`;
@@ -305,12 +306,34 @@ export async function renderNecessidadesOngPage(
     return reply.redirect("/dashboard");
   }
 
-  const { status, sucesso, busca } = request.query as { status?: string; sucesso?: string; busca?: string };
+  const { status, sucesso, busca, pagina } = request.query as {
+    status?: string;
+    sucesso?: string;
+    busca?: string;
+    pagina?: string;
+  };
+  const currentPage = normalizePage(pagina);
 
   const result = await necessidadeService.listarNecessidadesDaOng(
     Number(sessionUser.id),
     status,
     busca
+  );
+
+  const pagination = buildPagination({
+    basePath: "/ong/necessidades",
+    currentPage,
+    totalItems: result.necessidades.length,
+    pageSize: ONG_NECESSIDADES_PAGE_SIZE,
+    extraParams: {
+      status: result.filtroAtual,
+      busca: result.buscaAtual || undefined,
+    },
+  });
+
+  const necessidadesPaginadas = result.necessidades.slice(
+    (pagination.currentPage - 1) * ONG_NECESSIDADES_PAGE_SIZE,
+    pagination.currentPage * ONG_NECESSIDADES_PAGE_SIZE
   );
 
   const naoLidas = await getNaoLidas(sessionUser as any);
@@ -320,9 +343,10 @@ export async function renderNecessidadesOngPage(
     {
       user: sessionUser,
       naoLidas,
-      necessidades: result.necessidades,
+      necessidades: necessidadesPaginadas,
       filtroAtual: result.filtroAtual,
       buscaAtual: result.buscaAtual,
+      pagination,
       success: sucesso === "1",
     },
     { layout: "layouts/ongDashboardLayout" }

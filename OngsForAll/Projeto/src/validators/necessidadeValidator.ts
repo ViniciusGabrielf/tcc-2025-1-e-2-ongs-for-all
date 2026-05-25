@@ -16,6 +16,15 @@ const LOCAIS_VALIDOS = ["presencial", "remoto", "hibrido"];
 const TURNOS_VALIDOS = ["manha", "tarde", "noite", "integral"];
 const TIPOS_VALIDOS = ["bem", "servico", "voluntariado"];
 
+function getTodayDateString() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = `${today.getMonth() + 1}`.padStart(2, "0");
+  const day = `${today.getDate()}`.padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 export function validateNecessidade(data: NecessidadeInput) {
   const errors: string[] = [];
 
@@ -56,6 +65,10 @@ export function validateNecessidade(data: NecessidadeInput) {
 
     if (data.turno && !TURNOS_VALIDOS.includes(data.turno)) {
       errors.push("Turno invalido.");
+    }
+
+    if (data.data_inicio && data.data_inicio < getTodayDateString()) {
+      errors.push("A data de inicio nao pode ser anterior a data atual.");
     }
 
     if (data.data_inicio && data.data_fim && data.data_inicio > data.data_fim) {
