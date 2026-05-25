@@ -9,35 +9,44 @@ export interface FiltrosInput {
   busca?: string;
 }
 
-const STATUS_VALIDOS_NECESSIDADE = ["aberta", "concluida", "cancelada"];
+const STATUS_VALIDOS_NECESSIDADE = ["aberta", "em_andamento", "concluida", "cancelada"];
 const STATUS_VALIDOS_INTERESSE   = ["pendente", "aceito", "recebido", "cancelado"];
 const TIPOS_VALIDOS              = ["bem", "servico", "voluntariado"];
 const TIPOS_ATIVIDADE_VALIDOS    = [
   "necessidade_criada", "interesse_pendente", "interesse_aceito",
-  "entrega_recebida",   "interesse_cancelado",
+  "entrega_recebida",   "interesse_cancelado", "relatorio_publicado",
   "evidencia_registrada",
 ];
 
+// Valida formato E calendário — rejeita meses > 12 e dias além do máximo do mês (ex.: 2024-02-30)
+function isValidDate(s: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split("-").map(Number);
+  if (y < 2000 || y > 2099) return false;            // ano fora do intervalo permitido
+  if (m < 1 || m > 12 || d < 1) return false;
+  const maxDay = new Date(y, m, 0).getDate();         // dia 0 do mês seguinte = último dia do mês m
+  return d <= maxDay;
+}
+
+function normalizarDatas(raw: FiltrosInput, f: repo.FiltrosGerencial) {
+  if (raw.de  && isValidDate(raw.de))  f.de  = raw.de;
+  if (raw.ate && isValidDate(raw.ate)) f.ate = raw.ate;
+  if (f.de && f.ate && f.ate < f.de)  f.ate = undefined; // "Até" anterior a "De": descarta
+}
+
 function normalizarFiltros(raw: FiltrosInput): repo.FiltrosGerencial {
   const f: repo.FiltrosGerencial = {};
-
-  if (raw.de  && /^\d{4}-\d{2}-\d{2}$/.test(raw.de))  f.de  = raw.de;
-  if (raw.ate && /^\d{4}-\d{2}-\d{2}$/.test(raw.ate)) f.ate = raw.ate;
-  if (f.de && f.ate && f.de > f.ate) { f.ate = undefined; }
-
-  if (raw.tipo      && TIPOS_VALIDOS.includes(raw.tipo))                        f.tipo      = raw.tipo;
-  if (raw.status    && STATUS_VALIDOS_NECESSIDADE.includes(raw.status))         f.status    = raw.status;
-  if (raw.busca     && raw.busca.trim().length > 0)                             f.busca     = raw.busca.trim().slice(0, 100);
-  if (raw.categoria && raw.categoria.trim().length > 0)                        f.categoria = raw.categoria.trim();
-
+  normalizarDatas(raw, f);
+  if (raw.tipo      && TIPOS_VALIDOS.includes(raw.tipo))                f.tipo      = raw.tipo;
+  if (raw.status    && STATUS_VALIDOS_NECESSIDADE.includes(raw.status)) f.status    = raw.status;
+  if (raw.busca     && raw.busca.trim().length > 0)                     f.busca     = raw.busca.trim().slice(0, 100);
+  if (raw.categoria && raw.categoria.trim().length > 0)                 f.categoria = raw.categoria.trim();
   return f;
 }
 
 function normalizarFiltrosDoacoes(raw: FiltrosInput): repo.FiltrosGerencial {
   const f: repo.FiltrosGerencial = {};
-  if (raw.de  && /^\d{4}-\d{2}-\d{2}$/.test(raw.de))  f.de  = raw.de;
-  if (raw.ate && /^\d{4}-\d{2}-\d{2}$/.test(raw.ate)) f.ate = raw.ate;
-  if (f.de && f.ate && f.de > f.ate) { f.ate = undefined; }
+  normalizarDatas(raw, f);
   if (raw.status && STATUS_VALIDOS_INTERESSE.includes(raw.status)) f.status = raw.status;
   if (raw.tipo   && TIPOS_VALIDOS.includes(raw.tipo))              f.tipo   = raw.tipo;
   if (raw.busca  && raw.busca.trim().length > 0)                   f.busca  = raw.busca.trim().slice(0, 100);
@@ -46,9 +55,7 @@ function normalizarFiltrosDoacoes(raw: FiltrosInput): repo.FiltrosGerencial {
 
 function normalizarFiltrosAtividades(raw: FiltrosInput): repo.FiltrosGerencial {
   const f: repo.FiltrosGerencial = {};
-  if (raw.de  && /^\d{4}-\d{2}-\d{2}$/.test(raw.de))  f.de  = raw.de;
-  if (raw.ate && /^\d{4}-\d{2}-\d{2}$/.test(raw.ate)) f.ate = raw.ate;
-  if (f.de && f.ate && f.de > f.ate) { f.ate = undefined; }
+  normalizarDatas(raw, f);
   if (raw.tipo && TIPOS_ATIVIDADE_VALIDOS.includes(raw.tipo)) f.tipo = raw.tipo;
   return f;
 }
@@ -98,8 +105,7 @@ export async function getRelatorioAtividades(ongId: number, raw: FiltrosInput) {
 
 export async function getRelatorioImpacto(ongId: number, raw: FiltrosInput) {
   const f: repo.FiltrosGerencial = {};
-  if (raw.de  && /^\d{4}-\d{2}-\d{2}$/.test(raw.de))  f.de  = raw.de;
-  if (raw.ate && /^\d{4}-\d{2}-\d{2}$/.test(raw.ate)) f.ate = raw.ate;
+  normalizarDatas(raw, f);
   const dados = await repo.buscarImpactoConsolidado(ongId, f);
   return { dados, filtros: f };
 }
