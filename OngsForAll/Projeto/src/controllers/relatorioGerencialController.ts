@@ -33,13 +33,23 @@ function buildSecoes(current: string) {
 
 function getFiltros(query: any) {
   return {
-    de:       (query.de       as string) || "",
-    ate:      (query.ate      as string) || "",
-    tipo:     (query.tipo     as string) || "",
+    de:       (query.de        as string) || "",
+    ate:      (query.ate       as string) || "",
+    tipo:     (query.tipo      as string) || "",
     categoria:(query.categoria as string) || "",
-    status:   (query.status   as string) || "",
-    busca:    (query.busca    as string) || "",
+    status:   (query.status    as string) || "",
+    busca:    (query.busca     as string) || "",
   };
+}
+
+// true quando o usuário informou de/ate mas a normalização descartou algum deles
+function detectarCorrecao(raw: ReturnType<typeof getFiltros>, normalizado: any): boolean {
+  return (!!raw.de  && !normalizado.de)  ||
+         (!!raw.ate && !normalizado.ate);
+}
+
+function temFiltros(f: any): boolean {
+  return !!(f.de || f.ate || f.tipo || f.status || f.busca || f.categoria);
 }
 
 // ─── Visão Geral ──────────────────────────────────────────────────────────────
@@ -76,15 +86,16 @@ export async function renderNecessidadesPage(request: FastifyRequest, reply: Fas
   ]);
 
   return reply.view("/templates/relatorios/gerenciais/necessidades.hbs", {
-    user:       request.session.user,
+    user:           request.session.user,
     naoLidas,
-    title:      "Relatório de Necessidades",
-    secoes:     buildSecoes("/ong/relatorios/gerenciais/necessidades"),
-    dados:      resultado.dados,
-    resumo:     resultado.resumo,
-    categorias: resultado.categorias,
-    filtros:    resultado.filtros,
-    filtroAtivo: filtros,
+    title:          "Relatório de Necessidades",
+    secoes:         buildSecoes("/ong/relatorios/gerenciais/necessidades"),
+    dados:          resultado.dados,
+    resumo:         resultado.resumo,
+    categorias:     resultado.categorias,
+    filtroAtivo:    resultado.filtros,
+    filtroCorrigido: detectarCorrecao(filtros, resultado.filtros),
+    temFiltroAtivo: temFiltros(resultado.filtros),
   }, { layout: LAYOUT });
 }
 
@@ -102,14 +113,15 @@ export async function renderDoacoesPage(request: FastifyRequest, reply: FastifyR
   ]);
 
   return reply.view("/templates/relatorios/gerenciais/doacoes.hbs", {
-    user:    request.session.user,
+    user:            request.session.user,
     naoLidas,
-    title:   "Relatório de Doações",
-    secoes:  buildSecoes("/ong/relatorios/gerenciais/doacoes"),
-    dados:   resultado.dados,
-    resumo:  resultado.resumo,
-    filtros: resultado.filtros,
-    filtroAtivo: filtros,
+    title:           "Relatório de Doações",
+    secoes:          buildSecoes("/ong/relatorios/gerenciais/doacoes"),
+    dados:           resultado.dados,
+    resumo:          resultado.resumo,
+    filtroAtivo:     resultado.filtros,
+    filtroCorrigido: detectarCorrecao(filtros, resultado.filtros),
+    temFiltroAtivo:  temFiltros(resultado.filtros),
   }, { layout: LAYOUT });
 }
 
@@ -127,14 +139,15 @@ export async function renderVoluntariadoPage(request: FastifyRequest, reply: Fas
   ]);
 
   return reply.view("/templates/relatorios/gerenciais/voluntariado.hbs", {
-    user:    request.session.user,
+    user:            request.session.user,
     naoLidas,
-    title:   "Relatório de Voluntariado",
-    secoes:  buildSecoes("/ong/relatorios/gerenciais/voluntariado"),
-    dados:   resultado.dados,
-    resumo:  resultado.resumo,
-    filtros: resultado.filtros,
-    filtroAtivo: filtros,
+    title:           "Relatório de Voluntariado",
+    secoes:          buildSecoes("/ong/relatorios/gerenciais/voluntariado"),
+    dados:           resultado.dados,
+    resumo:          resultado.resumo,
+    filtroAtivo:     resultado.filtros,
+    filtroCorrigido: detectarCorrecao(filtros, resultado.filtros),
+    temFiltroAtivo:  temFiltros(resultado.filtros),
   }, { layout: LAYOUT });
 }
 
@@ -152,13 +165,14 @@ export async function renderAtividadesPage(request: FastifyRequest, reply: Fasti
   ]);
 
   return reply.view("/templates/relatorios/gerenciais/atividades.hbs", {
-    user:    request.session.user,
+    user:            request.session.user,
     naoLidas,
-    title:   "Relatório de Atividades",
-    secoes:  buildSecoes("/ong/relatorios/gerenciais/atividades"),
-    dados:   resultado.dados,
-    filtros: resultado.filtros,
-    filtroAtivo: filtros,
+    title:           "Relatório de Atividades",
+    secoes:          buildSecoes("/ong/relatorios/gerenciais/atividades"),
+    dados:           resultado.dados,
+    filtroAtivo:     resultado.filtros,
+    filtroCorrigido: detectarCorrecao(filtros, resultado.filtros),
+    temFiltroAtivo:  temFiltros(resultado.filtros),
   }, { layout: LAYOUT });
 }
 
@@ -192,13 +206,14 @@ export async function renderImpactoPage(request: FastifyRequest, reply: FastifyR
   );
 
   return reply.view("/templates/relatorios/gerenciais/impacto.hbs", {
-    user:    request.session.user,
+    user:            request.session.user,
     naoLidas,
-    title:   "Relatório de Impacto",
-    secoes:  buildSecoes("/ong/relatorios/gerenciais/impacto"),
-    dados:   resultado.dados,
-    filtros: resultado.filtros,
-    filtroAtivo: filtros,
+    title:           "Relatório de Impacto",
+    secoes:          buildSecoes("/ong/relatorios/gerenciais/impacto"),
+    dados:           resultado.dados,
+    filtroAtivo:     resultado.filtros,
+    filtroCorrigido: detectarCorrecao(filtros, resultado.filtros),
+    temFiltroAtivo:  !!(resultado.filtros.de || resultado.filtros.ate),
     evolucaoLabels,
     evolucaoTotal,
     evolucaoConf,
