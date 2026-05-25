@@ -3,8 +3,7 @@ import {
   renderCadastroEmpresaPage,
   cadastrarEmpresa,
   renderDashboardEmpresa,
-  renderPlanosEmpresaPage,
-  alterarPlanoEmpresa,
+  renderApoiosEmpresa,
   renderNecessidadesParaApoiar,
   apoiarNecessidade,
   renderVitrineEmpresa,
@@ -17,7 +16,13 @@ import {
   renderPerfilEmpresaPage,
   atualizarPerfilEmpresa,
   renderNotificacoesEmpresa,
+  renderExplorarOngsEmpresa,
 } from "../controllers/empresaController";
+import {
+  renderListaMensagensEmpresa,
+  renderConversa,
+  enviarMensagem,
+} from "../controllers/mensagemController";
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 import { ensureEmpresa } from "../middlewares/ensureEmpresa";
 
@@ -29,9 +34,8 @@ export async function empresaRoutes(fastify: FastifyInstance) {
   // Dashboard
   fastify.get("/empresa/dashboard", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderDashboardEmpresa);
 
-  // Planos
-  fastify.get("/empresa/plano", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderPlanosEmpresaPage);
-  fastify.post("/empresa/plano", { preHandler: [ensureAuthenticated, ensureEmpresa] }, alterarPlanoEmpresa);
+  // Meus apoios
+  fastify.get("/empresa/apoios", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderApoiosEmpresa);
 
   // Necessidades para apoiar
   fastify.get("/empresa/necessidades", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderNecessidadesParaApoiar);
@@ -50,6 +54,14 @@ export async function empresaRoutes(fastify: FastifyInstance) {
   fastify.get("/empresa/perfil", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderPerfilEmpresaPage);
   fastify.post("/empresa/perfil", { preHandler: [ensureAuthenticated, ensureEmpresa] }, atualizarPerfilEmpresa);
 
+  // Explorar ONGs
+  fastify.get("/empresa/ongs", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderExplorarOngsEmpresa);
+
   // Notificações
   fastify.get("/empresa/notificacoes", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderNotificacoesEmpresa);
+
+  // Mensagens
+  fastify.get("/empresa/mensagens", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderListaMensagensEmpresa);
+  fastify.get("/empresa/mensagens/:id", { preHandler: [ensureAuthenticated, ensureEmpresa] }, renderConversa);
+  fastify.post("/empresa/mensagens/:id/enviar", { preHandler: [ensureAuthenticated, ensureEmpresa] }, enviarMensagem);
 }

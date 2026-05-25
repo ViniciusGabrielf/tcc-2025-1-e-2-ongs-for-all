@@ -26,7 +26,7 @@
 
     <div class="min-w-0 flex-1">
       <p class="font-semibold text-[#2D4BA6] dark:text-white truncate">
-        {{#if isOng}}{{conversa.nome_usuario}}{{else}}{{conversa.nome_ong}}{{/if}}
+        {{#if isOng}}{{conversa.nome_outro}}{{else}}{{conversa.nome_ong}}{{/if}}
       </p>
       {{#if conversa.titulo_necessidade}}
       <p class="text-xs text-[#4886D9] truncate">Sobre: {{conversa.titulo_necessidade}}</p>
@@ -65,7 +65,7 @@
 
   <!-- Formulário de envio -->
   <div class="mt-4 bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm p-3">
-    <form method="POST" action="/mensagens/{{conversa.id}}/enviar" class="flex items-end gap-3">
+    <form method="POST" action="{{listaUrl}}/{{conversa.id}}/enviar" class="flex items-end gap-3">
       <textarea
         name="conteudo"
         rows="2"

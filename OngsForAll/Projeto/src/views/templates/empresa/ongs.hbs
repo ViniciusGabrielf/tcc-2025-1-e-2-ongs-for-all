@@ -1,0 +1,151 @@
+<div class="max-w-7xl mx-auto space-y-8">
+
+  <!-- Hero -->
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 p-8 sm:p-10 shadow-lg">
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
+    <div class="relative">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white">Explorar ONGs</h1>
+      <p class="mt-2 text-white/80 text-lg">Conheça as organizações cadastradas e descubra como apoiar</p>
+    </div>
+  </div>
+
+  <!-- Barra de pesquisa -->
+  <form method="GET" action="/empresa/ongs" class="flex flex-col sm:flex-row gap-3">
+    <div class="relative flex-1">
+      <svg xmlns="http://www.w3.org/2000/svg"
+        class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-white/40 pointer-events-none"
+        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input type="text" name="busca" value="{{busca}}" placeholder="Pesquisar por nome ou area de atuacao..."
+        class="w-full pl-12 pr-4 py-3 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm transition" />
+    </div>
+    <button type="submit"
+      class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-violet-500 to-purple-700 text-white font-semibold text-sm shadow-md hover:opacity-90 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      Pesquisar
+    </button>
+    {{#if busca}}
+    <a href="/empresa/ongs"
+      class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-white/70 hover:opacity-80 transition">
+      Limpar
+    </a>
+    {{/if}}
+  </form>
+
+  <!-- Contador -->
+  <div class="flex items-center gap-2">
+    <span class="inline-flex items-center px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 text-sm font-semibold">
+      {{totalOngs}} ONG(s)
+    </span>
+    {{#if busca}}
+    <span class="text-sm text-slate-500 dark:text-white/50">para "{{busca}}"</span>
+    {{/if}}
+  </div>
+
+  <!-- Grid de ONGs -->
+  {{#if ongs.length}}
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+    {{#each ongs}}
+    <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group">
+
+      <!-- Header do card -->
+      <div class="h-20 bg-gradient-to-r from-violet-500/20 to-purple-700/20 dark:from-violet-500/10 dark:to-purple-700/10 relative">
+        <div class="absolute -bottom-8 left-5">
+          {{#if this.logo}}
+          <img src="{{this.logo}}" alt="Logo de {{this.nome}}"
+            class="w-16 h-16 rounded-2xl object-cover border-4 border-white dark:border-[#0D1B2A] shadow-md bg-white dark:bg-[#102235]" />
+          {{else}}
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-white text-xl font-bold border-4 border-white dark:border-[#0D1B2A] shadow-md">
+            {{this.nome.[0]}}
+          </div>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- Conteudo -->
+      <div class="px-5 pt-12 pb-5">
+        <h3 class="text-lg font-bold text-violet-700 dark:text-white truncate group-hover:text-purple-700 transition-colors">
+          {{this.nome}}
+        </h3>
+
+        {{#if this.area_atuacao}}
+        <span class="inline-block mt-2 px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 text-xs font-semibold">
+          {{this.area_atuacao}}
+        </span>
+        {{/if}}
+
+        <div class="mt-4 space-y-2">
+          {{#if this.email}}
+          <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-white/50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span class="truncate">{{this.email}}</span>
+          </div>
+          {{/if}}
+
+          {{#if this.telefone}}
+          <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-white/50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            <span>{{this.telefone}}</span>
+          </div>
+          {{/if}}
+        </div>
+
+        <!-- Botoes de acao -->
+        <div class="mt-4 space-y-2">
+          <a href="/empresa/necessidades"
+            class="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-semibold shadow-sm hover:opacity-90 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            Necessidades
+          </a>
+          <div class="flex gap-2">
+            <a href="/ongs/{{this.id}}/localizacao"
+              class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-full border border-slate-200 dark:border-white/15 text-slate-600 dark:text-white/70 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition"
+              title="Ver localizacao da ONG">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Ver local
+            </a>
+            <form method="POST" action="/mensagens/iniciar" class="flex-1">
+              <input type="hidden" name="ong_id" value="{{this.id}}" />
+              <input type="hidden" name="mensagem" value="Ola! Somos da empresa {{../user.nome}} e gostarimos de conversar sobre como podemos apoiar a ONG {{this.nome}}." />
+              <button type="submit"
+                class="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-full border border-slate-200 dark:border-white/15 text-slate-600 dark:text-white/70 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition"
+                title="Conversar com a ONG">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 13.042 3 11.574 3 10c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Chat
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+
+  {{> paginationControls pagination=pagination}}
+  {{else}}
+  <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-12 shadow-sm text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto text-slate-300 dark:text-white/20 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+    <h3 class="text-xl font-bold text-slate-500 dark:text-white/50 mb-2">Nenhuma ONG encontrada</h3>
+    <p class="text-slate-400 dark:text-white/40">
+      {{#if busca}}Tente buscar com outros termos.{{else}}Ainda nao ha ONGs cadastradas.{{/if}}
+    </p>
+  </div>
+  {{/if}}
+
+</div>

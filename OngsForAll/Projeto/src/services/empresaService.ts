@@ -234,57 +234,91 @@ export async function cadastrarEmpresa(body: Record<string, string>) {
   }
 }
 
-export async function getDashboardData(empresaId: number) {
-  const [empresa, metricas, apoios, totalItensMarketplace, cnpjStatus] = await Promise.all([
+function enrichApoio(a: any) {
+  const status = a.status_necessidade as string;
+  const tipo = a.tipo_necessidade as string;
+  return {
+    ...a,
+    statusLabel:
+      status === "aberta" ? "Pendente"
+      : status === "em_andamento" ? "Em andamento"
+      : status === "concluida" ? "Concluído"
+      : status === "cancelada" ? "Cancelado"
+      : status,
+    isAberta: status === "aberta",
+    isEmAndamento: status === "em_andamento",
+    isConcluida: status === "concluida",
+    isCancelada: status === "cancelada",
+    tipoLabel: tipo === "bem" ? "Doação" : tipo === "servico" ? "Serviço" : "Voluntariado",
+    tipoIsBem: tipo === "bem",
+    tipoIsServico: tipo === "servico",
+    tipoIsVoluntariado: tipo === "voluntariado",
+  };
+}
+
+export async function listarApoiosEmpresa(
+  empresaId: number,
+  status?: string,
+  busca?: string
+) {
+  const todos = await empresaRepo.listarApoiosDaEmpresa(empresaId);
+
+  const resumo = todos.reduce(
+    (acc: { pendentes: number; em_andamento: number; concluidas: number; canceladas: number }, a: any) => {
+      if (a.status_necessidade === "aberta") acc.pendentes++;
+      else if (a.status_necessidade === "em_andamento") acc.em_andamento++;
+      else if (a.status_necessidade === "concluida") acc.concluidas++;
+      else if (a.status_necessidade === "cancelada") acc.canceladas++;
+      return acc;
+    },
+    { pendentes: 0, em_andamento: 0, concluidas: 0, canceladas: 0 }
+  );
+
+  const STATUS_VALIDOS = ["aberta", "em_andamento", "concluida", "cancelada"];
+  const filtro = STATUS_VALIDOS.includes(status || "") ? status : undefined;
+  const buscaNorm = busca?.trim().toLowerCase() ?? "";
+
+  let filtrados = todos;
+  if (filtro) filtrados = filtrados.filter((a: any) => a.status_necessidade === filtro);
+  if (buscaNorm) {
+    filtrados = filtrados.filter(
+      (a: any) =>
+        a.titulo_necessidade?.toLowerCase().includes(buscaNorm) ||
+        a.nome_ong?.toLowerCase().includes(buscaNorm)
+    );
+  }
+
+  return {
+    apoios: filtrados.map(enrichApoio),
+    resumo,
+    statusFiltro: filtro ?? "",
+    buscaAtual: buscaNorm,
+    total: filtrados.length,
+  };
+}
+
+export async function getDashboardData(
+  empresaId: number,
+  status?: string,
+  busca?: string
+) {
+  const [empresa, cnpjStatus, apoiosData] = await Promise.all([
     empresaRepo.findEmpresaById(empresaId),
-    empresaRepo.getMetricas(empresaId),
-    empresaRepo.listarApoiosDaEmpresa(empresaId),
-    marketplaceRepo.contarItensNoLimiteDaEmpresa(empresaId),
     getEmpresaCnpjStatus(empresaId),
+    listarApoiosEmpresa(empresaId, status, busca),
   ]);
 
   if (!empresa) throw new Error("Empresa nao encontrada.");
 
-  const isBloqueada = empresa.status_marketplace === "bloqueada";
-  const isElegivel = empresa.status_marketplace === "elegivel";
-  const isAtiva = empresa.status_marketplace === "ativa";
-  const podePubilcar = isElegivel || isAtiva;
-  const planoInfo = getPlanoInfo(empresa.plano);
-  const itensRestantesPlano =
-    planoInfo.codigo === "premium" ? null : Math.max(0, planoInfo.limite - totalItensMarketplace);
-  const usoLimitePlano =
-    planoInfo.codigo === "premium"
-      ? 100
-      : Math.min(100, Math.round((totalItensMarketplace / planoInfo.limite) * 100));
-
-  const META_APOIOS = 3;
-  const progressoMeta = Math.min(100, Math.round((Number(metricas.total_apoios) / META_APOIOS) * 100));
-  const faltam = Math.max(0, META_APOIOS - Number(metricas.total_apoios));
-
   return {
     empresa,
-    metricas: {
-      total_apoios: Number(metricas.total_apoios),
-      ongs_apoiadas: Number(metricas.ongs_apoiadas),
-      tipos_apoiados: Number(metricas.tipos_apoiados),
-    },
-    apoiosRecentes: apoios.slice(0, 5),
-    isBloqueada,
-    isElegivel,
-    isAtiva,
-    podePubilcar,
-    progressoMeta,
-    faltam,
-    META_APOIOS,
-    plano: {
-      ...planoInfo,
-      validoAte: empresa.plano_valido_ate,
-      totalItens: totalItensMarketplace,
-      itensRestantes: itensRestantesPlano,
-      usoLimite: usoLimitePlano,
-      isPremium: planoInfo.codigo === "premium",
-    },
     cnpjStatus,
+    ...apoiosData,
+    isTabTodos: !apoiosData.statusFiltro,
+    isTabPendentes: apoiosData.statusFiltro === "aberta",
+    isTabAndamento: apoiosData.statusFiltro === "em_andamento",
+    isTabConcluidas: apoiosData.statusFiltro === "concluida",
+    isTabCancelados: apoiosData.statusFiltro === "cancelada",
   };
 }
 

@@ -1,5 +1,14 @@
 import { pool } from "../config/ds";
 
+let _empresaColEnsured = false;
+async function ensureEmpresaIdColumn() {
+  if (_empresaColEnsured) return;
+  try {
+    await pool.query(`ALTER TABLE conversas ADD COLUMN empresa_id INT NULL DEFAULT NULL`);
+  } catch (_) {}
+  _empresaColEnsured = true;
+}
+
 export async function encontrarOuCriarConversa(params: {
   usuarioId: number;
   ongId: number;
@@ -24,15 +33,40 @@ export async function encontrarOuCriarConversa(params: {
   return result.insertId as number;
 }
 
+export async function encontrarOuCriarConversaEmpresa(params: {
+  empresaId: number;
+  ongId: number;
+  necessidadeId?: number;
+}): Promise<number> {
+  await ensureEmpresaIdColumn();
+  const necessidadeId = params.necessidadeId ?? null;
+
+  const [existing]: any = await pool.query(
+    `SELECT id FROM conversas WHERE empresa_id = ? AND ong_id = ? AND (necessidade_id = ? OR (necessidade_id IS NULL AND ? IS NULL)) LIMIT 1`,
+    [params.empresaId, params.ongId, necessidadeId, necessidadeId]
+  );
+
+  if (existing.length > 0) return existing[0].id as number;
+
+  const [result]: any = await pool.query(
+    `INSERT INTO conversas (empresa_id, ong_id, necessidade_id) VALUES (?, ?, ?)`,
+    [params.empresaId, params.ongId, necessidadeId]
+  );
+  return result.insertId as number;
+}
+
 export async function buscarConversaPorId(id: number) {
+  await ensureEmpresaIdColumn();
   const [rows]: any = await pool.query(
-    `SELECT c.id, c.usuario_id, c.ong_id, c.necessidade_id,
+    `SELECT c.id, c.usuario_id, c.empresa_id, c.ong_id, c.necessidade_id,
             u.nome AS nome_usuario,
+            e.nome_fantasia AS nome_empresa,
             o.nome AS nome_ong,
             o.logo AS logo_ong,
             n.titulo AS titulo_necessidade
      FROM conversas c
-     INNER JOIN usuarios u ON u.id = c.usuario_id
+     LEFT JOIN usuarios u ON u.id = c.usuario_id
+     LEFT JOIN empresas e ON e.id = c.empresa_id
      INNER JOIN ongs o ON o.ong_id = c.ong_id
      LEFT JOIN necessidades n ON n.id = c.necessidade_id
      WHERE c.id = ?
@@ -79,6 +113,26 @@ export async function listarConversasDaOng(ongId: number) {
   return rows as any[];
 }
 
+export async function listarConversasDaEmpresa(empresaId: number) {
+  await ensureEmpresaIdColumn();
+  const [rows]: any = await pool.query(
+    `SELECT c.id, c.empresa_id, c.ong_id, c.necessidade_id,
+            o.nome AS nome_ong,
+            o.logo AS logo_ong,
+            n.titulo AS titulo_necessidade,
+            (SELECT m.conteudo FROM mensagens m WHERE m.conversa_id = c.id ORDER BY m.criado_em DESC LIMIT 1) AS ultima_mensagem,
+            (SELECT DATE_FORMAT(m.criado_em, '%d/%m/%Y %H:%i') FROM mensagens m WHERE m.conversa_id = c.id ORDER BY m.criado_em DESC LIMIT 1) AS ultima_em,
+            (SELECT COUNT(*) FROM mensagens m WHERE m.conversa_id = c.id AND m.lida = 0 AND m.remetente_tipo = 'ong') AS nao_lidas
+     FROM conversas c
+     INNER JOIN ongs o ON o.ong_id = c.ong_id
+     LEFT JOIN necessidades n ON n.id = c.necessidade_id
+     WHERE c.empresa_id = ?
+     ORDER BY ultima_em DESC`,
+    [empresaId]
+  );
+  return rows as any[];
+}
+
 export async function listarMensagensDaConversa(conversaId: number) {
   const [rows]: any = await pool.query(
     `SELECT id, conversa_id, remetente_tipo, remetente_id, conteudo, lida,
@@ -93,7 +147,7 @@ export async function listarMensagensDaConversa(conversaId: number) {
 
 export async function criarMensagem(params: {
   conversaId: number;
-  remetenteTipo: "usuario" | "ong";
+  remetenteTipo: "usuario" | "ong" | "empresa";
   remetenteId: number;
   conteudo: string;
 }): Promise<number> {
@@ -106,7 +160,7 @@ export async function criarMensagem(params: {
 
 export async function marcarMensagensComoLidas(params: {
   conversaId: number;
-  remetenteTipo: "usuario" | "ong";
+  remetenteTipo: "usuario" | "ong" | "empresa";
 }) {
   await pool.query(
     `UPDATE mensagens SET lida = 1 WHERE conversa_id = ? AND remetente_tipo = ?`,
@@ -120,6 +174,17 @@ export async function contarNaoLidasUsuario(usuarioId: number): Promise<number> 
      INNER JOIN conversas c ON c.id = m.conversa_id
      WHERE c.usuario_id = ? AND m.remetente_tipo = 'ong' AND m.lida = 0`,
     [usuarioId]
+  );
+  return Number(rows[0]?.total ?? 0);
+}
+
+export async function contarNaoLidasEmpresa(empresaId: number): Promise<number> {
+  await ensureEmpresaIdColumn();
+  const [rows]: any = await pool.query(
+    `SELECT COUNT(*) AS total FROM mensagens m
+     INNER JOIN conversas c ON c.id = m.conversa_id
+     WHERE c.empresa_id = ? AND m.remetente_tipo = 'ong' AND m.lida = 0`,
+    [empresaId]
   );
   return Number(rows[0]?.total ?? 0);
 }
