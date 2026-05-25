@@ -40,7 +40,7 @@ jobs:
 
           BEFORE=$(git rev-parse HEAD)
 
-          git merge --no-edit upstream/main
+          git merge -X theirs --no-edit upstream/main
 
           AFTER=$(git rev-parse HEAD)
 
