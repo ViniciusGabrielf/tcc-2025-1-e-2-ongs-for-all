@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import * as perfilRepo from "../repositories/perfilRepository";
+import * as localizacaoRepo from "../repositories/localizacaoRepository";
 import { validatePerfil } from "../validators/perfilValidator";
 import * as notificacaoService from "./notificacaoService";
+import { geocodificarEndereco } from "./geocodingService";
 
 function onlyDigits(value?: string | null): string {
   return (value ?? "").replace(/\D/g, "");
@@ -145,8 +147,24 @@ export async function updateOngProfile(params: {
   areaAtuacao?: string;
   cnpj?: string;
   password?: string;
+  // localização (todos opcionais)
+  cep?: string;
+  logradouro?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+  localizacaoPublica?: boolean;
+  localizacaoAproximada?: boolean;
+  atendimentoRemoto?: boolean;
+  instrucoesChegada?: string;
 }) {
-  const { ongId, nome, email, telefone, areaAtuacao, cnpj, password } = params;
+  const {
+    ongId, nome, email, telefone, areaAtuacao, cnpj, password,
+    cep, logradouro, numero, complemento, bairro, cidade, estado,
+    localizacaoPublica, localizacaoAproximada, atendimentoRemoto, instrucoesChegada,
+  } = params;
 
   const validation = validatePerfil({ nome, email, telefone, password, areaAtuacao, isOng: true });
   if (!validation.isValid) {
@@ -186,8 +204,36 @@ export async function updateOngProfile(params: {
   }
 
   const passwordHash = await hashPassword(password);
-
   await perfilRepo.updateOngProfile(ongId, nome.trim(), email.trim(), telefone ?? null, areaAtuacao ?? null, passwordHash);
+
+  // Salvar localização (geocodifica apenas quando há dados suficientes e localização pública)
+  let latitude: number | null = null;
+  let longitude: number | null = null;
+
+  if (localizacaoPublica && !atendimentoRemoto && cidade) {
+    const coords = await geocodificarEndereco({ logradouro, numero, bairro, cidade, estado });
+    if (coords) {
+      latitude  = coords.latitude;
+      longitude = coords.longitude;
+    }
+  }
+
+  await localizacaoRepo.updateLocalizacao(ongId, {
+    cep:                 cep                 || null,
+    logradouro:          logradouro          || null,
+    numero:              numero              || null,
+    complemento:         complemento         || null,
+    bairro:              bairro              || null,
+    cidade:              cidade              || null,
+    estado:              estado              || null,
+    latitude,
+    longitude,
+    localizacaoPublica:    !!localizacaoPublica,
+    localizacaoAproximada: !!localizacaoAproximada,
+    atendimentoRemoto:     !!atendimentoRemoto,
+    instrucoesChegada:   instrucoesChegada   || null,
+  });
+
   return { ok: true as const, documentoSolicitacaoCriada };
 }
 

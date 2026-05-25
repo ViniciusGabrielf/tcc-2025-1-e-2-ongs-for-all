@@ -1,0 +1,222 @@
+{{#if comCoordenadas}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{{/if}}
+
+<section class="min-h-screen {{#unless user}}pt-28 px-4 sm:px-6 pb-10{{/unless}}">
+<div class="max-w-3xl mx-auto space-y-6">
+
+  {{! Cabeçalho }}
+  <div>
+    <a href="/ongs" class="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-white/50 hover:text-[#6B8F71] dark:hover:text-white transition mb-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Explorar ONGs
+    </a>
+    <h2 class="text-2xl font-bold text-[#2F3E34] dark:text-white">Localização da ONG</h2>
+    <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5 font-semibold">{{ong.nome}}</p>
+  </div>
+
+  {{! ── Atendimento remoto ── }}
+  {{#if estaRemota}}
+  <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm text-center space-y-4">
+    <div class="w-14 h-14 mx-auto rounded-full bg-[#6B8F71]/10 dark:bg-[#6B8F71]/20 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-[#6B8F71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />
+      </svg>
+    </div>
+    <p class="font-bold text-[#2F3E34] dark:text-white">Atendimento remoto</p>
+    <p class="text-sm text-slate-500 dark:text-white/60">Esta ONG realiza atendimento remoto ou não possui local público de atendimento.</p>
+    {{#if instrucoesChegada}}
+    <div class="bg-slate-50 dark:bg-white/5 rounded-xl p-4 text-sm text-slate-600 dark:text-white/70 text-left">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-1">Informações adicionais</p>
+      <p>{{instrucoesChegada}}</p>
+    </div>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  {{! ── Sem localização pública ── }}
+  {{#if semLocalizacao}}
+  <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm text-center space-y-3">
+    <div class="w-14 h-14 mx-auto rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-slate-400 dark:text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </div>
+    <p class="font-bold text-[#2F3E34] dark:text-white">Localização não disponível</p>
+    <p class="text-sm text-slate-500 dark:text-white/60">Esta ONG ainda não disponibilizou uma localização pública.</p>
+  </div>
+  {{/if}}
+
+  {{! ── Tem endereço ou coordenadas ── }}
+  {{#unless estaRemota}}
+  {{#unless semLocalizacao}}
+
+  {{! Aviso localização aproximada }}
+  {{#if localizacaoAproximada}}
+  <div class="flex items-center gap-2 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 text-sm text-amber-700 dark:text-amber-300">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    A localização exibida é aproximada.
+  </div>
+  {{/if}}
+
+  {{! ── MAPA ── }}
+  <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+
+    {{! Caso 1: coordenadas salvas → Leaflet }}
+    {{#if comCoordenadas}}
+    <div id="mapa-leaflet" style="height:340px" class="w-full"></div>
+
+    {{! Caso 2: só endereço → Google Maps iframe embed (sem API key, URL codificada no servidor) }}
+    {{else}}
+    {{#if googleMapsEmbedUrl}}
+    <iframe
+      title="Localização da ONG"
+      width="100%"
+      height="340"
+      style="border:0;display:block"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      src="{{googleMapsEmbedUrl}}">
+    </iframe>
+    {{/if}}
+    {{/if}}
+
+  </div>
+
+  {{! Endereço textual }}
+  {{#if enderecoTexto}}
+  <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
+    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-2">Endereço</p>
+    <div class="flex items-start gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#6B8F71] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <p class="text-sm text-slate-700 dark:text-white/80">{{enderecoTexto}}</p>
+    </div>
+  </div>
+  {{/if}}
+
+  {{! Instruções de chegada }}
+  {{#if instrucoesChegada}}
+  <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm">
+    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-2">Instruções de chegada</p>
+    <p class="text-sm text-slate-600 dark:text-white/70">{{instrucoesChegada}}</p>
+  </div>
+  {{/if}}
+
+  {{! Abrir rota }}
+  {{#if googleMapsUrl}}
+  <div class="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm space-y-4">
+    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-white/40">Abrir rota</p>
+    <div class="flex flex-col sm:flex-row gap-3 items-end">
+      <div class="flex-1">
+        <label for="input_cep_origem" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">
+          Seu CEP de origem
+          <span class="font-normal text-slate-400 dark:text-white/40 text-xs ml-1">(opcional)</span>
+        </label>
+        <input type="text" id="input_cep_origem" placeholder="00000-000" maxlength="9"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#6B8F71]/40" />
+      </div>
+      <a id="btn_maps"
+        href="{{googleMapsUrl}}"
+        data-dest-lat="{{latStr}}"
+        data-dest-lon="{{lonStr}}"
+        data-dest-text="{{enderecoTexto}}"
+        target="_blank" rel="noopener noreferrer"
+        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1a73e8] hover:bg-[#1765cc] text-white text-sm font-bold shadow-sm transition whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+        Abrir rota no Google Maps
+      </a>
+    </div>
+    <p class="text-xs text-slate-400 dark:text-white/40">O CEP de origem é opcional e usado apenas para montar o link externo.</p>
+  </div>
+  {{/if}}
+
+  {{/unless}}
+  {{/unless}}
+
+</div>
+</section>
+
+{{! Leaflet JS — só quando há coordenadas salvas }}
+{{#if comCoordenadas}}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WPeE=" crossorigin=""></script>
+<script>
+(function () {
+  var lat = parseFloat('{{latStr}}');
+  var lon = parseFloat('{{lonStr}}');
+  if (isNaN(lat) || isNaN(lon)) return;
+  var map = L.map('mapa-leaflet').setView([lat, lon], 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+  }).addTo(map);
+  var icon = L.divIcon({
+    html: '<div style="width:36px;height:36px;background:#6B8F71;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
+    iconSize: [36, 36], iconAnchor: [18, 36], className: '',
+  });
+  L.marker([lat, lon], { icon: icon }).addTo(map).bindPopup('{{ong.nome}}').openPopup();
+})();
+</script>
+{{/if}}
+
+{{! CEP de origem → monta URL no clique }}
+{{#unless estaRemota}}
+{{#unless semLocalizacao}}
+{{#if googleMapsUrl}}
+<script>
+(function () {
+  var input   = document.getElementById('input_cep_origem');
+  var btn     = document.getElementById('btn_maps');
+  var baseUrl = '{{googleMapsUrl}}';
+  if (!input || !btn) return;
+
+  function mask(v) { return v.replace(/\D/g,'').slice(0,8).replace(/^(\d{5})(\d)/,'$1-$2'); }
+  input.addEventListener('input', function () { input.value = mask(input.value); });
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    // Lê destino dos data-attributes (HTML decode automático, sem problema com &amp;)
+    var destLat  = btn.getAttribute('data-dest-lat');
+    var destLon  = btn.getAttribute('data-dest-lon');
+    var destText = btn.getAttribute('data-dest-text');
+
+    // Monta o parâmetro destination= (coordenadas têm prioridade sobre texto)
+    var destination;
+    var latN = parseFloat(destLat);
+    var lonN = parseFloat(destLon);
+    if (!isNaN(latN) && !isNaN(lonN)) {
+      destination = latN + ',' + lonN;
+    } else if (destText) {
+      destination = encodeURIComponent(destText);
+    } else {
+      window.open(baseUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    var cep = input.value.replace(/\D/g, '');
+    var url;
+    if (cep.length === 8) {
+      url = 'https://www.google.com/maps/dir/?api=1'
+          + '&origin='      + encodeURIComponent(input.value.trim())
+          + '&destination=' + destination;
+    } else {
+      url = 'https://www.google.com/maps/dir/?api=1&destination=' + destination;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  });
+})();
+</script>
+{{/if}}
+{{/unless}}
+{{/unless}}

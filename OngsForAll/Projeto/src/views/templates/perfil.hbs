@@ -166,6 +166,97 @@
     {{/if}}
     {{/if}}
 
+    {{#if isOng}}
+    <hr class="border-slate-200 dark:border-white/10" />
+
+    <div>
+      <h3 class="text-base font-bold text-[var(--theme-strong)] dark:text-white mb-0.5">Localização</h3>
+      <p class="text-xs text-slate-400 dark:text-white/40 mb-4">Opcional. Permite que usuários e empresas vejam sua ONG no mapa.</p>
+
+      {{! Atendimento remoto }}
+      <label class="flex items-center gap-3 cursor-pointer mb-4">
+        <input type="checkbox" name="atendimento_remoto" id="chk_remoto" value="1" {{#if user.atendimento_remoto}}checked{{/if}}
+          class="w-4 h-4 rounded accent-[var(--theme-primary)] cursor-pointer" />
+        <span class="text-sm text-slate-700 dark:text-white/80">Esta ONG atende remotamente (sem local físico público)</span>
+      </label>
+
+      {{! CEP + busca automática }}
+      <div id="bloco_endereco" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">CEP</label>
+            <input type="text" name="cep" id="input_cep" value="{{user.cep}}" maxlength="9" placeholder="00000-000"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          </div>
+          <button type="button" id="btn_buscar_cep"
+            class="px-4 py-2.5 rounded-xl bg-[var(--theme-strong)]/10 dark:bg-[var(--theme-primary)]/20 text-[var(--theme-strong)] dark:text-[var(--theme-primary)] text-sm font-semibold hover:opacity-80 transition">
+            Buscar CEP
+          </button>
+        </div>
+        <p id="cep_status" class="hidden text-xs"></p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Logradouro</label>
+            <input type="text" name="logradouro" id="input_logradouro" value="{{user.logradouro}}" maxlength="255"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Número</label>
+            <input type="text" name="numero" id="input_numero" value="{{user.numero}}" maxlength="30"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Complemento</label>
+            <input type="text" name="complemento" id="input_complemento" value="{{user.complemento}}" maxlength="100"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Bairro</label>
+            <input type="text" name="bairro" id="input_bairro" value="{{user.bairro}}" maxlength="100"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Cidade</label>
+            <input type="text" name="cidade" id="input_cidade" value="{{user.cidade}}" maxlength="100"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Estado (UF)</label>
+            <input type="text" name="estado" id="input_estado" value="{{user.estado}}" maxlength="2" placeholder="SP"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)]" />
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" name="localizacao_publica" id="chk_publica" value="1" {{#if user.localizacao_publica}}checked{{/if}}
+              class="w-4 h-4 rounded accent-[var(--theme-primary)] cursor-pointer" />
+            <span class="text-sm text-slate-700 dark:text-white/80">Tornar localização pública</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" name="localizacao_aproximada" id="chk_aproximada" value="1" {{#if user.localizacao_aproximada}}checked{{/if}}
+              class="w-4 h-4 rounded accent-[var(--theme-primary)] cursor-pointer" />
+            <span class="text-sm text-slate-700 dark:text-white/80">Exibir localização aproximada (sem ponto exato)</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Instruções de chegada</label>
+        <textarea name="instrucoes_chegada" rows="3" maxlength="500" placeholder="Ex: Atendimento somente com agendamento. Entrada pela rua lateral."
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)] resize-none">{{user.instrucoes_chegada}}</textarea>
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Exibido publicamente. Inclua informações de acesso, horários ou como entrar em contato.</p>
+      </div>
+    </div>
+    {{/if}}
+
     <div>
       <label class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">
         Nova senha
@@ -198,6 +289,69 @@
       }
     });
   });
+
+  // Localização: toggle bloco endereço ao marcar "remoto"
+  (function () {
+    var chkRemoto  = document.getElementById('chk_remoto');
+    var blocoEnd   = document.getElementById('bloco_endereco');
+    if (!chkRemoto || !blocoEnd) return;
+
+    function toggleBlocoEndereco() {
+      blocoEnd.style.display = chkRemoto.checked ? 'none' : '';
+    }
+    chkRemoto.addEventListener('change', toggleBlocoEndereco);
+    toggleBlocoEndereco();
+  })();
+
+  // Busca automática de CEP via ViaCEP
+  (function () {
+    var btnBuscar = document.getElementById('btn_buscar_cep');
+    var inputCep  = document.getElementById('input_cep');
+    var status    = document.getElementById('cep_status');
+    if (!btnBuscar || !inputCep) return;
+
+    function setStatus(msg, ok) {
+      if (!status) return;
+      status.textContent = msg;
+      status.className = 'text-xs ' + (ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400');
+      status.classList.remove('hidden');
+    }
+
+    function preencherCampo(id, valor) {
+      var el = document.getElementById(id);
+      if (el && valor) el.value = valor;
+    }
+
+    function maskCep(val) {
+      return val.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
+    }
+
+    inputCep.addEventListener('input', function () {
+      inputCep.value = maskCep(inputCep.value);
+    });
+
+    btnBuscar.addEventListener('click', async function () {
+      var cep = inputCep.value.replace(/\D/g, '');
+      if (cep.length !== 8) { setStatus('Informe um CEP válido com 8 dígitos.', false); return; }
+      btnBuscar.disabled = true;
+      btnBuscar.textContent = 'Buscando...';
+      try {
+        var resp = await fetch('/api/cep/' + cep);
+        if (!resp.ok) { setStatus('Não foi possível encontrar esse CEP.', false); return; }
+        var dados = await resp.json();
+        preencherCampo('input_logradouro', dados.logradouro);
+        preencherCampo('input_bairro', dados.bairro);
+        preencherCampo('input_cidade', dados.cidade);
+        preencherCampo('input_estado', dados.estado);
+        setStatus('Endereço preenchido automaticamente.', true);
+      } catch {
+        setStatus('Erro ao buscar o CEP. Tente novamente.', false);
+      } finally {
+        btnBuscar.disabled = false;
+        btnBuscar.textContent = 'Buscar CEP';
+      }
+    });
+  })();
 
   const cpfPerfilInput = document.getElementById('cpf_perfil');
   if (cpfPerfilInput) {
