@@ -5,7 +5,7 @@ import * as interesseRepo from "../repositories/interesseDoacaoRepository";
 import * as emailService from "../services/emailService";
 import { buildPagination, normalizePage } from "../utils/pagination";
 
-const PAGE_SIZE_INTERESSES = 10;
+const PAGE_SIZE_INTERESSES = 5;
 
 export async function renderNovaPaginaInteresse(
     request: FastifyRequest,

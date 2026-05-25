@@ -98,8 +98,8 @@ export async function renderDashboardOngPage(
     }
 
     const ongId = Number(sessionUser.id);
-    const { de, ate, tipo, categoria, status, busca } = request.query as {
-      de?: string; ate?: string; tipo?: string; categoria?: string; status?: string; busca?: string;
+    const { de, ate, tipo, categoria, status, busca, pagina } = request.query as {
+      de?: string; ate?: string; tipo?: string; categoria?: string; status?: string; busca?: string; pagina?: string;
     };
     const data = await dashboardService.getOngDashboardData(ongId, de, ate, { tipo, categoria, status, busca });
 
@@ -130,23 +130,38 @@ export async function renderDashboardOngPage(
         interessesAceitos: data.interessesAceitos ?? 0,
         interessesRecebidos: data.interessesRecebidos ?? 0,
 
-        // lista de necessidades
-        necessidadesList: (data.necessidadesList ?? []).map((n: any) => ({
-          ...n,
-          tipoLabel: n.tipo_necessidade === "bem" ? "Doação de bem"
-            : n.tipo_necessidade === "servico" ? "Serviço"
-            : n.tipo_necessidade === "voluntariado" ? "Voluntariado"
-            : n.tipo_necessidade,
-          statusLabel: n.status === "aberta" ? "Aberta"
-            : n.status === "em_andamento" ? "Em andamento"
-            : n.status === "concluida" ? "Concluída"
-            : n.status === "cancelada" ? "Cancelada"
-            : n.status,
-          isAberta: n.status === "aberta",
-          isEmAndamento: n.status === "em_andamento",
-          isConcluida: n.status === "concluida",
-          isCancelada: n.status === "cancelada",
-        })),
+        // lista de necessidades com paginação
+        ...(() => {
+          const PAGE_SIZE = 5;
+          const allItems = (data.necessidadesList ?? []).map((n: any) => ({
+            ...n,
+            tipoLabel: n.tipo_necessidade === "bem" ? "Doação de bem"
+              : n.tipo_necessidade === "servico" ? "Serviço"
+              : n.tipo_necessidade === "voluntariado" ? "Voluntariado"
+              : n.tipo_necessidade,
+            statusLabel: n.status === "aberta" ? "Aberta"
+              : n.status === "em_andamento" ? "Em andamento"
+              : n.status === "concluida" ? "Concluída"
+              : n.status === "cancelada" ? "Cancelada"
+              : n.status,
+            isAberta: n.status === "aberta",
+            isEmAndamento: n.status === "em_andamento",
+            isConcluida: n.status === "concluida",
+            isCancelada: n.status === "cancelada",
+          }));
+          const pagination = buildPagination({
+            basePath: "/dashboard/ong",
+            currentPage: normalizePage(pagina),
+            totalItems: allItems.length,
+            pageSize: PAGE_SIZE,
+            extraParams: { tipo, categoria, status, busca },
+          });
+          const necessidadesList = allItems.slice(
+            (pagination.currentPage - 1) * PAGE_SIZE,
+            pagination.currentPage * PAGE_SIZE
+          );
+          return { necessidadesList, pagination };
+        })(),
 
         // filtros ativos
         filtroDe: de ?? "",
