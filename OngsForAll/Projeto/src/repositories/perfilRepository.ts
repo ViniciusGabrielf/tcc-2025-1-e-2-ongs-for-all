@@ -170,7 +170,12 @@ export async function rejeitarCpfPendente(userId: number, observacaoAdmin?: stri
 
 export async function findOngById(id: number) {
   const [rows]: any = await pool.query(
-    "SELECT ong_id AS id, nome, email, cnpj, area_atuacao, telefone, logo FROM ongs WHERE ong_id = ? LIMIT 1",
+    `SELECT ong_id AS id, nome, email, cnpj, area_atuacao, telefone, logo,
+            cep, logradouro, numero, complemento, bairro, cidade, estado,
+            latitude, longitude,
+            localizacao_publica, localizacao_aproximada, atendimento_remoto,
+            instrucoes_chegada
+     FROM ongs WHERE ong_id = ? LIMIT 1`,
     [id]
   );
   return rows?.[0] ?? null;

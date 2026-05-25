@@ -74,6 +74,11 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
     let cpf: string | undefined, cnpj: string | undefined;
     let logoPath: string | null = null;
 
+    let cep: string | undefined, logradouro: string | undefined, numero: string | undefined;
+    let complemento: string | undefined, bairro: string | undefined, cidade: string | undefined, estado: string | undefined;
+    let localizacaoPublica = false, localizacaoAproximada = false, atendimentoRemoto = false;
+    let instrucoesChegada: string | undefined;
+
     if (isOng) {
       // ONG usa multipart/form-data (tem upload de logo)
       const data = await request.file();
@@ -86,6 +91,17 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
         password = fields.password;
         area_atuacao = fields.area_atuacao;
         cnpj = fields.cnpj;
+        cep = fields.cep;
+        logradouro = fields.logradouro;
+        numero = fields.numero;
+        complemento = fields.complemento;
+        bairro = fields.bairro;
+        cidade = fields.cidade;
+        estado = fields.estado;
+        localizacaoPublica   = fields.localizacao_publica   === "1";
+        localizacaoAproximada = fields.localizacao_aproximada === "1";
+        atendimentoRemoto    = fields.atendimento_remoto    === "1";
+        instrucoesChegada = fields.instrucoes_chegada;
 
         if (data.filename && data.mimetype) {
           if (!ALLOWED_MIMES.includes(data.mimetype)) {
@@ -119,6 +135,17 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
         password = body.password;
         area_atuacao = body.area_atuacao;
         cnpj = body.cnpj;
+        cep = body.cep;
+        logradouro = body.logradouro;
+        numero = body.numero;
+        complemento = body.complemento;
+        bairro = body.bairro;
+        cidade = body.cidade;
+        estado = body.estado;
+        localizacaoPublica   = body.localizacao_publica   === "1";
+        localizacaoAproximada = body.localizacao_aproximada === "1";
+        atendimentoRemoto    = body.atendimento_remoto    === "1";
+        instrucoesChegada = body.instrucoes_chegada;
       }
     } else {
       // Usuário usa form normal (sem arquivo)
@@ -139,6 +166,17 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
           areaAtuacao: area_atuacao,
           cnpj,
           password,
+          cep,
+          logradouro,
+          numero,
+          complemento,
+          bairro,
+          cidade,
+          estado,
+          localizacaoPublica,
+          localizacaoAproximada,
+          atendimentoRemoto,
+          instrucoesChegada,
         })
       : await perfilService.updateProfile({
           userId,
