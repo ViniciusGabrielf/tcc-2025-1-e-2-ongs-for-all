@@ -94,7 +94,11 @@
         <div><span class="font-semibold text-slate-700 dark:text-white/80">Quantidade oferecida:</span> {{quantidade}}</div>
         <div><span class="font-semibold text-slate-700 dark:text-white/80">Data prevista:</span> {{data_prevista}}</div>
         <div><span class="font-semibold text-slate-700 dark:text-white/80">Meta:</span> {{meta}}</div>
+        {{#ifCond status 'recebido'}}
+        <div><span class="font-semibold text-slate-700 dark:text-white/80">Quantidade entregue:</span> {{quantidade_confirmada}}</div>
+        {{else}}
         <div><span class="font-semibold text-slate-700 dark:text-white/80">Recebido ate agora:</span> {{quantidade_recebida}}</div>
+        {{/ifCond}}
         <div><span class="font-semibold text-slate-700 dark:text-white/80">Criado em:</span> {{criado_em}}</div>
       </div>
 
