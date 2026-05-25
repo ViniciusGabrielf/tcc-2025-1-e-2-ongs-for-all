@@ -306,6 +306,60 @@ export async function getNecessidadeMaisAvancadaOng(ongId: number) {
   return rows[0] ?? null;
 }
 
+export async function getNecessidadesAbertasOng(ongId: number) {
+  const [rows]: any = await pool.query(
+    `SELECT COUNT(*) AS total FROM necessidades WHERE ong_id = ? AND status NOT IN ('concluida','cancelada')`,
+    [ongId]
+  );
+  return Number(rows[0]?.total ?? 0);
+}
+
+export async function getNecessidadesListOng(
+  ongId: number,
+  filters: { de?: string; ate?: string; tipo?: string; categoria?: string; status?: string; busca?: string }
+) {
+  const params: any[] = [ongId];
+  let where = "";
+
+  if (filters.de)     { where += " AND n.criado_em >= ?"; params.push(filters.de); }
+  if (filters.ate)    { where += " AND n.criado_em <= ?"; params.push(filters.ate); }
+  if (filters.tipo)   { where += " AND n.tipo_necessidade = ?"; params.push(filters.tipo); }
+  if (filters.categoria) { where += " AND n.categoria = ?"; params.push(filters.categoria); }
+  if (filters.status) { where += " AND n.status = ?"; params.push(filters.status); }
+  if (filters.busca?.trim()) {
+    const b = filters.busca.trim();
+    if (!Number.isNaN(Number(b)) && /^\d+$/.test(b)) {
+      where += " AND (n.id = ? OR n.titulo LIKE ?)";
+      params.push(Number(b), `%${b}%`);
+    } else {
+      where += " AND n.titulo LIKE ?";
+      params.push(`%${b}%`);
+    }
+  }
+
+  const [rows]: any = await pool.query(
+    `SELECT
+       n.id,
+       n.titulo,
+       n.tipo_necessidade,
+       n.categoria,
+       n.quantidade,
+       n.quantidade_recebida,
+       n.status,
+       DATE_FORMAT(n.criado_em, '%d/%m/%Y') AS criado_em,
+       CASE WHEN n.quantidade > 0
+         THEN LEAST(ROUND((n.quantidade_recebida / n.quantidade) * 100), 100)
+         ELSE 0
+       END AS percentual,
+       GREATEST(COALESCE(n.quantidade, 0) - COALESCE(n.quantidade_recebida, 0), 0) AS pendente
+     FROM necessidades n
+     WHERE n.ong_id = ?${where}
+     ORDER BY n.criado_em DESC`,
+    params
+  );
+  return rows;
+}
+
 export async function getAtividadesRecentesOng(ongId: number, de?: string, ate?: string, limite = 10) {
   const params: any[] = [ongId, ongId, ongId];
   let dateFilterInteresses = "";

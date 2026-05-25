@@ -98,8 +98,10 @@ export async function renderDashboardOngPage(
     }
 
     const ongId = Number(sessionUser.id);
-    const { de, ate } = request.query as { de?: string; ate?: string };
-    const data = await dashboardService.getOngDashboardData(ongId, de, ate);
+    const { de, ate, tipo, categoria, status, busca } = request.query as {
+      de?: string; ate?: string; tipo?: string; categoria?: string; status?: string; busca?: string;
+    };
+    const data = await dashboardService.getOngDashboardData(ongId, de, ate, { tipo, categoria, status, busca });
 
     if (process.env.NODE_ENV === "test") {
       return reply.send({ user: sessionUser, ...data });
@@ -117,29 +119,50 @@ export async function renderDashboardOngPage(
         isOng: true,
         naoLidas,
 
-        // cards
-        totalRecebido: Number(data.totalRecebido ?? 0).toFixed(2),
-        qtdDoacoes: data.qtdDoacoes ?? 0,
-        qtdDoadores: data.qtdDoadores ?? 0,
-
-        // tabela
-        ultimasDoacoes: data.ultimasDoacoes ?? [],
-
-        // métricas de impacto
+        // métricas de necessidades
         necessidadesCriadas: data.necessidadesCriadas ?? 0,
+        necessidadesAbertas: data.necessidadesAbertas ?? 0,
         necessidadesConcluidas: data.necessidadesConcluidas ?? 0,
         taxaConclusao: data.taxaConclusao ?? "0.0",
+
+        // métricas de interesses
         interessesPendentes: data.interessesPendentes ?? 0,
         interessesAceitos: data.interessesAceitos ?? 0,
         interessesRecebidos: data.interessesRecebidos ?? 0,
-        totalInteressesOng: (data.interessesPendentes ?? 0) + (data.interessesAceitos ?? 0) + (data.interessesRecebidos ?? 0),
-        entregasPendentesOng: data.interessesAceitos ?? 0,
-        necessidadesQuaseCompletas: data.necessidadesQuaseCompletas ?? [],
-        necessidadeMaisAvancada: data.necessidadeMaisAvancada ?? null,
 
-        // filtro de período
+        // lista de necessidades
+        necessidadesList: (data.necessidadesList ?? []).map((n: any) => ({
+          ...n,
+          tipoLabel: n.tipo_necessidade === "bem" ? "Doação de bem"
+            : n.tipo_necessidade === "servico" ? "Serviço"
+            : n.tipo_necessidade === "voluntariado" ? "Voluntariado"
+            : n.tipo_necessidade,
+          statusLabel: n.status === "aberta" ? "Aberta"
+            : n.status === "em_andamento" ? "Em andamento"
+            : n.status === "concluida" ? "Concluída"
+            : n.status === "cancelada" ? "Cancelada"
+            : n.status,
+          isAberta: n.status === "aberta",
+          isEmAndamento: n.status === "em_andamento",
+          isConcluida: n.status === "concluida",
+          isCancelada: n.status === "cancelada",
+        })),
+
+        // filtros ativos
         filtroDe: de ?? "",
         filtroAte: ate ?? "",
+        filtroTipo: tipo ?? "",
+        filtroCategoria: categoria ?? "",
+        filtroStatus: status ?? "",
+        filtroBusca: busca ?? "",
+        temFiltroAtivo: !!(de || ate || tipo || categoria || status || busca),
+        filtroTipoBem: tipo === "bem",
+        filtroTipoServico: tipo === "servico",
+        filtroTipoVoluntariado: tipo === "voluntariado",
+        filtroStatusAberta: status === "aberta",
+        filtroStatusAndamento: status === "em_andamento",
+        filtroStatusConcluida: status === "concluida",
+        filtroStatusCancelada: status === "cancelada",
       },
       { layout: "layouts/ongDashboardLayout" }
     );
