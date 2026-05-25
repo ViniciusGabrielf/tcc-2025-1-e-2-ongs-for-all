@@ -102,7 +102,12 @@ export async function getDashboardData(userId: number, de?: string, ate?: string
   };
 }
 
-export async function getOngDashboardData(ongId: number, de?: string, ate?: string) {
+export async function getOngDashboardData(
+  ongId: number,
+  de?: string,
+  ate?: string,
+  filters?: { tipo?: string; categoria?: string; status?: string; busca?: string }
+) {
   const [totalRecebido, qtdDoacoes, qtdDoadores] = await Promise.all([
     dashboardRepository.getTotalRecebido(ongId, de, ate),
     dashboardRepository.getQtdDoacoes(ongId, de, ate),
@@ -125,19 +130,19 @@ export async function getOngDashboardData(ongId: number, de?: string, ate?: stri
   const [
     necessidadesCriadas,
     necessidadesConcluidas,
+    necessidadesAbertas,
     interessesPendentes,
     interessesAceitos,
     interessesRecebidos,
-    necessidadesQuaseCompletas,
-    necessidadeMaisAvancada,
+    necessidadesList,
   ] = await Promise.all([
     dashboardRepository.getNecessidadesCriadasOng(ongId, de, ate),
     dashboardRepository.getNecessidadesConcluidasOng(ongId, de, ate),
+    dashboardRepository.getNecessidadesAbertasOng(ongId),
     dashboardRepository.getInteressesPorStatusOng(ongId, "pendente", de, ate),
     dashboardRepository.getInteressesPorStatusOng(ongId, "aceito", de, ate),
     dashboardRepository.getInteressesPorStatusOng(ongId, "recebido", de, ate),
-    dashboardRepository.getNecessidadesQuaseCompletasOng(ongId),
-    dashboardRepository.getNecessidadeMaisAvancadaOng(ongId),
+    dashboardRepository.getNecessidadesListOng(ongId, { de, ate, ...filters }),
   ]);
 
   const taxaConclusao = necessidadesCriadas > 0
@@ -155,11 +160,11 @@ export async function getOngDashboardData(ongId: number, de?: string, ate?: stri
     ultimasDoacoes,
     necessidadesCriadas,
     necessidadesConcluidas,
+    necessidadesAbertas,
     taxaConclusao,
     interessesPendentes,
     interessesAceitos,
     interessesRecebidos,
-    necessidadesQuaseCompletas,
-    necessidadeMaisAvancada,
+    necessidadesList,
   };
 }
