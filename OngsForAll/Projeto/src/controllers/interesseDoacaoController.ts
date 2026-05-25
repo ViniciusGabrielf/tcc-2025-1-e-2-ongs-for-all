@@ -1,6 +1,8 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import * as interesseService from "../services/interesseDoacaoService";
 import * as notificacaoService from "../services/notificacaoService";
+import * as interesseRepo from "../repositories/interesseDoacaoRepository";
+import * as emailService from "../services/emailService";
 import { buildPagination, normalizePage } from "../utils/pagination";
 
 const PAGE_SIZE_INTERESSES = 10;
@@ -153,6 +155,85 @@ export async function renderInteressesOngPage(
         },
         { layout: "layouts/ongDashboardLayout" }
     );
+}
+
+export async function cancelarInteresseUsuario(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    const sessionUser = request.session.user;
+    if (!sessionUser) return reply.redirect("/login");
+
+    const { id } = request.params as { id: string };
+    const { motivo } = request.body as { motivo?: string };
+
+    const interesse = await interesseRepo.buscarInteressePorId(Number(id));
+
+    const result = await interesseRepo.cancelarInteresseDoUsuario(
+        Number(id),
+        Number(sessionUser.id)
+    );
+    if (!result.ok) return reply.code(400).send(result.error);
+
+    if (interesse) {
+        const ong = await interesseRepo.buscarEmailOngPorId(Number(interesse.ong_id));
+        if (ong?.email) {
+            emailService.enviarCancelamentoInteresseParaOng({
+                interesseId: Number(id),
+                emailOng: ong.email,
+                nomeOng: ong.nome,
+                nomeUsuario: interesse.nome_usuario,
+                tituloNecessidade: interesse.titulo_necessidade,
+                motivo: motivo?.trim() || null,
+            }).catch((err) => console.error("[EMAIL] Falha ao enviar cancelamento para ONG:", err.message));
+        }
+    }
+
+    return reply.redirect("/dashboard?cancelado=1");
+}
+
+export async function editarInteresseUsuario(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    const sessionUser = request.session.user;
+    if (!sessionUser) return reply.redirect("/login");
+
+    const { id } = request.params as { id: string };
+    const { observacao, data_prevista, quantidade } = request.body as {
+        observacao?: string;
+        data_prevista?: string;
+        quantidade?: string;
+    };
+
+    const interesse = await interesseRepo.buscarInteressePorId(Number(id));
+
+    const result = await interesseRepo.editarInteresseDoUsuario(
+        Number(id),
+        Number(sessionUser.id),
+        observacao,
+        data_prevista,
+        quantidade ? Number(quantidade) : undefined
+    );
+    if (!result.ok) return reply.code(400).send(result.error);
+
+    if (interesse) {
+        const ong = await interesseRepo.buscarEmailOngPorId(Number(interesse.ong_id));
+        if (ong?.email) {
+            emailService.enviarEdicaoInteresseParaOng({
+                interesseId: Number(id),
+                emailOng: ong.email,
+                nomeOng: ong.nome,
+                nomeUsuario: interesse.nome_usuario,
+                tituloNecessidade: interesse.titulo_necessidade,
+                novaObservacao: observacao?.trim() || null,
+                novaDataPrevista: data_prevista || null,
+                novaQuantidade: quantidade ? Number(quantidade) : null,
+            }).catch((err) => console.error("[EMAIL] Falha ao enviar edição para ONG:", err.message));
+        }
+    }
+
+    return reply.redirect("/dashboard?editado=1");
 }
 
 export async function aceitarInteresse(

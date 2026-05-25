@@ -1,6 +1,11 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import * as dashboardService from "../services/dashboardService";
 import * as notificacaoService from "../services/notificacaoService";
+import * as atividadesService from "../services/atividadesService";
+import { buildPagination, normalizePage } from "../utils/pagination";
+
+const PAGE_SIZE_DASHBOARD = 5;
+const STATUS_VALIDOS_DASHBOARD = ["pendente", "aceito", "recebido", "cancelado"];
 
 // =======================
 // DASHBOARD - USUÁRIO
@@ -16,11 +21,41 @@ export async function renderDashBoardPage(
       return reply.redirect("/login");
     }
 
-    const { de, ate, interesse } = request.query as { de?: string; ate?: string; interesse?: string };
-    const data = await dashboardService.getDashboardData(Number(sessionUser.id), de, ate);
+    const { status, pagina, interesse, busca } = request.query as {
+      status?: string;
+      pagina?: string;
+      interesse?: string;
+      busca?: string;
+    };
+
+    const statusFiltro = STATUS_VALIDOS_DASHBOARD.includes(status ?? "")
+      ? status
+      : undefined;
+    const buscaAtual = busca?.trim() ?? "";
+    const currentPage = normalizePage(pagina);
+
+    const dados = await atividadesService.getAtividades(
+      Number(sessionUser.id),
+      statusFiltro,
+      buscaAtual || undefined
+    );
+
     if (process.env.NODE_ENV === "test") {
-      return reply.send({ user: sessionUser, ...data });
+      return reply.send({ user: sessionUser, ...dados });
     }
+
+    const pagination = buildPagination({
+      basePath: "/dashboard",
+      currentPage,
+      totalItems: dados.total,
+      pageSize: PAGE_SIZE_DASHBOARD,
+      extraParams: { status: statusFiltro, busca: buscaAtual || undefined },
+    });
+
+    const atividades = dados.atividades.slice(
+      (pagination.currentPage - 1) * PAGE_SIZE_DASHBOARD,
+      pagination.currentPage * PAGE_SIZE_DASHBOARD
+    );
 
     const { naoLidas } = await notificacaoService.listarNotificacoes({
       tipoConta: sessionUser.tipo,
@@ -32,24 +67,12 @@ export async function renderDashBoardPage(
       {
         user: sessionUser,
         naoLidas,
-        // cards
-        totalInteresses: data.totalInteresses ?? 0,
-        entregasPendentes: data.entregasPendentes ?? 0,
-        qtdTipos: data.qtdTipos ?? 0,
-        qtdMesesComAtividade: data.qtdMesesComAtividade ?? 0,
-
-        // métricas de impacto
-        necessidadesApoiadas: data.necessidadesApoiadas ?? 0,
-        ongsApoiadas: data.ongsApoiadas ?? 0,
-        interessesCriados: data.interessesCriados ?? 0,
-        interessesRecebidos: data.interessesRecebidos ?? 0,
-        atividadesRecentes: data.atividadesRecentes ?? [],
-
-        // filtro de período
-        filtroDe: de ?? "",
-        filtroAte: ate ?? "",
-
-        // feedback de ações
+        ...dados,
+        atividades,
+        pagination,
+        isOng: false,
+        statusFiltro: statusFiltro ?? "",
+        buscaAtual,
         sucessoInteresse: interesse === "1",
       },
       { layout: "layouts/dashboardLayout" }

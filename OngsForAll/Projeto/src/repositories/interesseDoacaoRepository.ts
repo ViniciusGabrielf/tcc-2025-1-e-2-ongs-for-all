@@ -106,6 +106,43 @@ export async function listarInteressesPorOng(
     return rows;
 }
 
+export async function cancelarInteresseDoUsuario(id: number, userId: number) {
+    const [rows]: any = await pool.query(
+        `SELECT id, status FROM interesses_doacao WHERE id = ? AND usuario_id = ? LIMIT 1`,
+        [id, userId]
+    );
+    const interesse = rows?.[0];
+    if (!interesse) return { ok: false as const, error: "Interesse não encontrado." };
+    if (interesse.status !== "pendente" && interesse.status !== "aceito") {
+        return { ok: false as const, error: "Apenas interesses pendentes ou em andamento podem ser cancelados." };
+    }
+    await pool.query(`UPDATE interesses_doacao SET status = 'cancelado' WHERE id = ?`, [id]);
+    return { ok: true as const };
+}
+
+export async function editarInteresseDoUsuario(
+    id: number,
+    userId: number,
+    observacao?: string,
+    dataPrevista?: string,
+    quantidade?: number
+) {
+    const [rows]: any = await pool.query(
+        `SELECT id, status FROM interesses_doacao WHERE id = ? AND usuario_id = ? LIMIT 1`,
+        [id, userId]
+    );
+    const interesse = rows?.[0];
+    if (!interesse) return { ok: false as const, error: "Interesse não encontrado." };
+    if (interesse.status !== "pendente") {
+        return { ok: false as const, error: "Apenas interesses pendentes podem ser editados." };
+    }
+    await pool.query(
+        `UPDATE interesses_doacao SET observacao = ?, data_prevista = ?, quantidade = COALESCE(?, quantidade) WHERE id = ?`,
+        [observacao || null, dataPrevista || null, quantidade ?? null, id]
+    );
+    return { ok: true as const };
+}
+
 export async function buscarInteressePorId(id: number) {
     const [rows]: any = await pool.query(
         `

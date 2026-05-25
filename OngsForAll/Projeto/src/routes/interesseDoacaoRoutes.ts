@@ -6,6 +6,8 @@ import {
     aceitarInteresse,
     receberInteresse,
     cancelarInteresse,
+    cancelarInteresseUsuario,
+    editarInteresseUsuario,
 } from "../controllers/interesseDoacaoController";
 import { ensureAuthenticated } from "../middlewares/ensureAuthenticated";
 import { ensureUser } from "../middlewares/ensureUser";
@@ -46,5 +48,17 @@ export async function interesseDoacaoRoutes(fastify: FastifyInstance) {
         "/ong/interesses/:id/cancelar",
         { preHandler: [ensureAuthenticated, ensureOng] },
         cancelarInteresse
+    );
+
+    fastify.post(
+        "/interesses/:id/cancelar",
+        { preHandler: [ensureAuthenticated, ensureUser] },
+        cancelarInteresseUsuario
+    );
+
+    fastify.post(
+        "/interesses/:id/editar",
+        { preHandler: [ensureAuthenticated, ensureUser] },
+        editarInteresseUsuario
     );
 }
