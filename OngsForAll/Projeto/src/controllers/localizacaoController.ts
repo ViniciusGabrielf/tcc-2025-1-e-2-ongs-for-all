@@ -19,18 +19,46 @@ async function getNaoLidas(session: any): Promise<number> {
   return naoLidas;
 }
 
+function renderLocalizacaoIndisponivel(reply: FastifyReply, session: any, naoLidas: number) {
+  return reply.status(404).view("/templates/ong/localizacao.hbs", {
+    title: "Localizacao indisponivel",
+    ong: { id: null, nome: "ONG nao encontrada ou ainda nao aprovada" },
+    estado: "sem_localizacao",
+    estaRemota: false,
+    semLocalizacao: true,
+    enderecoApenas: false,
+    comCoordenadas: false,
+    localizacaoAproximada: false,
+    enderecoTexto: null,
+    bairroStr: "",
+    cidadeStr: "",
+    estadoStr: "",
+    latitude: null,
+    longitude: null,
+    latStr: "",
+    lonStr: "",
+    instrucoesChegada: null,
+    googleMapsUrl: null,
+    googleMapsEmbedUrl: null,
+    temEndereco: false,
+    user: session ?? null,
+    naoLidas,
+  }, { layout: getLayout(session) });
+}
+
 export async function renderLocalizacaoPage(request: FastifyRequest, reply: FastifyReply) {
   const { id } = request.params as { id: string };
   const ongId = Number(id);
-  if (!ongId || isNaN(ongId)) return reply.status(404).send({ message: "ONG não encontrada" });
-
   const session = request.session.user;
-  const [loc, naoLidas] = await Promise.all([
-    localizacaoService.getLocalizacaoPublica(ongId),
-    getNaoLidas(session),
-  ]);
+  const naoLidas = await getNaoLidas(session);
 
-  if (!loc) return reply.status(404).send({ message: "ONG não encontrada" });
+  if (!ongId || isNaN(ongId)) {
+    return renderLocalizacaoIndisponivel(reply, session, naoLidas);
+  }
+
+  const loc = await localizacaoService.getLocalizacaoPublica(ongId);
+
+  if (!loc) return renderLocalizacaoIndisponivel(reply, session, naoLidas);
 
   const temCoordenadas = loc.estado === "com_coordenadas";
   const temEndereco    = !!(loc.enderecoTexto);
