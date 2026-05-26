@@ -5,6 +5,8 @@ import * as empresaService from "../services/empresaService";
 import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
 import * as ongService from "../services/ongService";
+import * as authService from "../services/authService";
+import * as emailService from "../services/emailService";
 import { buildPagination, normalizePage } from "../utils/pagination";
 import { processarUploadComModeracao } from "../services/moderacaoImagemService";
 import { detectMimeFromFile } from "../utils/magicBytes";
@@ -60,7 +62,13 @@ export async function cadastrarEmpresa(request: FastifyRequest, reply: FastifyRe
     );
   }
 
-  return reply.redirect("/login?cadastro=empresa");
+  const email = body.email?.trim() ?? "";
+  const nome = body.nome_fantasia?.trim() ?? "";
+  const codigo = await authService.gerarEEnviarCodigoVerificacao(email, nome, "empresa");
+  emailService.enviarCodigoVerificacaoEmail({ email, nome, codigo })
+    .catch(err => console.error("[EMAIL] Falha ao enviar verificação:", err.message));
+
+  return reply.redirect(`/verificar-email?email=${encodeURIComponent(email)}`);
 }
 
 // ----------------------------------------------------------

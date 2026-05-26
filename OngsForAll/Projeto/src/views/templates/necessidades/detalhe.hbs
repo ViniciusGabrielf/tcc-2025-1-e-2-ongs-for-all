@@ -9,11 +9,11 @@
       </span>
       {{else if necessidade.isServico}}
       <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-xs font-semibold">
-        Servico
+        Serviço
       </span>
       {{else}}
       <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-semibold">
-        Doacao de bem
+        Doação de bem
       </span>
       {{/if}}
 
@@ -154,13 +154,13 @@
           <a href="/interesses/nova?necessidade_id={{necessidade.id}}"
             class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-medium transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            Quero ser voluntario
+            Quero ser voluntário
           </a>
           {{else}}
           <a href="/interesses/nova?necessidade_id={{necessidade.id}}"
             class="inline-flex items-center gap-2 bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] text-white px-5 py-3 rounded-xl font-medium transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-            {{#if necessidade.isServico}}Quero oferecer este servico{{else}}Quero entregar este item{{/if}}
+            {{#if necessidade.isServico}}Quero oferecer este serviço{{else}}Quero entregar este item{{/if}}
           </a>
           {{/if}}
 
@@ -184,7 +184,7 @@
           <a href="{{loginRedirectUrl}}"
             class="inline-flex items-center gap-2 bg-[var(--theme-primary)] hover:bg-[var(--theme-strong)] text-white px-5 py-3 rounded-xl font-medium transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-            {{#if necessidade.isServico}}Quero oferecer este servico{{else if necessidade.isVoluntariado}}Quero ser voluntario{{else}}Quero entregar este item{{/if}}
+            {{#if necessidade.isServico}}Quero oferecer este serviço{{else if necessidade.isVoluntariado}}Quero ser voluntário{{else}}Quero entregar este item{{/if}}
           </a>
           <a href="{{registerRedirectUrl}}"
             class="inline-flex items-center gap-2 border border-slate-300 dark:border-white/20 text-slate-600 dark:text-white/80 px-5 py-3 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition">

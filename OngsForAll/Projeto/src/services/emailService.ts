@@ -601,6 +601,54 @@ export async function enviarCodigoRedefinicaoSenha(params: {
     });
 }
 
+export async function enviarCodigoVerificacaoEmail(params: {
+    email: string;
+    nome: string;
+    codigo: string;
+}) {
+    const html = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <tr>
+          <td style="background:#2D4BA6;padding:28px 32px;text-align:center;">
+            <h1 style="color:#ffffff;margin:0;font-size:24px;">OngsForAll</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <h2 style="color:#111;margin:0 0 8px;">Confirme seu e-mail</h2>
+            <p style="color:#444;margin:0 0 24px;">Olá, <strong>${params.nome}</strong>! Para ativar sua conta, insira o código abaixo na tela de verificação.</p>
+            <div style="text-align:center;margin:32px 0;">
+              <span style="display:inline-block;background:#1D3273;color:#ffffff;font-size:36px;font-weight:700;letter-spacing:12px;padding:16px 32px;border-radius:8px;">${params.codigo}</span>
+            </div>
+            <p style="color:#888;font-size:13px;margin:0 0 8px;">O código é válido por 30 minutos.</p>
+            <p style="color:#888;font-size:13px;margin:0;">Se você não criou uma conta, ignore este e-mail.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f9fafb;padding:20px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+            <p style="color:#9ca3af;font-size:12px;margin:0;">Este é um email automático. Por favor, não responda.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+    await transporter.sendMail({
+        from: FROM,
+        to: params.email,
+        subject: `Seu código de verificação de e-mail — OngsForAll`,
+        html,
+    });
+}
+
 export async function enviarMensagemContato(params: {
     nome: string;
     email: string;

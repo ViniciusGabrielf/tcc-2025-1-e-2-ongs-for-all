@@ -26,7 +26,7 @@
 
       <div>
         <label for="quantidade" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50 mb-1">
-          Quantidade que você pode entregar
+          {{#ifCond necessidade.tipo_necessidade 'voluntariado'}}Quantidade de voluntários{{else}}Quantidade que você pode entregar{{/ifCond}}
         </label>
         <input type="number" name="quantidade" id="quantidade" min="1" placeholder="Ex.: 1"
           class="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9] transition" />
@@ -34,7 +34,7 @@
 
       <div>
         <label for="data_prevista" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-white/50 mb-1">
-          Data prevista para entrega
+          {{#ifCond necessidade.tipo_necessidade 'voluntariado'}}Data prevista do voluntariado{{else}}Data prevista para entrega{{/ifCond}}
         </label>
         <input type="date" name="data_prevista" id="data_prevista"
           class="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9] transition" />
@@ -45,9 +45,10 @@
           Observação
         </label>
         <p class="text-xs text-slate-400 dark:text-white/45 mb-2">
-          Use este campo para combinar a entrega e também informar especificações do item, como estado de conservação, tamanho, modelo ou voltagem.
+          {{#ifCond necessidade.tipo_necessidade 'voluntariado'}}Use este campo para informar sua disponibilidade de horário e qualquer outra informação relevante.{{else}}Use este campo para combinar a entrega e também informar especificações do item, como estado de conservação, tamanho, modelo ou voltagem.{{/ifCond}}
         </p>
-        <textarea name="observacao" id="observacao" rows="3" placeholder="Ex: Posso entregar no período da tarde, O item está em bom estado."
+        <textarea name="observacao" id="observacao" rows="3"
+          placeholder="{{#ifCond necessidade.tipo_necessidade 'voluntariado'}}Ex: Tenho disponibilidade no período da manhã, de segunda a sexta.{{else}}Ex: Posso entregar no período da tarde, O item está em bom estado.{{/ifCond}}"
           class="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9] transition resize-none"></textarea>
       </div>
 

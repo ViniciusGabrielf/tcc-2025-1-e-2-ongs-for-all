@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { z, ZodError } from "zod";
 import { validateLogin } from "../validators/authValidator";
 
+import { SENHA_MSG, senhaForte } from "../utils/passwordValidator";
+import { ensureEmailVerificadoColumns, atualizarEmailNaoVerificado } from "../repositories/authRepository";
 import * as authService from "../services/authService";
 import * as emailService from "../services/emailService";
 import { validateAndLookupCnpj } from "../services/cnpjService";
@@ -15,7 +17,7 @@ import { pool } from "../config/ds"; // ainda usado em registerUser/registerONG 
 const registerUserSchema = z.object({
   nome: z.string().min(1),
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().refine(senhaForte, { message: SENHA_MSG }),
   cpf: z.string().length(11),
   telefone: z.string().min(10).max(11),
 });
@@ -23,7 +25,7 @@ const registerUserSchema = z.object({
 const ongSchema = z.object({
   nome: z.string().min(1),
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().refine(senhaForte, { message: SENHA_MSG }),
   cnpj: z.string().length(14),
   area_atuacao: z.string().min(1),
   telefone: z.string().min(10).max(11),
@@ -83,11 +85,12 @@ function renderRegisterOngError(reply: FastifyReply, error: string, form?: Recor
 export async function renderAuthLoginPage(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const logoutSuccess = (request.query as any).logout === "1";
   const resetSuccess = (request.query as any).reset === "1";
+  const verificadoSuccess = (request.query as any).verificado === "1";
   const redirectTo = getSafeRedirectPath((request.query as any).redirect);
   const registerUrl = redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : "/register";
   return reply.view(
     "/templates/auth/login.hbs",
-    { logoutSuccess, resetSuccess, redirectTo, registerUrl },
+    { logoutSuccess, resetSuccess, verificadoSuccess, redirectTo, registerUrl },
     { layout: "layouts/authLayout" }
   );
 }
@@ -132,15 +135,18 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
+    await ensureEmailVerificadoColumns();
     await pool.query(
-      `INSERT INTO usuarios (nome, email, senha, cpf, telefone)
-       VALUES (?, ?, ?, ?, ?)`,
+      `INSERT INTO usuarios (nome, email, senha, cpf, telefone, email_verificado)
+       VALUES (?, ?, ?, ?, ?, 0)`,
       [body.nome, body.email, hashedPassword, body.cpf, body.telefone]
     );
 
-    const redirectTo = getSafeRedirectPath(rawBody.redirect);
-    const loginTarget = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login";
-    return reply.redirect(loginTarget);
+    const codigo = await authService.gerarEEnviarCodigoVerificacao(body.email, body.nome, "usuario");
+    emailService.enviarCodigoVerificacaoEmail({ email: body.email, nome: body.nome, codigo })
+      .catch(err => console.error("[EMAIL] Falha ao enviar verificação:", err.message));
+
+    return reply.redirect(`/verificar-email?email=${encodeURIComponent(body.email)}`);
   } catch (error: any) {
     console.error("Erro ao registrar usuÃ¡rio:", error);
 
@@ -212,15 +218,18 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
 
     const hashedPassword = await bcrypt.hash(ong.password, 10);
 
+    await ensureEmailVerificadoColumns();
     await pool.query(
-      `INSERT INTO ongs (nome, email, senha, cnpj, area_atuacao, telefone)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO ongs (nome, email, senha, cnpj, area_atuacao, telefone, email_verificado)
+       VALUES (?, ?, ?, ?, ?, ?, 0)`,
       [ong.nome, ong.email, hashedPassword, cnpjValidation.cnpj, ong.area_atuacao, ong.telefone]
     );
 
-    const redirectTo = getSafeRedirectPath((request.body as any)?.redirect);
-    const loginTarget = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login";
-    return reply.redirect(loginTarget);
+    const codigo = await authService.gerarEEnviarCodigoVerificacao(ong.email, ong.nome, "ong");
+    emailService.enviarCodigoVerificacaoEmail({ email: ong.email, nome: ong.nome, codigo })
+      .catch(err => console.error("[EMAIL] Falha ao enviar verificação:", err.message));
+
+    return reply.redirect(`/verificar-email?email=${encodeURIComponent(ong.email)}`);
   } catch (error: any) {
     console.error("Erro ao cadastrar ONG:", error);
 
@@ -287,6 +296,12 @@ export async function loginUser(
     const result = await authService.login(email.trim(), password, ip);
 
     if (!result.ok) {
+      if ("naoVerificado" in result && result.naoVerificado) {
+        return reply.redirect(
+          `/verificar-email?email=${encodeURIComponent(result.email)}&pendente=1`
+        );
+      }
+
       if (process.env.NODE_ENV === "test") {
         return reply.status(401).send({ error: "E-mail ou senha incorretos" });
       }
@@ -406,10 +421,10 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
     );
   }
 
-  if (!password || password.length < 6) {
+  if (!password || !senhaForte(password)) {
     return reply.view(
       "/templates/auth/resetPassword.hbs",
-      { error: "A senha deve ter no mínimo 6 caracteres." },
+      { error: SENHA_MSG },
       { layout: "layouts/authLayout" }
     );
   }
@@ -439,6 +454,117 @@ export async function handleResetPassword(request: FastifyRequest, reply: Fastif
     return reply.view(
       "/templates/auth/resetPassword.hbs",
       { error: "Erro interno ao redefinir. Tente novamente." },
+      { layout: "layouts/authLayout" }
+    );
+  }
+}
+
+// =======================
+// Verificação de e-mail
+// =======================
+export async function renderVerificarEmailPage(request: FastifyRequest, reply: FastifyReply) {
+  const email = ((request.query as any).email ?? "").trim();
+  const pendente = (request.query as any).pendente === "1";
+  const reenviado = (request.query as any).reenviado === "1";
+  return reply.view(
+    "/templates/auth/verificarEmail.hbs",
+    { email, pendente, reenviado },
+    { layout: "layouts/authLayout" }
+  );
+}
+
+export async function handleVerificarEmail(request: FastifyRequest, reply: FastifyReply) {
+  const { email, codigo } = request.body as { email: string; codigo: string };
+
+  const emailNorm = (email ?? "").trim();
+  const codigoNorm = (codigo ?? "").trim();
+
+  if (!emailNorm || !codigoNorm) {
+    return reply.view(
+      "/templates/auth/verificarEmail.hbs",
+      { email: emailNorm, error: "Informe o código de verificação." },
+      { layout: "layouts/authLayout" }
+    );
+  }
+
+  const result = await authService.verificarCodigoEmail(emailNorm, codigoNorm);
+
+  if (!result.ok) {
+    return reply.view(
+      "/templates/auth/verificarEmail.hbs",
+      { email: emailNorm, error: "Código inválido ou expirado. Solicite um novo código." },
+      { layout: "layouts/authLayout" }
+    );
+  }
+
+  return reply.redirect("/login?verificado=1");
+}
+
+export async function handleReenviarVerificacao(request: FastifyRequest, reply: FastifyReply) {
+  const { email } = request.body as { email: string };
+  const emailNorm = (email ?? "").trim();
+
+  if (!emailNorm) return reply.redirect("/register");
+
+  try {
+    const conta = await authService.buscarContaPorEmail(emailNorm);
+
+    if (conta) {
+      const codigo = await authService.gerarEEnviarCodigoVerificacao(emailNorm, conta.nome, conta.tipo);
+      emailService.enviarCodigoVerificacaoEmail({ email: emailNorm, nome: conta.nome, codigo })
+        .catch(err => console.error("[EMAIL] Falha ao reenviar verificação:", err.message));
+    }
+  } catch (err) {
+    console.error("[VERIFICACAO] Erro ao reenviar código:", err);
+  }
+
+  return reply.redirect(`/verificar-email?email=${encodeURIComponent(emailNorm)}&reenviado=1`);
+}
+
+export async function handleAlterarEmailVerificacao(request: FastifyRequest, reply: FastifyReply) {
+  const { email_antigo, email_novo } = request.body as { email_antigo: string; email_novo: string };
+
+  const emailAntigo = (email_antigo ?? "").trim().toLowerCase();
+  const emailNovo = (email_novo ?? "").trim().toLowerCase();
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailNovo || !emailRegex.test(emailNovo)) {
+    return reply.view(
+      "/templates/auth/verificarEmail.hbs",
+      { email: emailAntigo, error: "Informe um e-mail válido." },
+      { layout: "layouts/authLayout" }
+    );
+  }
+
+  if (emailNovo === emailAntigo) {
+    return reply.redirect(`/verificar-email?email=${encodeURIComponent(emailAntigo)}`);
+  }
+
+  try {
+    const atualizado = await atualizarEmailNaoVerificado(emailAntigo, emailNovo);
+
+    if (!atualizado) {
+      return reply.view(
+        "/templates/auth/verificarEmail.hbs",
+        { email: emailAntigo, error: "Não foi possível alterar o e-mail. Tente se cadastrar novamente." },
+        { layout: "layouts/authLayout" }
+      );
+    }
+
+    const conta = await authService.buscarContaPorEmail(emailNovo);
+    if (conta) {
+      const codigo = await authService.gerarEEnviarCodigoVerificacao(emailNovo, conta.nome, conta.tipo);
+      emailService.enviarCodigoVerificacaoEmail({ email: emailNovo, nome: conta.nome, codigo })
+        .catch(err => console.error("[EMAIL] Falha ao enviar verificação:", err.message));
+    }
+
+    return reply.redirect(`/verificar-email?email=${encodeURIComponent(emailNovo)}&reenviado=1`);
+  } catch (err) {
+    console.error("[VERIFICACAO] Erro ao alterar e-mail:", err);
+    return reply.view(
+      "/templates/auth/verificarEmail.hbs",
+      { email: emailAntigo, error: "Erro ao alterar o e-mail. Tente novamente." },
       { layout: "layouts/authLayout" }
     );
   }

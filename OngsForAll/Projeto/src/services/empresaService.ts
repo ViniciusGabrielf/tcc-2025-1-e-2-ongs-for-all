@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { SENHA_MSG, senhaForte } from "../utils/passwordValidator";
 import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
 import { formatCnpj, isValidCnpj, normalizeCnpj, validateAndLookupCnpj } from "./cnpjService";
@@ -83,7 +84,7 @@ const cadastroSchema = z.object({
   telefone: z.string().min(8).optional(),
   descricao: z.string().optional(),
   setor: z.string().optional(),
-  senha: z.string().min(6, "Senha minima de 6 caracteres"),
+  senha: z.string().refine(senhaForte, { message: SENHA_MSG }),
 });
 
 const perfilEmpresaSchema = z.object({

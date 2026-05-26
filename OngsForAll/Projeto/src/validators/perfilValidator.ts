@@ -1,3 +1,5 @@
+import { SENHA_MSG, senhaForte } from "../utils/passwordValidator";
+
 type PerfilInput = {
   nome?: string;
   email?: string;
@@ -34,8 +36,8 @@ export function validatePerfil(data: PerfilInput) {
   }
 
   if (data.password && data.password.length > 0) {
-    if (data.password.length < 6) {
-      errors.push("A senha deve ter no mínimo 6 caracteres.");
+    if (!senhaForte(data.password)) {
+      errors.push(SENHA_MSG);
     }
   }
 

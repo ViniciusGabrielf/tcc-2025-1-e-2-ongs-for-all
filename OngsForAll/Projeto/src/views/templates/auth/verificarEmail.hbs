@@ -1,0 +1,124 @@
+<div class="flex flex-col items-center justify-center min-h-screen py-10 px-4">
+  <div class="w-full max-w-lg bg-white dark:bg-[#102235] rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 p-6 sm:p-8">
+
+    <div class="text-center mb-8">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center mx-auto mb-4 shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">Verificação de e-mail</h1>
+      <p class="text-sm text-slate-500 dark:text-white/50 mt-1">
+        Enviamos um código de 6 dígitos para
+      </p>
+      <div class="flex items-center justify-center gap-2 mt-1">
+        <strong id="email-display" class="text-slate-700 dark:text-white/80 text-sm">{{email}}</strong>
+        <button type="button" id="btn-editar-email"
+          class="text-violet-600 dark:text-violet-400 hover:underline text-xs font-semibold flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
+          </svg>
+          Editar
+        </button>
+      </div>
+
+      <div id="form-editar-email" class="hidden mt-3 w-full">
+        <form action="/alterar-email-verificacao" method="POST" class="flex flex-col gap-2">
+          <input type="hidden" name="email_antigo" value="{{email}}" />
+          <input type="email" name="email_novo" placeholder="Novo e-mail" required
+            class="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+          <div class="flex gap-2">
+            <button type="submit"
+              class="flex-1 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-700 text-white text-sm font-semibold hover:opacity-90 transition">
+              Confirmar
+            </button>
+            <button type="button" id="btn-cancelar-editar"
+              class="flex-1 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-white/70 hover:opacity-80 transition">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {{#if pendente}}
+    <div class="mb-5 px-4 py-3 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300 text-sm">
+      Seu e-mail ainda não foi verificado. Insira o código enviado para ativar sua conta.
+    </div>
+    {{/if}}
+
+    {{#if reenviado}}
+    <div class="mb-5 px-4 py-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-sm">
+      Novo código enviado! Verifique sua caixa de entrada (e a pasta de spam).
+    </div>
+    {{/if}}
+
+    {{#if error}}
+    <div class="mb-5 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm">
+      {{error}}
+    </div>
+    {{/if}}
+
+    <form action="/verificar-email" method="POST" class="space-y-5">
+      <input type="hidden" name="email" value="{{email}}" />
+
+      <div>
+        <label for="codigo" class="block text-sm font-semibold text-slate-700 dark:text-white/80 mb-1">Código de verificação</label>
+        <input
+          type="text"
+          name="codigo"
+          id="codigo"
+          required
+          maxlength="6"
+          inputmode="numeric"
+          pattern="[0-9]{6}"
+          placeholder="000000"
+          autocomplete="one-time-code"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 text-center text-2xl tracking-widest font-mono"
+        />
+        <p class="text-xs text-slate-400 dark:text-white/40 mt-1">O código é válido por 30 minutos.</p>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-700 text-white font-bold text-sm shadow-md hover:opacity-90 transition">
+        Confirmar e-mail
+      </button>
+    </form>
+
+    <div class="mt-5 border-t border-slate-100 dark:border-white/10 pt-5">
+      <p class="text-center text-sm text-slate-500 dark:text-white/50 mb-3">Não recebeu o código?</p>
+      <form action="/reenviar-verificacao" method="POST">
+        <input type="hidden" name="email" value="{{email}}" />
+        <button type="submit"
+          class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-sm font-semibold text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition">
+          Reenviar código
+        </button>
+      </form>
+    </div>
+
+    <p class="text-center text-sm text-slate-500 dark:text-white/50 mt-4">
+      <a href="/login" class="text-violet-600 dark:text-violet-400 font-semibold hover:underline">Voltar para o login</a>
+    </p>
+
+  </div>
+</div>
+
+<script>
+  const btnEditar = document.getElementById('btn-editar-email');
+  const btnCancelar = document.getElementById('btn-cancelar-editar');
+  const formEditar = document.getElementById('form-editar-email');
+  const emailDisplay = document.getElementById('email-display');
+
+  btnEditar.addEventListener('click', () => {
+    formEditar.classList.remove('hidden');
+    emailDisplay.classList.add('hidden');
+    btnEditar.classList.add('hidden');
+  });
+
+  btnCancelar.addEventListener('click', () => {
+    formEditar.classList.add('hidden');
+    emailDisplay.classList.remove('hidden');
+    btnEditar.classList.remove('hidden');
+  });
+</script>
