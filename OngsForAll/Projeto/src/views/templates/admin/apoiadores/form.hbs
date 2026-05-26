@@ -1,0 +1,147 @@
+<div class="max-w-2xl mx-auto space-y-6">
+
+  <!-- Cabeçalho -->
+  <div class="flex items-center gap-3">
+    <a href="/admin/apoiadores" class="text-slate-400 hover:text-slate-600 dark:text-white/30 dark:hover:text-white/60 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </a>
+    <div>
+      <h2 class="text-2xl font-bold text-[#2D4BA6] dark:text-white">
+        {{#if modoEdicao}}Editar apoiador{{else}}Novo apoiador{{/if}}
+      </h2>
+      <p class="text-sm text-slate-500 dark:text-white/60 mt-0.5">Preencha os dados do apoiador institucional</p>
+    </div>
+  </div>
+
+  <!-- Erro -->
+  {{#if erro}}
+  <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl text-sm font-medium">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    {{erro}}
+  </div>
+  {{/if}}
+
+  <form method="POST" action="{{#if modoEdicao}}/admin/apoiadores/{{apoiador.id}}{{else}}/admin/apoiadores{{/if}}"
+    enctype="multipart/form-data"
+    class="bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm space-y-5">
+
+    {{#if modoEdicao}}
+    <input type="hidden" name="logo_url_existente" value="{{apoiador.logo_url}}" />
+    {{/if}}
+
+    <!-- Nome -->
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Nome da empresa <span class="text-red-500">*</span></label>
+      <input type="text" name="nome" value="{{apoiador.nome}}" required maxlength="150"
+        placeholder="Ex: Padaria Central"
+        class="w-full rounded-xl px-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9]" />
+    </div>
+
+    <!-- Logo -->
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Logo da empresa</label>
+      {{#if apoiador.logo_url}}
+      <div class="mb-2 flex items-center gap-3">
+        <img src="{{apoiador.logo_url}}" alt="Logo atual" class="h-12 max-w-[160px] object-contain rounded-lg border border-slate-200 dark:border-white/10 p-1 bg-white dark:bg-white/5" />
+        <span class="text-xs text-slate-400">Logo atual — envie uma nova para substituir</span>
+      </div>
+      {{/if}}
+      <input type="file" name="logo" accept="image/jpeg,image/png,image/webp"
+        class="w-full text-sm text-slate-600 dark:text-white/60 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#2D4BA6]/10 file:text-[#2D4BA6] dark:file:bg-[#4886D9]/20 dark:file:text-[#4886D9] hover:file:opacity-80 file:transition" />
+      <p class="text-xs text-slate-400 dark:text-white/30 mt-1">JPG, PNG ou WebP · Máx. 1 MB</p>
+    </div>
+
+    <!-- Link externo -->
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Link externo</label>
+      <input type="url" name="website_url" value="{{apoiador.website_url}}" maxlength="500"
+        placeholder="https://site-da-empresa.com.br"
+        class="w-full rounded-xl px-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9]" />
+      <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Opcional. O link abrirá em nova aba com segurança.</p>
+    </div>
+
+    <!-- Plano + Valor -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Plano <span class="text-red-500">*</span></label>
+        <select name="plano" id="planoSelect" required onchange="atualizarValor(this.value)"
+          class="w-full rounded-xl px-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
+          <option value="basico"        {{#ifCond apoiador.plano '===' 'basico'}}selected{{/ifCond}}>Apoiador Básico — R$ 19,90/mês</option>
+          <option value="local"         {{#ifCond apoiador.plano '===' 'local'}}selected{{/ifCond}}>Apoiador Local — R$ 39,90/mês</option>
+          <option value="destaque"      {{#ifCond apoiador.plano '===' 'destaque'}}selected{{/ifCond}}>Apoiador Destaque — R$ 69,90/mês</option>
+          <option value="institucional" {{#ifCond apoiador.plano '===' 'institucional'}}selected{{/ifCond}}>Parceiro Institucional — R$ 99,90/mês</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Valor mensal (R$) <span class="text-red-500">*</span></label>
+        <input type="number" name="valor_mensal" id="valorMensal" step="0.01" min="0.01"
+          value="{{apoiador.valor_mensal}}"
+          class="w-full rounded-xl px-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]" />
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Preenchido pelo plano. Ajuste se necessário.</p>
+      </div>
+    </div>
+
+    <!-- Descrição -->
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Descrição institucional</label>
+      <textarea name="descricao" rows="2" maxlength="200"
+        placeholder="Breve descrição da empresa (opcional, disponível nos planos Local, Destaque e Institucional)"
+        class="w-full rounded-xl px-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4886D9] resize-none">{{apoiador.descricao}}</textarea>
+      <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Máx. 200 caracteres.</p>
+    </div>
+
+    <!-- Datas -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Data de início <span class="text-red-500">*</span></label>
+        <input type="date" name="data_inicio" value="{{apoiador.data_inicio}}" required
+          class="w-full rounded-xl px-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Data de término</label>
+        <input type="date" name="data_fim" value="{{apoiador.data_fim}}"
+          class="w-full rounded-xl px-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]" />
+        <p class="text-xs text-slate-400 dark:text-white/30 mt-1">Deixe em branco para sem data de encerramento.</p>
+      </div>
+    </div>
+
+    <!-- Status inicial (só no cadastro) -->
+    {{#unless modoEdicao}}
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 dark:text-white/60 mb-1.5">Status inicial</label>
+      <div class="flex gap-4">
+        <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-white/80 cursor-pointer">
+          <input type="radio" name="status" value="pausado" checked class="accent-[#2D4BA6]" /> Pausado (aguarda ativação)
+        </label>
+        <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-white/80 cursor-pointer">
+          <input type="radio" name="status" value="ativo" class="accent-[#2D4BA6]" /> Ativo imediatamente
+        </label>
+      </div>
+    </div>
+    {{/unless}}
+
+    <!-- Ações -->
+    <div class="flex items-center gap-3 pt-2 border-t border-slate-100 dark:border-white/5">
+      <button type="submit"
+        class="px-6 py-2.5 rounded-xl bg-[#2D4BA6] text-white text-sm font-semibold hover:opacity-90 transition shadow-sm">
+        {{#if modoEdicao}}Salvar alterações{{else}}Cadastrar apoiador{{/if}}
+      </button>
+      <a href="/admin/apoiadores" class="px-4 py-2.5 rounded-xl text-sm text-slate-500 dark:text-white/50 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+        Cancelar
+      </a>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  var planoValores = { basico: 19.90, local: 39.90, destaque: 69.90, institucional: 99.90 };
+  function atualizarValor(plano) {
+    var campo = document.getElementById('valorMensal');
+    if (campo && planoValores[plano]) campo.value = planoValores[plano].toFixed(2);
+  }
+</script>

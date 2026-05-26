@@ -1,0 +1,269 @@
+<style>
+  #apoiadores-scroll::-webkit-scrollbar { display: none; }
+  #apoiadores-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .ap-card, .ap-card img { transition: none !important; }
+  }
+</style>
+
+<div id="apoiadores-section" style="display:none">
+  <div class="border-t border-slate-200 dark:border-white/10 mt-6 pt-5 pb-3">
+
+    <p class="text-xs text-center text-slate-400 dark:text-white/30 mb-4 font-medium tracking-widest uppercase select-none">
+      Apoiadores da plataforma
+    </p>
+
+    <!-- Scroll horizontal -->
+    <div class="relative">
+      <!-- Fade esquerda -->
+      <div id="ap-fade-left"
+        class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 hidden"
+        style="background: linear-gradient(to right, var(--ap-bg, white), transparent)"></div>
+      <!-- Fade direita -->
+      <div id="ap-fade-right"
+        class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10"
+        style="background: linear-gradient(to left, var(--ap-bg, white), transparent)"></div>
+
+      <div id="apoiadores-scroll"
+        class="flex items-stretch gap-3 overflow-x-auto px-2 py-1"
+        style="-webkit-overflow-scrolling: touch; scroll-behavior: smooth;">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  /* ── Configuração por plano ───────────────────────────────────────────── */
+  var PLANOS = {
+    institucional: {
+      ordem: 4,
+      logoH: 48,
+      showNome: true,
+      showDesc: true,
+      showBadge: true,
+      badgeLabel: 'Parceiro Institucional',
+      badgeBg: '#2D4BA6',
+      cardBorder: '1.5px solid rgba(45,75,166,0.30)',
+      cardBg: 'rgba(45,75,166,0.04)',
+      cardRadius: '14px',
+      cardPad: '12px 14px',
+      cardMinW: '170px',
+      cardMaxW: '220px',
+      grayscale: false,
+      opacity: '1',
+    },
+    destaque: {
+      ordem: 3,
+      logoH: 38,
+      showNome: true,
+      showDesc: true,
+      showBadge: true,
+      badgeLabel: 'Destaque',
+      badgeBg: '#4886D9',
+      cardBorder: '1px solid rgba(72,134,217,0.25)',
+      cardBg: 'rgba(72,134,217,0.03)',
+      cardRadius: '12px',
+      cardPad: '10px 12px',
+      cardMinW: '150px',
+      cardMaxW: '200px',
+      grayscale: false,
+      opacity: '1',
+    },
+    local: {
+      ordem: 2,
+      logoH: 30,
+      showNome: true,
+      showDesc: false,
+      showBadge: true,
+      badgeLabel: 'Apoiador Local',
+      badgeBg: '#64748b',
+      cardBorder: '1px solid rgba(100,116,139,0.15)',
+      cardBg: 'transparent',
+      cardRadius: '10px',
+      cardPad: '8px 10px',
+      cardMinW: '120px',
+      cardMaxW: '170px',
+      grayscale: true,
+      opacity: '0.75',
+    },
+    basico: {
+      ordem: 1,
+      logoH: 24,
+      showNome: false,
+      showDesc: false,
+      showBadge: false,
+      badgeLabel: '',
+      badgeBg: '',
+      cardBorder: 'none',
+      cardBg: 'transparent',
+      cardRadius: '8px',
+      cardPad: '6px 8px',
+      cardMinW: '90px',
+      cardMaxW: '140px',
+      grayscale: true,
+      opacity: '0.55',
+    },
+  };
+
+  function cfg(plano) {
+    return PLANOS[plano] || PLANOS['basico'];
+  }
+
+  /* ── Detectar tema escuro ─────────────────────────────────────────────── */
+  function isDark() {
+    return document.documentElement.classList.contains('dark');
+  }
+
+  /* ── Construir card ───────────────────────────────────────────────────── */
+  function buildCard(a) {
+    var c = cfg(a.plano);
+
+    var card = document.createElement('div');
+    card.className = 'ap-card flex flex-col items-center gap-1.5 shrink-0 transition-opacity duration-200';
+    card.style.cssText = [
+      'border:' + (isDark() ? c.cardBorder.replace('rgba(', 'rgba(').replace(',0.', ',0.4') : c.cardBorder),
+      'background:' + (isDark() ? c.cardBg.replace('0.04', '0.08').replace('0.03', '0.06') : c.cardBg),
+      'border-radius:' + c.cardRadius,
+      'padding:' + c.cardPad,
+      'min-width:' + c.cardMinW,
+      'max-width:' + c.cardMaxW,
+      'opacity:' + c.opacity,
+    ].join(';');
+
+    /* Hover: elevar opacidade */
+    card.addEventListener('mouseenter', function () { this.style.opacity = '1'; });
+    card.addEventListener('mouseleave', function () { this.style.opacity = c.opacity; });
+
+    /* Logo ou inicial */
+    var logoWrap = document.createElement('div');
+    logoWrap.style.cssText = 'height:' + c.logoH + 'px; display:flex; align-items:center; justify-content:center; width:100%;';
+
+    if (a.logo_url) {
+      var img = document.createElement('img');
+      img.src = a.logo_url;
+      img.alt = a.nome;
+      img.title = a.nome;
+      img.style.cssText = [
+        'max-height:' + c.logoH + 'px',
+        'max-width:100%',
+        'object-fit:contain',
+        c.grayscale ? 'filter:grayscale(100%)' : '',
+        'transition: filter 0.3s',
+      ].join(';');
+      img.addEventListener('mouseenter', function () { if (c.grayscale) this.style.filter = 'grayscale(0%)'; });
+      img.addEventListener('mouseleave', function () { if (c.grayscale) this.style.filter = 'grayscale(100%)'; });
+      img.onerror = function () {
+        logoWrap.innerHTML = '';
+        var ini = document.createElement('span');
+        ini.textContent = (a.nome || '?')[0].toUpperCase();
+        ini.style.cssText = 'font-size:18px; font-weight:700; color:' + (isDark() ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)') + '; line-height:1;';
+        logoWrap.appendChild(ini);
+      };
+      logoWrap.appendChild(img);
+    } else {
+      var ini = document.createElement('span');
+      ini.textContent = (a.nome || '?')[0].toUpperCase();
+      ini.style.cssText = 'font-size:16px; font-weight:700; color:' + (isDark() ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.18)') + '; line-height:1;';
+      logoWrap.appendChild(ini);
+    }
+    card.appendChild(logoWrap);
+
+    /* Nome */
+    if (c.showNome) {
+      var nome = document.createElement('p');
+      nome.textContent = a.nome;
+      nome.style.cssText = 'font-size:11px; font-weight:600; text-align:center; line-height:1.3; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:' + (isDark() ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)') + ';';
+      card.appendChild(nome);
+    }
+
+    /* Descrição */
+    if (c.showDesc && a.descricao) {
+      var desc = document.createElement('p');
+      var maxLen = 80;
+      desc.textContent = a.descricao.length > maxLen ? a.descricao.slice(0, maxLen) + '…' : a.descricao;
+      desc.style.cssText = 'font-size:10px; text-align:center; line-height:1.4; color:' + (isDark() ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)') + '; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;';
+      card.appendChild(desc);
+    }
+
+    /* Badge */
+    if (c.showBadge && c.badgeLabel) {
+      var badge = document.createElement('span');
+      badge.textContent = c.badgeLabel;
+      badge.style.cssText = 'font-size:9px; font-weight:600; padding:2px 7px; border-radius:20px; background:' + c.badgeBg + '22; color:' + c.badgeBg + '; letter-spacing:0.03em; white-space:nowrap;';
+      card.appendChild(badge);
+    }
+
+    /* Wrapper com link ou div */
+    var wrap;
+    if (a.website_url) {
+      wrap = document.createElement('a');
+      wrap.href = a.website_url;
+      wrap.target = '_blank';
+      wrap.rel = 'noopener noreferrer';
+      wrap.setAttribute('aria-label', 'Visitar site de ' + a.nome);
+      wrap.style.cssText = 'display:contents; text-decoration:none;';
+      wrap.appendChild(card);
+    } else {
+      wrap = card;
+    }
+
+    return wrap;
+  }
+
+  /* ── Fades de scroll ──────────────────────────────────────────────────── */
+  function updateFades(el) {
+    var left = document.getElementById('ap-fade-left');
+    var right = document.getElementById('ap-fade-right');
+    if (!left || !right) return;
+    var scrolled = el.scrollLeft > 8;
+    var canRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 8;
+    left.style.display = scrolled ? '' : 'none';
+    right.style.display = canRight ? '' : 'none';
+  }
+
+  /* ── Init ─────────────────────────────────────────────────────────────── */
+  fetch('/api/apoiadores/publico')
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (list) {
+      if (!list || !list.length) return;
+
+      var container = document.getElementById('apoiadores-scroll');
+      var section = document.getElementById('apoiadores-section');
+      if (!container || !section) return;
+
+      /* Ordenar: maior prioridade primeiro, depois por plano */
+      list.sort(function (a, b) {
+        var pa = (cfg(a.plano).ordem || 0) * 10 + (a.prioridade || 0);
+        var pb = (cfg(b.plano).ordem || 0) * 10 + (b.prioridade || 0);
+        return pb - pa;
+      });
+
+      list.forEach(function (a) {
+        container.appendChild(buildCard(a));
+      });
+
+      section.style.display = '';
+
+      /* Fades */
+      updateFades(container);
+      container.addEventListener('scroll', function () { updateFades(this); }, { passive: true });
+
+      /* Adaptar cor de fundo do fade ao tema */
+      var bgColor = isDark() ? '#0D1B2A' : '#ffffff';
+      var fadeEl = document.getElementById('ap-fade-left');
+      var fadeEl2 = document.getElementById('ap-fade-right');
+      if (fadeEl) fadeEl.style.background = 'linear-gradient(to right,' + bgColor + ',transparent)';
+      if (fadeEl2) fadeEl2.style.background = 'linear-gradient(to left,' + bgColor + ',transparent)';
+
+      /* Centralizar se couber tudo sem scroll */
+      if (container.scrollWidth <= container.clientWidth) {
+        container.style.justifyContent = 'center';
+        var fadeR = document.getElementById('ap-fade-right');
+        if (fadeR) fadeR.style.display = 'none';
+      }
+    })
+    .catch(function () {});
+})();
+</script>
