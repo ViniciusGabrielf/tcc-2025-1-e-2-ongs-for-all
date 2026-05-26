@@ -31,15 +31,6 @@ const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
 
-function parseMultipartFields(fields: Record<string, any>): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, field] of Object.entries(fields)) {
-    if (field && typeof field === "object" && "value" in field) {
-      result[key] = field.value;
-    }
-  }
-  return result;
-}
 
 export async function renderPerfilPage(request: FastifyRequest, reply: FastifyReply) {
   const session = request.session.user;
@@ -83,92 +74,85 @@ export async function updatePerfil(request: FastifyRequest, reply: FastifyReply)
     let instrucoesChegada: string | undefined;
 
     if (isOng) {
-      // ONG usa multipart/form-data (tem upload de logo)
-      const data = await request.file();
+      // Usa request.parts() para capturar campos antes E depois do arquivo no multipart
+      const partsIter = request.parts();
+      const f: Record<string, string> = {};
+      let uploadFilename = "";
+      let uploadMimetype = "";
+      let uploadTempPath = "";
 
-      if (data) {
-        const fields = parseMultipartFields(data.fields);
-        nome = fields.nome;
-        email = fields.email;
-        telefone = fields.telefone;
-        password = fields.password;
-        area_atuacao = fields.area_atuacao;
-        cnpj = fields.cnpj;
-        cep = fields.cep;
-        logradouro = fields.logradouro;
-        numero = fields.numero;
-        complemento = fields.complemento;
-        bairro = fields.bairro;
-        cidade = fields.cidade;
-        estado = fields.estado;
-        localizacaoPublica   = fields.localizacao_publica   === "1";
-        localizacaoAproximada = fields.localizacao_aproximada === "1";
-        atendimentoRemoto    = fields.atendimento_remoto    === "1";
-        instrucoesChegada = fields.instrucoes_chegada;
-
-        if (data.filename && data.mimetype) {
-          if (!ALLOWED_MIMES.includes(data.mimetype)) {
-            throw new Error("Formato de imagem não suportado. Use JPG, PNG, WebP ou GIF.");
+      for await (const part of partsIter) {
+        if (part.type === "file") {
+          if (part.filename && ALLOWED_MIMES.includes(part.mimetype)) {
+            if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
+            const ext = path.extname(part.filename).toLowerCase() || ".jpg";
+            const filename = `ong_${userId}_${Date.now()}${ext}`;
+            const tempPath = path.join(TEMP_DIR, filename);
+            await pipeline(part.file, fs.createWriteStream(tempPath));
+            uploadFilename = filename;
+            uploadMimetype = part.mimetype;
+            uploadTempPath = tempPath;
+          } else {
+            part.file.resume();
           }
-
-          const ext = path.extname(data.filename).toLowerCase() || ".jpg";
-          const filename = `ong_${userId}_${Date.now()}${ext}`;
-
-          if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
-          const tempFilePath = path.join(TEMP_DIR, filename);
-
-          const writeStream = fs.createWriteStream(tempFilePath);
-          await pipeline(data.file, writeStream);
-
-          const stats = fs.statSync(tempFilePath);
-          if (stats.size > MAX_FILE_SIZE) {
-            fs.unlinkSync(tempFilePath);
-            throw new Error("Imagem muito grande. O tamanho máximo é 2MB.");
-          }
-
-          const realMime = detectMimeFromFile(tempFilePath);
-          if (!realMime || !ALLOWED_MIMES.includes(realMime)) {
-            fs.unlinkSync(tempFilePath);
-            throw new Error("Formato de arquivo inválido. O conteúdo não corresponde a uma imagem suportada.");
-          }
-
-          if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-
-          const modResult = await processarUploadComModeracao({
-            tempPath: tempFilePath,
-            publicDir: UPLOADS_DIR,
-            publicUrlBase: "/public/uploads/logos",
-            filename,
-            mimeType: realMime,
-            tipo: "logo_ong",
-            referenciaId: userId,
-          });
-
-          if (!modResult.ok) {
-            throw new Error(modResult.rejeitado ? modResult.motivo : modResult.erro);
-          }
-
-          logoPath = modResult.publicUrl;
+        } else {
+          f[part.fieldname] = part.value as string;
         }
-      } else {
-        const body = request.body as any;
-        nome = body.nome;
-        email = body.email;
-        telefone = body.telefone;
-        password = body.password;
-        area_atuacao = body.area_atuacao;
-        cnpj = body.cnpj;
-        cep = body.cep;
-        logradouro = body.logradouro;
-        numero = body.numero;
-        complemento = body.complemento;
-        bairro = body.bairro;
-        cidade = body.cidade;
-        estado = body.estado;
-        localizacaoPublica   = body.localizacao_publica   === "1";
-        localizacaoAproximada = body.localizacao_aproximada === "1";
-        atendimentoRemoto    = body.atendimento_remoto    === "1";
-        instrucoesChegada = body.instrucoes_chegada;
+      }
+
+      nome          = f.nome          ?? "";
+      email         = f.email         ?? "";
+      telefone      = f.telefone;
+      password      = f.password;
+      area_atuacao  = f.area_atuacao;
+      cnpj          = f.cnpj;
+      cep           = f.cep;
+      logradouro    = f.logradouro;
+      numero        = f.numero;
+      complemento   = f.complemento;
+      bairro        = f.bairro;
+      cidade        = f.cidade;
+      estado        = f.estado;
+      localizacaoPublica    = f.localizacao_publica    === "1";
+      localizacaoAproximada = f.localizacao_aproximada === "1";
+      atendimentoRemoto     = f.atendimento_remoto     === "1";
+      instrucoesChegada     = f.instrucoes_chegada;
+
+      if (uploadTempPath) {
+        if (!ALLOWED_MIMES.includes(uploadMimetype)) {
+          fs.unlinkSync(uploadTempPath);
+          throw new Error("Formato de imagem não suportado. Use JPG, PNG, WebP ou GIF.");
+        }
+
+        const stats = fs.statSync(uploadTempPath);
+        if (stats.size > MAX_FILE_SIZE) {
+          fs.unlinkSync(uploadTempPath);
+          throw new Error("Imagem muito grande. O tamanho máximo é 2MB.");
+        }
+
+        const realMime = detectMimeFromFile(uploadTempPath);
+        if (!realMime || !ALLOWED_MIMES.includes(realMime)) {
+          fs.unlinkSync(uploadTempPath);
+          throw new Error("Formato de arquivo inválido. O conteúdo não corresponde a uma imagem suportada.");
+        }
+
+        if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+        const modResult = await processarUploadComModeracao({
+          tempPath: uploadTempPath,
+          publicDir: UPLOADS_DIR,
+          publicUrlBase: "/public/uploads/logos",
+          filename: uploadFilename,
+          mimeType: realMime,
+          tipo: "logo_ong",
+          referenciaId: userId,
+        });
+
+        if (!modResult.ok) {
+          throw new Error(modResult.rejeitado ? modResult.motivo : modResult.erro);
+        }
+
+        logoPath = modResult.publicUrl;
       }
     } else {
       // Usuário usa form normal (sem arquivo)

@@ -530,6 +530,40 @@ export async function criarItemMarketplace(request: FastifyRequest, reply: Fasti
 // ----------------------------------------------------------
 // Perfil da empresa
 // ----------------------------------------------------------
+async function renderPerfilEmpresaComErro(
+  reply: FastifyReply,
+  sessionUser: any,
+  error: string
+) {
+  const [empresa, naoLidas, cnpjStatus] = await Promise.all([
+    empresaRepo.findEmpresaById(Number(sessionUser.id)),
+    getNaoLidas(Number(sessionUser.id)),
+    empresaService.getEmpresaCnpjStatus(Number(sessionUser.id)),
+  ]);
+  return reply.view(
+    "/templates/empresa/perfil.hbs",
+    {
+      user: sessionUser,
+      naoLidas,
+      empresa,
+      form: {
+        nome_fantasia: empresa?.nome_fantasia ?? "",
+        razao_social: empresa?.razao_social ?? "",
+        email: empresa?.email ?? "",
+        telefone: empresa?.telefone ?? "",
+        setor: empresa?.setor ?? "",
+        descricao: empresa?.descricao ?? "",
+        cnpj: empresa?.cnpj ?? "",
+      },
+      cnpjStatus,
+      success: false,
+      cnpjPendingNotice: false,
+      error,
+    },
+    { layout: "layouts/empresaDashboardLayout" }
+  );
+}
+
 export async function renderPerfilEmpresaPage(request: FastifyRequest, reply: FastifyReply) {
   const sessionUser = request.session.user;
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
@@ -568,59 +602,75 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
   if (!sessionUser || sessionUser.tipo !== "empresa") return reply.redirect("/login");
 
   try {
-    const data = await request.file();
-    let nome_fantasia = "", razao_social = "", email = "", cnpj = "", telefone = "", descricao = "", setor = "";
+    const partsIter = request.parts();
+    const formFields: Record<string, string> = {};
+    let uploadedFilename = "";
+    let uploadedMimetype = "";
+    let uploadedTempPath = "";
+
+    for await (const part of partsIter) {
+      if (part.type === "file") {
+        if (part.filename && ALLOWED_MIMES.includes(part.mimetype)) {
+          if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
+          const ext = path.extname(part.filename).toLowerCase() || ".jpg";
+          const filename = `empresa_${sessionUser.id}_${Date.now()}${ext}`;
+          const tempPath = path.join(TEMP_DIR, filename);
+          await pipeline(part.file, fs.createWriteStream(tempPath));
+          uploadedFilename = filename;
+          uploadedMimetype = part.mimetype;
+          uploadedTempPath = tempPath;
+        } else {
+          part.file.resume();
+        }
+      } else {
+        formFields[part.fieldname] = part.value as string;
+      }
+    }
+
+    const nome_fantasia = formFields.nome_fantasia ?? "";
+    const razao_social  = formFields.razao_social  ?? "";
+    const email         = formFields.email         ?? "";
+    const cnpj          = formFields.cnpj          ?? "";
+    const telefone      = formFields.telefone       ?? "";
+    const descricao     = formFields.descricao      ?? "";
+    const setor         = formFields.setor          ?? "";
+
     let logoUrl: string | undefined;
 
-    if (data) {
-      const fields = data.fields as Record<string, any>;
-      nome_fantasia = fields.nome_fantasia?.value ?? "";
-      razao_social = fields.razao_social?.value ?? "";
-      email = fields.email?.value ?? "";
-      cnpj = fields.cnpj?.value ?? "";
-      telefone = fields.telefone?.value ?? "";
-      descricao = fields.descricao?.value ?? "";
-      setor = fields.setor?.value ?? "";
-
-      if (data.filename && ALLOWED_MIMES.includes(data.mimetype)) {
-        if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR, { recursive: true });
-        if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-        const ext = path.extname(data.filename).toLowerCase() || ".jpg";
-        const filename = `empresa_${sessionUser.id}_${Date.now()}${ext}`;
-        const tempFilePath = path.join(TEMP_DIR, filename);
-        await pipeline(data.file, fs.createWriteStream(tempFilePath));
-        const stats = fs.statSync(tempFilePath);
-        if (stats.size > MAX_SIZE) {
-          fs.unlinkSync(tempFilePath);
-          // silently skip oversized logo (profile still saves)
-        } else {
-          const realMime = detectMimeFromFile(tempFilePath);
-          if (realMime && ALLOWED_MIMES.includes(realMime)) {
-            const modResult = await processarUploadComModeracao({
-              tempPath: tempFilePath,
-              publicDir: UPLOADS_DIR,
-              publicUrlBase: "/public/uploads/empresa_logos",
-              filename,
-              mimeType: realMime,
-              tipo: "logo_empresa",
-              referenciaId: Number(sessionUser.id),
-            });
-            if (modResult.ok) logoUrl = modResult.publicUrl;
-            else if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
-          } else {
-            fs.unlinkSync(tempFilePath);
-          }
+    if (uploadedTempPath) {
+      if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+      const stats = fs.statSync(uploadedTempPath);
+      if (stats.size > MAX_SIZE) {
+        fs.unlinkSync(uploadedTempPath);
+        // oversized logo — skip silently, profile still saves
+      } else {
+        const realMime = detectMimeFromFile(uploadedTempPath);
+        if (!realMime || !ALLOWED_MIMES.includes(realMime)) {
+          fs.unlinkSync(uploadedTempPath);
+          return renderPerfilEmpresaComErro(reply, sessionUser, "Formato de arquivo inválido. Use JPG, PNG ou WebP.");
         }
+
+        const modResult = await processarUploadComModeracao({
+          tempPath: uploadedTempPath,
+          publicDir: UPLOADS_DIR,
+          publicUrlBase: "/public/uploads/empresa_logos",
+          filename: uploadedFilename,
+          mimeType: realMime,
+          tipo: "logo_empresa",
+          referenciaId: Number(sessionUser.id),
+        });
+
+        if (!modResult.ok) {
+          if (fs.existsSync(uploadedTempPath)) fs.unlinkSync(uploadedTempPath);
+          return renderPerfilEmpresaComErro(
+            reply,
+            sessionUser,
+            modResult.rejeitado ? modResult.motivo : modResult.erro
+          );
+        }
+
+        logoUrl = modResult.publicUrl;
       }
-    } else {
-      const body = request.body as any;
-      nome_fantasia = body.nome_fantasia ?? "";
-      razao_social = body.razao_social ?? "";
-      email = body.email ?? "";
-      cnpj = body.cnpj ?? "";
-      telefone = body.telefone ?? "";
-      descricao = body.descricao ?? "";
-      setor = body.setor ?? "";
     }
 
     const result = await empresaService.atualizarPerfilEmpresa(Number(sessionUser.id), {
@@ -639,34 +689,7 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
         if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
       }
 
-      const [empresa, naoLidas, cnpjStatus] = await Promise.all([
-        empresaRepo.findEmpresaById(Number(sessionUser.id)),
-        getNaoLidas(Number(sessionUser.id)),
-        empresaService.getEmpresaCnpjStatus(Number(sessionUser.id)),
-      ]);
-
-      return reply.view(
-        "/templates/empresa/perfil.hbs",
-        {
-          user: sessionUser,
-          naoLidas,
-          empresa,
-          form: {
-            nome_fantasia,
-            razao_social,
-            email,
-            telefone,
-            descricao,
-            setor,
-            cnpj,
-          },
-          cnpjStatus,
-          error: result.error,
-          success: false,
-          cnpjPendingNotice: false,
-        },
-        { layout: "layouts/empresaDashboardLayout" }
-      );
+      return renderPerfilEmpresaComErro(reply, sessionUser, result.error);
     }
 
     if (logoUrl) {
@@ -678,9 +701,9 @@ export async function atualizarPerfilEmpresa(request: FastifyRequest, reply: Fas
     (request.session.user as any).email = email;
 
     return reply.redirect(`/empresa/perfil?sucesso=1${result.cnpjSolicitacaoCriada ? "&cnpj=pendente" : ""}`);
-  } catch (err) {
+  } catch (err: any) {
     console.error("Erro ao atualizar perfil:", err);
-    return reply.redirect("/empresa/perfil");
+    return renderPerfilEmpresaComErro(reply, sessionUser, err?.message || "Erro inesperado. Tente novamente.");
   }
 }
 
