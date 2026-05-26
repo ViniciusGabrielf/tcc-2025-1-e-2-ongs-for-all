@@ -10,6 +10,10 @@ import {
   handleForgotPassword,
   renderResetPasswordPage,
   handleResetPassword,
+  renderVerificarEmailPage,
+  handleVerificarEmail,
+  handleReenviarVerificacao,
+  handleAlterarEmailVerificacao,
 } from '../controllers/authController'
 import { createRateLimit } from '../middlewares/rateLimit'
 
@@ -39,4 +43,9 @@ export async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/esqueci-minha-senha', { preHandler: passwordResetRateLimit }, handleForgotPassword)
   fastify.get("/redefinir-senha", renderResetPasswordPage);
   fastify.post("/redefinir-senha", { preHandler: passwordResetRateLimit }, handleResetPassword);
+
+  fastify.get("/verificar-email", renderVerificarEmailPage);
+  fastify.post("/verificar-email", handleVerificarEmail);
+  fastify.post("/reenviar-verificacao", handleReenviarVerificacao);
+  fastify.post("/alterar-email-verificacao", handleAlterarEmailVerificacao);
 }

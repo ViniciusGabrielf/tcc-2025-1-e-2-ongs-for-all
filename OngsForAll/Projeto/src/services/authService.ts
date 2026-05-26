@@ -9,6 +9,11 @@ import {
   setPasswordResetToken,
   findAccountByValidResetToken,
   updatePasswordByAccount,
+  salvarCodigoVerificacao,
+  buscarCodigoVerificacao,
+  deletarCodigosVerificacao,
+  marcarEmailVerificado,
+  findAnyAccountByEmail,
 } from "../repositories/authRepository";
 
 function normalizeDigits(value: string): string {
@@ -48,6 +53,10 @@ export async function login(email: string, password: string, ip: string) {
 
   if (!user || !ok) return { ok: false as const };
 
+  if (!user.email_verificado) {
+    return { ok: false as const, naoVerificado: true as const, email: user.email, tipo };
+  }
+
   return {
     ok: true as const,
     user: {
@@ -58,6 +67,33 @@ export async function login(email: string, password: string, ip: string) {
       ...(user.logo ? { logo: user.logo } : {}),
     },
   };
+}
+
+export async function gerarEEnviarCodigoVerificacao(
+  email: string,
+  nome: string,
+  tipo: "usuario" | "ong" | "empresa"
+): Promise<string> {
+  const codigo = crypto.randomInt(100000, 999999).toString();
+  await salvarCodigoVerificacao(email, codigo, tipo);
+  return codigo;
+}
+
+export async function verificarCodigoEmail(
+  email: string,
+  codigo: string
+): Promise<{ ok: true; tipo: "usuario" | "ong" | "empresa" } | { ok: false }> {
+  const registro = await buscarCodigoVerificacao(email, codigo);
+  if (!registro) return { ok: false };
+
+  await marcarEmailVerificado(email, registro.tipo);
+  await deletarCodigosVerificacao(email);
+
+  return { ok: true, tipo: registro.tipo };
+}
+
+export async function buscarContaPorEmail(email: string) {
+  return findAnyAccountByEmail(email);
 }
 
 export async function requestPasswordReset(nome: string, email: string, documento: string) {

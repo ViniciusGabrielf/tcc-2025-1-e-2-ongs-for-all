@@ -1,4 +1,5 @@
 import { pool } from "../config/ds";
+import { ensureEmailVerificadoColumns } from "./authRepository";
 
 const EMPRESA_CNPJ_CONTROLES_TABLE = "empresa_cnpj_controles";
 
@@ -37,9 +38,10 @@ export async function createEmpresa(params: {
   setor?: string;
   senhaHash: string;
 }): Promise<number> {
+  await ensureEmailVerificadoColumns();
   const [result]: any = await pool.query(
-    `INSERT INTO empresas (nome_fantasia, razao_social, email, cnpj, telefone, descricao, setor, senha)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO empresas (nome_fantasia, razao_social, email, cnpj, telefone, descricao, setor, senha, email_verificado)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
     [
       params.nome_fantasia,
       params.razao_social ?? null,
