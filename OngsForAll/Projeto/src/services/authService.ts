@@ -55,7 +55,7 @@ export async function login(email: string, password: string, ip: string) {
       nome: user.nome,
       email: user.email,
       tipo,
-      ...(tipo === "ong" && user.logo ? { logo: user.logo } : {}),
+      ...(user.logo ? { logo: user.logo } : {}),
     },
   };
 }

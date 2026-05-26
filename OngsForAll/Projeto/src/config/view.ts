@@ -66,6 +66,7 @@ export default async function (fastify: FastifyInstance) {
         emptyState: 'partials/emptyState.hbs',
         publicExploreSidebar: 'partials/publicExploreSidebar.hbs',
         paginationControls: 'partials/paginationControls.hbs',
+        apoiadoresRodape: 'partials/apoiadores-rodape.hbs',
       },
     },
 
