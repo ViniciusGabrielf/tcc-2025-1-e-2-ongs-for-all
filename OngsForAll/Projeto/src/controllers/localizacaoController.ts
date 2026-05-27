@@ -49,6 +49,8 @@ function renderLocalizacaoIndisponivel(reply: FastifyReply, session: any, naoLid
 export async function renderLocalizacaoPage(request: FastifyRequest, reply: FastifyReply) {
   const { id } = request.params as { id: string };
   const ongId = Number(id);
+
+
   const session = request.session.user;
   const naoLidas = await getNaoLidas(session);
 

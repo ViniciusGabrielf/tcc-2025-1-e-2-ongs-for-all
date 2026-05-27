@@ -188,16 +188,6 @@ export async function renderDashboardOngPage(
 }
 
 // =======================
-// CONQUISTAS (GAMIFICAÇÃO)
-// =======================
-export async function renderConquistasPage(
-  request: FastifyRequest,
-  reply: FastifyReply
-) {
-  return reply.redirect("/dashboard");
-}
-
-// =======================
 // TOTAL POR ONG
 // =======================
 export async function totalDoacoesPorOng(

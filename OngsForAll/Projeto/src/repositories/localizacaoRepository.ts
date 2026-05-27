@@ -39,6 +39,7 @@ export async function findLocalizacaoPublicaByOngId(ongId: number) {
             instrucoes_chegada
      FROM ongs
      WHERE ong_id = ?
+
      LIMIT 1`,
     [ongId]
   );
