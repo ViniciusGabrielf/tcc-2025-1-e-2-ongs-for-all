@@ -45,4 +45,4 @@ Pronto, seu servidor ficará disponível em [`http://localhost:3000`](http://loc
 
 
 # Em construção ⚙️
->Esta é apenas uma prévia da documentação. Em breve uma mais detalhada estará disponível.
+>Esta é apenas uma prévia da documentação. Em breve uma mais detalhada estará disponível...
