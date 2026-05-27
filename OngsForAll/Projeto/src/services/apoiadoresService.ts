@@ -2,10 +2,10 @@ import * as repo from "../repositories/apoiadoresRepository";
 import type { PlanApoiador, StatusApoiador } from "../repositories/apoiadoresRepository";
 
 export const PLANO_CONFIG: Record<PlanApoiador, { prioridade: number; valor: number; label: string; descMax: number }> = {
-  basico:        { prioridade: 1, valor: 19.90, label: "Apoiador Básico",        descMax: 0   },
-  local:         { prioridade: 2, valor: 39.90, label: "Apoiador Local",         descMax: 120 },
-  destaque:      { prioridade: 3, valor: 69.90, label: "Apoiador Destaque",      descMax: 200 },
-  institucional: { prioridade: 4, valor: 99.90, label: "Parceiro Institucional", descMax: 200 },
+  basico:        { prioridade: 1, valor: 29.90, label: "Apoiador", descMax: 200 },
+  local:         { prioridade: 1, valor: 29.90, label: "Apoiador", descMax: 200 },
+  destaque:      { prioridade: 1, valor: 29.90, label: "Apoiador", descMax: 200 },
+  institucional: { prioridade: 1, valor: 29.90, label: "Apoiador", descMax: 200 },
 };
 
 function validarUrl(url: string | undefined): string | null {

@@ -1,4 +1,4 @@
-<section class="min-h-screen {{#unless user}}pt-28 px-4 sm:px-6 pb-10{{/unless}}" style="--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
+<section class="min-h-screen {{#unless user}}px-4 sm:px-6 pb-10{{/unless}}" style="{{#unless user}}padding-top: 8rem; {{/unless}}--theme-primary: {{#if isOngDashboard}}#6B8F71{{else}}#4886D9{{/if}}; --theme-strong: {{#if isOngDashboard}}#2F3E34{{else}}#2D4BA6{{/if}}; --theme-accent: {{#if isOngDashboard}}#3F5F45{{else}}#EC4899{{/if}}; --theme-soft: {{#if isOngDashboard}}#EAF3EC{{else}}#DBEAFE{{/if}}; --theme-soft-2: {{#if isOngDashboard}}#DDEADB{{else}}#F3E8FF{{/if}};">
   <div class="max-w-7xl mx-auto {{#unless user}}lg:flex lg:items-start lg:gap-8{{/unless}}">
     {{#unless user}}
     {{> publicExploreSidebar publicPageOngs=true}}

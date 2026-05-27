@@ -1,267 +1,365 @@
 <style>
-  #apoiadores-scroll::-webkit-scrollbar { display: none; }
-  #apoiadores-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  #ap-scroll::-webkit-scrollbar { display: none; }
+  #ap-scroll { -ms-overflow-style: none; scrollbar-width: none; }
   @media (prefers-reduced-motion: reduce) {
-    .ap-card, .ap-card img { transition: none !important; }
+    .ap-card, .ap-card img { transition: none !important; transform: none !important; }
   }
+
+  /* Cores de texto via CSS — imunes ao timing do dark mode */
+  :root {
+    --ap-name-clr:   rgba(0,0,0,0.65);
+    --ap-desc-clr:   rgba(0,0,0,0.40);
+    --ap-link-clr:   rgba(45,75,166,0.65);
+    --ap-fb-clr:     rgba(0,0,0,0.14);
+    --ap-divider-clr:rgba(0,0,0,0.05);
+    --ap-title-clr:  rgba(0,0,0,0.35);
+    --ap-sub-clr:    rgba(0,0,0,0.25);
+  }
+  .dark {
+    --ap-name-clr:   rgba(255,255,255,0.75);
+    --ap-desc-clr:   rgba(255,255,255,0.38);
+    --ap-link-clr:   rgba(72,134,217,0.80);
+    --ap-fb-clr:     rgba(255,255,255,0.18);
+    --ap-divider-clr:rgba(255,255,255,0.06);
+    --ap-title-clr:  rgba(255,255,255,0.30);
+    --ap-sub-clr:    rgba(255,255,255,0.20);
+  }
+
+  #ap-title    { color: var(--ap-title-clr); }
+  #ap-subtitle { color: var(--ap-sub-clr);   }
+  .ap-name     { color: var(--ap-name-clr) !important; }
+  .ap-desc     { color: var(--ap-desc-clr) !important; }
+  .ap-link     { color: var(--ap-link-clr) !important; }
+  .ap-fallback { color: var(--ap-fb-clr)   !important; }
+  .ap-divider  { background: var(--ap-divider-clr) !important; }
 </style>
 
-<div id="apoiadores-section" style="display:none">
-  <div class="border-t border-slate-200 dark:border-white/10 mt-6 pt-5 pb-3">
+<section id="ap-section" aria-label="Apoiadores da plataforma" style="display:none">
+  <div class="border-t border-slate-200 dark:border-white/10 mt-8 pt-6 pb-5">
 
-    <p class="text-xs text-center text-slate-400 dark:text-white/30 mb-4 font-medium tracking-widest uppercase select-none">
-      Apoiadores da plataforma
-    </p>
+    <!-- Cabeçalho da seção -->
+    <div class="text-center mb-5 select-none">
+      <a href="/apoiadores" class="group inline-block">
+        <p id="ap-title" class="text-[10.5px] font-bold tracking-[0.18em] uppercase group-hover:opacity-70 transition-opacity">
+          Apoiadores da plataforma
+        </p>
+      </a>
+      <p id="ap-subtitle" class="text-[10px] mt-1">
+        Empresas que ajudam a manter esta iniciativa ativa
+      </p>
+    </div>
 
-    <!-- Scroll horizontal -->
+    <!-- Carrossel -->
     <div class="relative">
       <!-- Fade esquerda -->
-      <div id="ap-fade-left"
-        class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 hidden"
-        style="background: linear-gradient(to right, var(--ap-bg, white), transparent)"></div>
+      <div id="ap-fade-l"
+        class="pointer-events-none absolute left-0 top-0 bottom-0 w-10 z-10"
+        style="display:none; background: linear-gradient(to right, var(--ap-bg, #fff), transparent)">
+      </div>
       <!-- Fade direita -->
-      <div id="ap-fade-right"
-        class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10"
-        style="background: linear-gradient(to left, var(--ap-bg, white), transparent)"></div>
+      <div id="ap-fade-r"
+        class="pointer-events-none absolute right-0 top-0 bottom-0 w-10 z-10"
+        style="background: linear-gradient(to left, var(--ap-bg, #fff), transparent)">
+      </div>
 
-      <div id="apoiadores-scroll"
-        class="flex items-stretch gap-3 overflow-x-auto px-2 py-1"
-        style="-webkit-overflow-scrolling: touch; scroll-behavior: smooth;">
+      <div id="ap-scroll"
+        role="list"
+        aria-label="Lista de apoiadores"
+        class="flex items-stretch gap-3 overflow-x-auto px-3 py-2"
+        style="-webkit-overflow-scrolling: touch; scroll-behavior: smooth; scroll-snap-type: x proximity;">
       </div>
     </div>
 
+    <!-- Link para página completa -->
+    <div class="text-center mt-4">
+      <a href="/apoiadores"
+        class="text-[10px] font-medium text-slate-400 dark:text-white/25 hover:text-[#4886D9] dark:hover:text-[#4886D9]/60 transition-colors duration-200 select-none">
+        Ver todos os apoiadores →
+      </a>
+    </div>
+
   </div>
-</div>
+</section>
 
 <script>
 (function () {
-  /* ── Configuração por plano ───────────────────────────────────────────── */
-  var PLANOS = {
-    institucional: {
-      ordem: 4,
-      logoH: 48,
-      showNome: true,
-      showDesc: true,
-      showBadge: true,
-      badgeLabel: 'Parceiro Institucional',
-      badgeBg: '#2D4BA6',
-      cardBorder: '1.5px solid rgba(45,75,166,0.30)',
-      cardBg: 'rgba(45,75,166,0.04)',
-      cardRadius: '14px',
-      cardPad: '12px 14px',
-      cardMinW: '170px',
-      cardMaxW: '220px',
-      grayscale: false,
-      opacity: '1',
-    },
-    destaque: {
-      ordem: 3,
-      logoH: 38,
-      showNome: true,
-      showDesc: true,
-      showBadge: true,
-      badgeLabel: 'Destaque',
-      badgeBg: '#4886D9',
-      cardBorder: '1px solid rgba(72,134,217,0.25)',
-      cardBg: 'rgba(72,134,217,0.03)',
-      cardRadius: '12px',
-      cardPad: '10px 12px',
-      cardMinW: '150px',
-      cardMaxW: '200px',
-      grayscale: false,
-      opacity: '1',
-    },
-    local: {
-      ordem: 2,
-      logoH: 30,
-      showNome: true,
-      showDesc: false,
-      showBadge: true,
-      badgeLabel: 'Apoiador Local',
-      badgeBg: '#64748b',
-      cardBorder: '1px solid rgba(100,116,139,0.15)',
-      cardBg: 'transparent',
-      cardRadius: '10px',
-      cardPad: '8px 10px',
-      cardMinW: '120px',
-      cardMaxW: '170px',
-      grayscale: true,
-      opacity: '0.75',
-    },
-    basico: {
-      ordem: 1,
-      logoH: 24,
-      showNome: false,
-      showDesc: false,
-      showBadge: false,
-      badgeLabel: '',
-      badgeBg: '',
-      cardBorder: 'none',
-      cardBg: 'transparent',
-      cardRadius: '8px',
-      cardPad: '6px 8px',
-      cardMinW: '90px',
-      cardMaxW: '140px',
-      grayscale: true,
-      opacity: '0.55',
-    },
+  'use strict';
+
+  var BG_LIGHT = '#ffffff';
+  var BG_DARK  = '#0D1B2A';
+
+  /* ── Estilo único de card ────────────────────────────────────────────────── */
+  var CARD = {
+    logoH: 36,
+    showName: true, showDesc: true, descMax: 65,
+    badge: 'Apoiador', badgeHex: '#2D4BA6',
+    showLink: true,
+    minW: '152px', maxW: '200px', radius: '14px', pad: '12px 14px',
+    opacity: 1,
+    borderLight: '1px solid rgba(45,75,166,0.20)',
+    borderDark:  '1px solid rgba(72,134,217,0.26)',
+    bgLight: 'rgba(45,75,166,0.025)',
+    bgDark:  'rgba(72,134,217,0.055)',
+    hoverShadowLight: '0 4px 16px rgba(45,75,166,0.10)',
+    hoverShadowDark:  '0 4px 16px rgba(0,0,0,0.42)',
   };
 
-  function cfg(plano) {
-    return PLANOS[plano] || PLANOS['basico'];
+  function cfg() { return CARD; }
+
+  function dark() { return document.documentElement.classList.contains('dark'); }
+
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  /* ── Detectar tema escuro ─────────────────────────────────────────────── */
-  function isDark() {
-    return document.documentElement.classList.contains('dark');
+  function trunc(s, n) {
+    s = String(s || '');
+    return s.length > n ? s.slice(0, n - 1) + '…' : s;
   }
 
-  /* ── Construir card ───────────────────────────────────────────────────── */
-  function buildCard(a) {
-    var c = cfg(a.plano);
+  function initial(name) { return (name || '?').trim()[0].toUpperCase(); }
 
-    var card = document.createElement('div');
-    card.className = 'ap-card flex flex-col items-center gap-1.5 shrink-0 transition-opacity duration-200';
+  /* ── Fallback de logo (inicial) ──────────────────────────────────────────── */
+  function makeFallback(name, h) {
+    var span = document.createElement('span');
+    span.textContent = initial(name);
+    span.className = 'ap-fallback';
+    span.setAttribute('aria-hidden', 'true');
+    span.style.cssText = [
+      'font-size:' + Math.max(13, Math.round(h * 0.54)) + 'px',
+      'font-weight:700',
+      'line-height:1',
+      'user-select:none',
+    ].join(';');
+    return span;
+  }
+
+  /* ── Construir card ──────────────────────────────────────────────────────── */
+  function buildCard(ap) {
+    var c = cfg();
+    var d = dark();
+
+    var card = document.createElement('article');
+    card.className = 'ap-card';
+    card.setAttribute('role', 'listitem');
     card.style.cssText = [
-      'border:' + (isDark() ? c.cardBorder.replace('rgba(', 'rgba(').replace(',0.', ',0.4') : c.cardBorder),
-      'background:' + (isDark() ? c.cardBg.replace('0.04', '0.08').replace('0.03', '0.06') : c.cardBg),
-      'border-radius:' + c.cardRadius,
-      'padding:' + c.cardPad,
-      'min-width:' + c.cardMinW,
-      'max-width:' + c.cardMaxW,
+      'display:flex',
+      'flex-direction:column',
+      'align-items:center',
+      'gap:7px',
+      'flex-shrink:0',
+      'scroll-snap-align:start',
+      'min-width:' + c.minW,
+      'max-width:' + c.maxW,
+      'padding:' + c.pad,
+      'border-radius:' + c.radius,
+      'border:' + (d ? c.borderDark : c.borderLight),
+      'background:' + (d ? c.bgDark : c.bgLight),
       'opacity:' + c.opacity,
+      'transition:opacity 0.2s, box-shadow 0.2s, transform 0.18s',
     ].join(';');
 
-    /* Hover: elevar opacidade */
-    card.addEventListener('mouseenter', function () { this.style.opacity = '1'; });
-    card.addEventListener('mouseleave', function () { this.style.opacity = c.opacity; });
+    var hoverShadow = d ? c.hoverShadowDark : c.hoverShadowLight;
 
-    /* Logo ou inicial */
+    card.addEventListener('mouseenter', function () {
+      this.style.opacity = '1';
+      this.style.boxShadow = hoverShadow;
+      this.style.transform = 'translateY(-2px)';
+    });
+    card.addEventListener('mouseleave', function () {
+      this.style.opacity = String(c.opacity);
+      this.style.boxShadow = 'none';
+      this.style.transform = 'none';
+    });
+
+    /* -- Logo ---------------------------------------------------------------- */
     var logoWrap = document.createElement('div');
-    logoWrap.style.cssText = 'height:' + c.logoH + 'px; display:flex; align-items:center; justify-content:center; width:100%;';
+    logoWrap.style.cssText = [
+      'height:' + c.logoH + 'px',
+      'width:100%',
+      'display:flex',
+      'align-items:center',
+      'justify-content:center',
+    ].join(';');
 
-    if (a.logo_url) {
+    if (ap.logo_url) {
       var img = document.createElement('img');
-      img.src = a.logo_url;
-      img.alt = a.nome;
-      img.title = a.nome;
+      img.src   = esc(ap.logo_url);
+      img.alt   = esc(ap.nome);
+      img.title = esc(ap.nome);
       img.style.cssText = [
         'max-height:' + c.logoH + 'px',
         'max-width:100%',
         'object-fit:contain',
-        c.grayscale ? 'filter:grayscale(100%)' : '',
-        'transition: filter 0.3s',
+        c.grayscale ? 'filter:grayscale(1)' : '',
+        'transition:filter 0.25s',
       ].join(';');
-      img.addEventListener('mouseenter', function () { if (c.grayscale) this.style.filter = 'grayscale(0%)'; });
-      img.addEventListener('mouseleave', function () { if (c.grayscale) this.style.filter = 'grayscale(100%)'; });
-      img.onerror = function () {
+      if (c.grayscale) {
+        img.addEventListener('mouseenter', function () { this.style.filter = 'grayscale(0)'; });
+        img.addEventListener('mouseleave', function () { this.style.filter = 'grayscale(1)'; });
+      }
+      img.addEventListener('error', function () {
         logoWrap.innerHTML = '';
-        var ini = document.createElement('span');
-        ini.textContent = (a.nome || '?')[0].toUpperCase();
-        ini.style.cssText = 'font-size:18px; font-weight:700; color:' + (isDark() ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)') + '; line-height:1;';
-        logoWrap.appendChild(ini);
-      };
+        logoWrap.appendChild(makeFallback(ap.nome, c.logoH));
+      });
       logoWrap.appendChild(img);
     } else {
-      var ini = document.createElement('span');
-      ini.textContent = (a.nome || '?')[0].toUpperCase();
-      ini.style.cssText = 'font-size:16px; font-weight:700; color:' + (isDark() ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.18)') + '; line-height:1;';
-      logoWrap.appendChild(ini);
+      logoWrap.appendChild(makeFallback(ap.nome, c.logoH));
     }
     card.appendChild(logoWrap);
 
-    /* Nome */
-    if (c.showNome) {
-      var nome = document.createElement('p');
-      nome.textContent = a.nome;
-      nome.style.cssText = 'font-size:11px; font-weight:600; text-align:center; line-height:1.3; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:' + (isDark() ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)') + ';';
-      card.appendChild(nome);
+    /* -- Divisor ------------------------------------------------------------ */
+    if (true) {
+      var divider = document.createElement('div');
+      divider.setAttribute('aria-hidden', 'true');
+      divider.className = 'ap-divider';
+      divider.style.cssText = 'width:100%; height:1px; border-radius:1px;';
+      card.appendChild(divider);
     }
 
-    /* Descrição */
-    if (c.showDesc && a.descricao) {
-      var desc = document.createElement('p');
-      var maxLen = 80;
-      desc.textContent = a.descricao.length > maxLen ? a.descricao.slice(0, maxLen) + '…' : a.descricao;
-      desc.style.cssText = 'font-size:10px; text-align:center; line-height:1.4; color:' + (isDark() ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)') + '; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;';
-      card.appendChild(desc);
+    /* -- Nome --------------------------------------------------------------- */
+    if (c.showName) {
+      var nameEl = document.createElement('p');
+      nameEl.textContent = trunc(ap.nome, 30);
+      nameEl.title = ap.nome || '';
+      nameEl.className = 'ap-name';
+      nameEl.style.cssText = [
+        'margin:0',
+        'font-size:11px',
+        'font-weight:600',
+        'line-height:1.3',
+        'text-align:center',
+        'width:100%',
+        'overflow:hidden',
+        'text-overflow:ellipsis',
+        'white-space:nowrap',
+      ].join(';');
+      card.appendChild(nameEl);
     }
 
-    /* Badge */
-    if (c.showBadge && c.badgeLabel) {
+    /* -- Descrição ---------------------------------------------------------- */
+    if (c.showDesc && ap.descricao) {
+      var descEl = document.createElement('p');
+      descEl.textContent = trunc(ap.descricao, c.descMax);
+      descEl.className = 'ap-desc';
+      descEl.style.cssText = [
+        'margin:0',
+        'font-size:10px',
+        'line-height:1.5',
+        'text-align:center',
+        'width:100%',
+        'overflow:hidden',
+        'display:-webkit-box',
+        '-webkit-line-clamp:2',
+        '-webkit-box-orient:vertical',
+      ].join(';');
+      card.appendChild(descEl);
+    }
+
+    /* -- Badge -------------------------------------------------------------- */
+    if (c.badge) {
       var badge = document.createElement('span');
-      badge.textContent = c.badgeLabel;
-      badge.style.cssText = 'font-size:9px; font-weight:600; padding:2px 7px; border-radius:20px; background:' + c.badgeBg + '22; color:' + c.badgeBg + '; letter-spacing:0.03em; white-space:nowrap;';
+      badge.textContent = c.badge;
+      badge.setAttribute('aria-hidden', 'true');
+      badge.style.cssText = [
+        'font-size:8.5px',
+        'font-weight:700',
+        'letter-spacing:0.05em',
+        'white-space:nowrap',
+        'padding:2.5px 8px',
+        'border-radius:20px',
+        'background:' + c.badgeHex + (d ? '28' : '16'),
+        'color:' + c.badgeHex,
+        'margin-top:1px',
+      ].join(';');
       card.appendChild(badge);
     }
 
-    /* Wrapper com link ou div */
-    var wrap;
-    if (a.website_url) {
-      wrap = document.createElement('a');
-      wrap.href = a.website_url;
-      wrap.target = '_blank';
-      wrap.rel = 'noopener noreferrer';
-      wrap.setAttribute('aria-label', 'Visitar site de ' + a.nome);
-      wrap.style.cssText = 'display:contents; text-decoration:none;';
-      wrap.appendChild(card);
-    } else {
-      wrap = card;
+    /* -- Link "Conhecer" (destaque+) ---------------------------------------- */
+    if (c.showLink && ap.website_url) {
+      var linkEl = document.createElement('a');
+      linkEl.href = esc(ap.website_url);
+      linkEl.target = '_blank';
+      linkEl.rel = 'noopener noreferrer';
+      linkEl.textContent = 'Conhecer →';
+      linkEl.setAttribute('aria-label', 'Conhecer ' + esc(ap.nome) + ' (abre em nova aba)');
+      linkEl.className = 'ap-link';
+      linkEl.style.cssText = [
+        'font-size:9.5px',
+        'font-weight:500',
+        'text-decoration:none',
+        'border-bottom:1px solid currentColor',
+        'margin-top:auto',
+        'padding-bottom:1px',
+        'transition:opacity 0.15s',
+        'opacity:0.85',
+      ].join(';');
+      linkEl.addEventListener('mouseenter', function () { this.style.opacity = '1'; });
+      linkEl.addEventListener('mouseleave', function () { this.style.opacity = '0.85'; });
+      card.appendChild(linkEl);
     }
 
-    return wrap;
+    /* -- Envolver em <a> para plano básico (card inteiro clicável) ----------- */
+    if (!c.showLink && ap.website_url) {
+      var wrap = document.createElement('a');
+      wrap.href = esc(ap.website_url);
+      wrap.target = '_blank';
+      wrap.rel = 'noopener noreferrer';
+      wrap.setAttribute('aria-label', 'Visitar site de ' + esc(ap.nome) + ' (abre em nova aba)');
+      wrap.style.cssText = 'display:contents; text-decoration:none;';
+      wrap.appendChild(card);
+      return wrap;
+    }
+
+    return card;
   }
 
-  /* ── Fades de scroll ──────────────────────────────────────────────────── */
-  function updateFades(el) {
-    var left = document.getElementById('ap-fade-left');
-    var right = document.getElementById('ap-fade-right');
-    if (!left || !right) return;
-    var scrolled = el.scrollLeft > 8;
-    var canRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 8;
-    left.style.display = scrolled ? '' : 'none';
-    right.style.display = canRight ? '' : 'none';
+  /* ── Fades de scroll ─────────────────────────────────────────────────────── */
+  function updateFades(scroll) {
+    var l = document.getElementById('ap-fade-l');
+    var r = document.getElementById('ap-fade-r');
+    if (!l || !r) return;
+    var canLeft  = scroll.scrollLeft > 8;
+    var canRight = scroll.scrollLeft + scroll.clientWidth < scroll.scrollWidth - 8;
+    l.style.display = canLeft  ? '' : 'none';
+    r.style.display = canRight ? '' : 'none';
   }
 
-  /* ── Init ─────────────────────────────────────────────────────────────── */
+  function applyFadeBg() {
+    var bg = dark() ? BG_DARK : BG_LIGHT;
+    var l  = document.getElementById('ap-fade-l');
+    var r  = document.getElementById('ap-fade-r');
+    if (l) l.style.background = 'linear-gradient(to right,'  + bg + ',transparent)';
+    if (r) r.style.background = 'linear-gradient(to left,' + bg + ',transparent)';
+  }
+
+  /* ── Init ────────────────────────────────────────────────────────────────── */
   fetch('/api/apoiadores/publico')
-    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (res) { return res.ok ? res.json() : []; })
     .then(function (list) {
       if (!list || !list.length) return;
 
-      var container = document.getElementById('apoiadores-scroll');
-      var section = document.getElementById('apoiadores-section');
-      if (!container || !section) return;
+      var scroll  = document.getElementById('ap-scroll');
+      var section = document.getElementById('ap-section');
+      if (!scroll || !section) return;
 
-      /* Ordenar: maior prioridade primeiro, depois por plano */
       list.sort(function (a, b) {
-        var pa = (cfg(a.plano).ordem || 0) * 10 + (a.prioridade || 0);
-        var pb = (cfg(b.plano).ordem || 0) * 10 + (b.prioridade || 0);
-        return pb - pa;
+        return (b.prioridade || 0) - (a.prioridade || 0);
       });
 
-      list.forEach(function (a) {
-        container.appendChild(buildCard(a));
-      });
+      list.forEach(function (ap) { scroll.appendChild(buildCard(ap)); });
 
       section.style.display = '';
+      applyFadeBg();
+      updateFades(scroll);
+      scroll.addEventListener('scroll', function () { updateFades(this); }, { passive: true });
 
-      /* Fades */
-      updateFades(container);
-      container.addEventListener('scroll', function () { updateFades(this); }, { passive: true });
-
-      /* Adaptar cor de fundo do fade ao tema */
-      var bgColor = isDark() ? '#0D1B2A' : '#ffffff';
-      var fadeEl = document.getElementById('ap-fade-left');
-      var fadeEl2 = document.getElementById('ap-fade-right');
-      if (fadeEl) fadeEl.style.background = 'linear-gradient(to right,' + bgColor + ',transparent)';
-      if (fadeEl2) fadeEl2.style.background = 'linear-gradient(to left,' + bgColor + ',transparent)';
-
-      /* Centralizar se couber tudo sem scroll */
-      if (container.scrollWidth <= container.clientWidth) {
-        container.style.justifyContent = 'center';
-        var fadeR = document.getElementById('ap-fade-right');
-        if (fadeR) fadeR.style.display = 'none';
+      if (scroll.scrollWidth <= scroll.clientWidth) {
+        scroll.style.justifyContent = 'center';
+        var r = document.getElementById('ap-fade-r');
+        if (r) r.style.display = 'none';
       }
     })
     .catch(function () {});

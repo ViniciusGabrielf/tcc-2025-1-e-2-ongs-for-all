@@ -25,7 +25,7 @@
       <div id="tab1" class="tab-content hidden">
         <div class="mb-5 text-center">
           <h2 class="text-xl font-bold text-[#2D4BA6] dark:text-white">Cadastro de Pessoa Física</h2>
-          <p class="text-sm text-slate-500 dark:text-white/50 mt-1">Crie sua conta para doar e acompanhar ONGs na plataforma</p>
+          <p class="text-sm text-slate-500 dark:text-white/50 mt-1">Crie a sua conta para doar e acompanhar ONGs na plataforma</p>
         </div>
 
         <form action="/register-user" method="POST" class="space-y-4">
@@ -361,6 +361,7 @@
       if (!input || !hints) return;
 
       function refreshHints() {
+
         const v = input.value;
         hints.classList.remove('hidden');
         hints.querySelectorAll('li').forEach(li => {

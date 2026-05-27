@@ -1,0 +1,106 @@
+<main class="pt-28 pb-24 px-4 min-h-screen">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- ── Hero ───────────────────────────────────────────────────────────── -->
+    <section class="text-center mb-16 max-w-2xl mx-auto">
+      <span class="inline-block text-[11px] font-bold tracking-[0.18em] uppercase text-[#4886D9] mb-4 select-none">
+        Reconhecimento institucional
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-[#1D3273] mb-5 leading-tight">
+        Apoiadores da plataforma
+      </h1>
+      <p class="text-base text-slate-600 leading-relaxed mb-3">
+        Empresas e organizações que acreditam no poder das ONGs e ajudam a manter esta plataforma ativa e gratuita para quem mais precisa.
+      </p>
+      <p class="text-sm text-slate-400 leading-relaxed">
+        O apoio institucional torna possível conectar doadores, voluntários e empresas a causas que transformam vidas. Somos gratos a cada empresa que faz parte desta iniciativa.
+      </p>
+    </section>
+
+    <!-- ── Grid de apoiadores ─────────────────────────────────────────────── -->
+    {{#if temApoiadores}}
+    <section aria-label="Lista de apoiadores da plataforma">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        {{#each apoiadores}}
+        <article
+          class="group bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center gap-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-[#2D4BA6]/20">
+
+          <!-- Logo -->
+          <div class="w-20 h-20 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 transition-colors duration-200 group-hover:bg-[#2D4BA6]/5 group-hover:border-[#2D4BA6]/15">
+            {{#if temLogo}}
+            <img
+              src="{{logo_url}}"
+              alt="Logo de {{nome}}"
+              title="{{nome}}"
+              class="w-full h-full object-contain p-2"
+              onerror="this.style.display='none';this.parentElement.querySelector('.ap-fb').style.display='flex';"
+            />
+            <span class="ap-fb hidden w-full h-full items-center justify-center text-2xl font-bold text-slate-300" aria-hidden="true">
+              {{inicial}}
+            </span>
+            {{else}}
+            <span class="text-2xl font-bold text-slate-300" aria-hidden="true">{{inicial}}</span>
+            {{/if}}
+          </div>
+
+          <!-- Conteúdo -->
+          <div class="flex flex-col items-center gap-2 flex-1 w-full min-w-0">
+            <h2 class="text-base font-bold text-slate-800 line-clamp-2 leading-snug w-full">
+              {{nome}}
+            </h2>
+
+            {{#if temDesc}}
+            <p class="text-sm text-slate-500 line-clamp-3 leading-relaxed w-full">
+              {{descricao}}
+            </p>
+            {{/if}}
+
+            <span class="mt-auto inline-block text-[10px] font-bold tracking-[0.08em] uppercase px-3 py-1 rounded-full bg-[#2D4BA6]/8 text-[#2D4BA6]">
+              Apoiador
+            </span>
+          </div>
+
+          <!-- Link externo -->
+          {{#if temLink}}
+          <a
+            href="{{website_url}}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Visitar site de {{nome}} (abre em nova aba)"
+            class="w-full text-center text-sm font-semibold text-[#2D4BA6] border border-[#2D4BA6]/25 rounded-xl py-2.5 hover:bg-[#2D4BA6]/5 hover:border-[#2D4BA6]/40 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4886D9] focus:ring-offset-2">
+            Visitar site →
+          </a>
+          {{/if}}
+
+        </article>
+        {{/each}}
+
+      </div>
+    </section>
+
+
+    {{else}}
+
+    <!-- ── Estado vazio ────────────────────────────────────────────────────── -->
+    <section class="text-center py-20 max-w-md mx-auto">
+      <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-6">
+        <box-icon name="heart" color="#cbd5e1" size="md"></box-icon>
+      </div>
+      <h2 class="text-xl font-bold text-slate-700 mb-3">
+        Nenhum apoiador ativo no momento
+      </h2>
+      <p class="text-sm text-slate-500 leading-relaxed mb-7">
+        Esta plataforma depende do apoio de empresas e organizações para continuar crescendo. Se a sua empresa deseja fazer parte desta iniciativa, entre em contato.
+      </p>
+      <a
+        href="/sobre#contato"
+        class="inline-block text-sm font-semibold text-[#2D4BA6] border border-[#2D4BA6]/30 px-6 py-2.5 rounded-xl hover:bg-[#2D4BA6]/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#4886D9] focus:ring-offset-2">
+        Entrar em contato
+      </a>
+    </section>
+
+    {{/if}}
+
+  </div>
+</main>

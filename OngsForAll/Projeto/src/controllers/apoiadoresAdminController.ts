@@ -12,10 +12,10 @@ const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 1 * 1024 * 1024; // 1 MB
 
 const PLANO_LABELS: Record<string, string> = {
-  basico: "Apoiador Básico",
-  local: "Apoiador Local",
-  destaque: "Apoiador Destaque",
-  institucional: "Parceiro Institucional",
+  basico: "Apoiador",
+  local: "Apoiador",
+  destaque: "Apoiador",
+  institucional: "Apoiador",
 };
 
 async function renderLista(reply: FastifyReply, extra: Record<string, any> = {}) {
@@ -58,7 +58,7 @@ export async function renderFormNovo(request: FastifyRequest, reply: FastifyRepl
     "/templates/admin/apoiadores/form.hbs",
     {
       modoEdicao: false,
-      apoiador: { status: "pausado", plano: "basico", data_inicio: new Date().toISOString().slice(0, 10) },
+      apoiador: { status: "pausado", plano: "institucional", valor_mensal: "29.90", data_inicio: new Date().toISOString().slice(0, 10) },
       adminPageApoiadores: true,
     },
     { layout: "layouts/adminLayout" }
@@ -133,8 +133,8 @@ export async function criarApoiador(request: FastifyRequest, reply: FastifyReply
     logo_url: logoUrl,
     website_url: fields.website_url,
     descricao: fields.descricao,
-    plano: fields.plano,
-    valor_mensal: fields.valor_mensal,
+    plano: "institucional",
+    valor_mensal: "29.90",
     data_inicio: fields.data_inicio,
     data_fim: fields.data_fim,
     status: fields.status,
@@ -171,8 +171,8 @@ export async function atualizarApoiador(request: FastifyRequest, reply: FastifyR
     logo_url: logoFinal,
     website_url: fields.website_url,
     descricao: fields.descricao,
-    plano: fields.plano,
-    valor_mensal: fields.valor_mensal,
+    plano: "institucional",
+    valor_mensal: "29.90",
     data_inicio: fields.data_inicio,
     data_fim: fields.data_fim,
   });
