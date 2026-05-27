@@ -25,44 +25,28 @@
   </div>
   {{/if}}
 
-  <!-- Filtros -->
-  <div class="flex flex-col sm:flex-row gap-3">
-    <!-- Filtro status -->
-    <div class="flex gap-1 flex-wrap">
-      <a href="/admin/apoiadores?status=todos&plano={{filtroPlano}}"
-        class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
-          {{#ifCond filtroStatus '===' 'todos'}}bg-[#2D4BA6] text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
-        Todos ({{contagens.todos}})
-      </a>
-      <a href="/admin/apoiadores?status=ativo&plano={{filtroPlano}}"
-        class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
-          {{#ifCond filtroStatus '===' 'ativo'}}bg-emerald-500 text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
-        Ativos ({{contagens.ativo}})
-      </a>
-      <a href="/admin/apoiadores?status=pausado&plano={{filtroPlano}}"
-        class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
-          {{#ifCond filtroStatus '===' 'pausado'}}bg-amber-500 text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
-        Pausados ({{contagens.pausado}})
-      </a>
-      <a href="/admin/apoiadores?status=encerrado&plano={{filtroPlano}}"
-        class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
-          {{#ifCond filtroStatus '===' 'encerrado'}}bg-slate-500 text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
-        Encerrados ({{contagens.encerrado}})
-      </a>
-    </div>
-
-    <!-- Filtro plano -->
-    <form method="GET" action="/admin/apoiadores" class="flex items-center gap-2 ml-auto">
-      <input type="hidden" name="status" value="{{filtroStatus}}" />
-      <select name="plano" onchange="this.form.submit()"
-        class="text-xs rounded-xl px-3 py-2 border border-slate-200 dark:border-white/10 bg-white dark:bg-[#102235] text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4886D9]">
-        <option value="todos" {{#ifCond filtroPlano '===' 'todos'}}selected{{/ifCond}}>Todos os planos</option>
-        <option value="basico"        {{#ifCond filtroPlano '===' 'basico'}}selected{{/ifCond}}>Apoiador Básico</option>
-        <option value="local"         {{#ifCond filtroPlano '===' 'local'}}selected{{/ifCond}}>Apoiador Local</option>
-        <option value="destaque"      {{#ifCond filtroPlano '===' 'destaque'}}selected{{/ifCond}}>Apoiador Destaque</option>
-        <option value="institucional" {{#ifCond filtroPlano '===' 'institucional'}}selected{{/ifCond}}>Parceiro Institucional</option>
-      </select>
-    </form>
+  <!-- Filtros de status -->
+  <div class="flex gap-1 flex-wrap">
+    <a href="/admin/apoiadores?status=todos"
+      class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+        {{#ifCond filtroStatus '===' 'todos'}}bg-[#2D4BA6] text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
+      Todos ({{contagens.todos}})
+    </a>
+    <a href="/admin/apoiadores?status=ativo"
+      class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+        {{#ifCond filtroStatus '===' 'ativo'}}bg-emerald-500 text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
+      Ativos ({{contagens.ativo}})
+    </a>
+    <a href="/admin/apoiadores?status=pausado"
+      class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+        {{#ifCond filtroStatus '===' 'pausado'}}bg-amber-500 text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
+      Pausados ({{contagens.pausado}})
+    </a>
+    <a href="/admin/apoiadores?status=encerrado"
+      class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+        {{#ifCond filtroStatus '===' 'encerrado'}}bg-slate-500 text-white{{else}}bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10{{/ifCond}}">
+      Encerrados ({{contagens.encerrado}})
+    </a>
   </div>
 
   <!-- Lista -->
@@ -92,7 +76,7 @@
             {{else}}
             <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-white/40 text-xs font-semibold">Encerrado</span>
             {{/if}}
-            <span class="px-2 py-0.5 rounded-full bg-[#2D4BA6]/10 text-[#2D4BA6] dark:bg-[#4886D9]/20 dark:text-[#4886D9] text-xs font-semibold">{{planoLabel}}</span>
+            <span class="px-2 py-0.5 rounded-full bg-[#2D4BA6]/10 text-[#2D4BA6] dark:bg-[#4886D9]/20 dark:text-[#4886D9] text-xs font-semibold">Apoiador</span>
           </div>
           <p class="text-xs text-slate-400 dark:text-white/40">
             {{valorFormatado}}/mês · Início: {{data_inicio}}{{#if data_fim}} · Término: {{data_fim}}{{/if}}

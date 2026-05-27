@@ -107,6 +107,18 @@ export async function listarAtivosParaRodape(): Promise<Pick<Apoiador, "id" | "n
   return rows ?? [];
 }
 
+export async function listarAtivosPublico(): Promise<Pick<Apoiador, "id" | "nome" | "logo_url" | "website_url" | "descricao">[]> {
+  const [rows]: any = await pool.query(
+    `SELECT id, nome, logo_url, website_url, descricao
+     FROM apoiadores_institucionais
+     WHERE status = 'ativo'
+       AND data_inicio <= CURDATE()
+       AND (data_fim IS NULL OR data_fim >= CURDATE())
+     ORDER BY nome ASC`
+  );
+  return rows ?? [];
+}
+
 export async function contarPorStatus(): Promise<Record<string, number>> {
   const [rows]: any = await pool.query(
     `SELECT status, COUNT(*) AS total FROM apoiadores_institucionais GROUP BY status`
