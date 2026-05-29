@@ -26,6 +26,11 @@ const NOTIFICACAO_REFERENCIA_COLS: ColDef[] = [
   ["referencia_id",   "INT NULL"],
 ];
 
+const TERMOS_ACEITE_COLS: ColDef[] = [
+  ["termos_aceitos_em", "DATETIME NULL"],
+  ["termos_versao",     "VARCHAR(20) NULL"],
+];
+
 async function columnExists(table: string, column: string): Promise<boolean> {
   const [rows]: any = await pool.query(
     `SELECT COUNT(*) AS cnt
@@ -122,12 +127,25 @@ async function migration004AddReferenciaNotificacao(): Promise<void> {
   `);
 }
 
+async function migration005AddAceiteTermos(): Promise<void> {
+  for (const table of ["usuarios", "ongs", "empresas"]) {
+    for (const [column, definition] of TERMOS_ACEITE_COLS) {
+      const exists = await columnExists(table, column);
+      if (!exists) {
+        await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+        console.log(`[migration] ${table}.${column} adicionado.`);
+      }
+    }
+  }
+}
+
 export async function runMigrations(): Promise<void> {
   try {
     await migration001AddLocalizacaoOng();
     await migration002CreateApoiadores();
     await migration003CreateOngReviews();
     await migration004AddReferenciaNotificacao();
+    await migration005AddAceiteTermos();
   } catch (err) {
     console.error("[migration] Erro ao executar migrations:", err);
   }
