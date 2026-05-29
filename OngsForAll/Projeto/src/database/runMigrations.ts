@@ -64,10 +64,28 @@ async function migration002CreateApoiadores(): Promise<void> {
   `);
 }
 
+async function migration003CreateOngReviews(): Promise<void> {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ong_reviews (
+      id         INT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      ong_id     INT         NOT NULL,
+      user_id    INT         NOT NULL,
+      user_tipo  VARCHAR(20) NOT NULL,
+      rating     TINYINT     NOT NULL,
+      comment    TEXT        NULL,
+      created_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY uq_ong_user (ong_id, user_id, user_tipo),
+      KEY idx_ong_id (ong_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+  `);
+}
+
 export async function runMigrations(): Promise<void> {
   try {
     await migration001AddLocalizacaoOng();
     await migration002CreateApoiadores();
+    await migration003CreateOngReviews();
   } catch (err) {
     console.error("[migration] Erro ao executar migrations:", err);
   }

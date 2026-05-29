@@ -321,33 +321,58 @@ export async function listAllOngs(params: {
   offset: number;
   excludeOngId?: number;
 }) {
-  let fromClause = " FROM ongs";
+  const conditions: string[] = [];
   const queryParams: any[] = [];
 
   if (params.excludeOngId) {
-    fromClause += " WHERE ong_id <> ?";
+    conditions.push("o.ong_id <> ?");
     queryParams.push(params.excludeOngId);
   }
 
   if (params.search && params.search.trim()) {
-    fromClause += queryParams.length ? " AND" : " WHERE";
-    fromClause += " (nome LIKE ? OR area_atuacao LIKE ?)";
+    conditions.push("(o.nome LIKE ? OR o.area_atuacao LIKE ?)");
     const term = `%${params.search.trim()}%`;
     queryParams.push(term, term);
   }
 
+  const whereClause = conditions.length
+    ? " WHERE " + conditions.join(" AND ")
+    : "";
+
   const [countRows]: any = await pool.query(
-    `SELECT COUNT(*) AS total${fromClause}`,
+    `SELECT COUNT(*) AS total FROM ongs o${whereClause}`,
     queryParams
   );
 
   const [rows]: any = await pool.query(
-    `SELECT ong_id AS id, nome, email, area_atuacao, telefone, logo${fromClause} ORDER BY nome ASC LIMIT ? OFFSET ?`,
+    `SELECT o.ong_id AS id, o.nome, o.email, o.area_atuacao, o.telefone, o.logo,
+            COUNT(r.id) AS total_avaliacoes,
+            AVG(r.rating) AS media_avaliacao
+     FROM ongs o
+     LEFT JOIN ong_reviews r ON r.ong_id = o.ong_id${whereClause}
+     GROUP BY o.ong_id, o.nome, o.email, o.area_atuacao, o.telefone, o.logo
+     ORDER BY o.nome ASC LIMIT ? OFFSET ?`,
     [...queryParams, params.limit, params.offset]
   );
 
   return {
-    items: rows,
+    items: rows.map((row: any) => {
+      const total = Number(row.total_avaliacoes ?? 0);
+      const media = total > 0 ? parseFloat(Number(row.media_avaliacao).toFixed(1)) : 0;
+      return {
+        id: row.id,
+        nome: row.nome,
+        email: row.email,
+        area_atuacao: row.area_atuacao,
+        telefone: row.telefone,
+        logo: row.logo,
+        totalAvaliacoes: total,
+        mediaAvaliacao: total > 0 ? media : null,
+        mediaFormatada: total > 0 ? media.toFixed(1).replace(".", ",") : null,
+        mediaArredondada: total > 0 ? Math.round(media) : 0,
+        temAvaliacao: total > 0,
+      };
+    }),
     total: Number(countRows?.[0]?.total ?? 0),
   };
 }
