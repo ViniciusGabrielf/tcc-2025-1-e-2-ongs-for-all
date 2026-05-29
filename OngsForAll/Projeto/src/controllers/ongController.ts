@@ -2,6 +2,24 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import * as ongService from "../services/ongService";
 import * as notificacaoService from "../services/notificacaoService";
 import { buildPagination, normalizePage } from "../utils/pagination";
+import * as perfilRepo from "../repositories/perfilRepository";
+import * as reviewService from "../services/ongReviewsService";
+
+function getLayout(session: any): string {
+  if (!session) return "layouts/main";
+  if (session.tipo === "ong") return "layouts/ongDashboardLayout";
+  if (session.tipo === "empresa") return "layouts/empresaDashboardLayout";
+  return "layouts/dashboardLayout";
+}
+
+async function getNaoLidas(session: any): Promise<number> {
+  if (!session) return 0;
+  const { naoLidas } = await notificacaoService.contarNaoLidas({
+    tipoConta: session.tipo,
+    id: Number(session.id),
+  });
+  return naoLidas;
+}
 
 const ONGS_PAGE_SIZE = 9;
 
@@ -68,5 +86,64 @@ export async function renderOngsPage(request: FastifyRequest, reply: FastifyRepl
     isOngDashboard,
     pagination,
     loginRedirectUrl: `/login?redirect=${encodeURIComponent(request.raw.url || "/ongs")}`,
+  }, { layout });
+}
+
+export async function renderOngDetalhePage(request: FastifyRequest, reply: FastifyReply) {
+  const { id } = request.params as { id: string };
+  const ongId = Number(id);
+  const session = request.session.user;
+  const naoLidas = await getNaoLidas(session);
+  const layout = getLayout(session);
+
+  if (!ongId || isNaN(ongId)) {
+    return reply.status(404).view("/templates/ong/detalhe.hbs", {
+      title: "ONG não encontrada",
+      ong: null,
+      reviews: null,
+      user: session ?? null,
+      naoLidas,
+      podeAvaliar: false,
+      sucesso: false,
+      erro: null,
+      loginRedirectUrl: null,
+    }, { layout });
+  }
+
+  const ong = await perfilRepo.findOngById(ongId);
+  if (!ong) {
+    return reply.status(404).view("/templates/ong/detalhe.hbs", {
+      title: "ONG não encontrada",
+      ong: null,
+      reviews: null,
+      user: session ?? null,
+      naoLidas,
+      podeAvaliar: false,
+      sucesso: false,
+      erro: null,
+      loginRedirectUrl: null,
+    }, { layout });
+  }
+
+  const reviews = await reviewService.getReviewData(
+    ongId,
+    session ? Number(session.id) : undefined,
+    session?.tipo
+  );
+
+  const podeAvaliar = !!session && session.tipo !== "ong";
+  const sucesso = (request.query as any)?.sucesso === "1";
+  const erro = (request.query as any)?.erro ?? null;
+
+  return reply.view("/templates/ong/detalhe.hbs", {
+    title: `${ong.nome}`,
+    ong,
+    reviews,
+    user: session ?? null,
+    naoLidas,
+    podeAvaliar,
+    sucesso,
+    erro,
+    loginRedirectUrl: encodeURIComponent(`/ongs/${ongId}`),
   }, { layout });
 }
