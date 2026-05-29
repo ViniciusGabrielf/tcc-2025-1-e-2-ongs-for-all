@@ -107,6 +107,8 @@ export async function criarInteresse(params: {
         titulo: "Novo interesse recebido",
         mensagem: `${nomeUsuario} demonstrou interesse em ajudar a necessidade "${necessidade.titulo}".`,
         tipo: "novo_interesse",
+        referenciaTipo: "interesse",
+        referenciaId: interesseId,
     });
 
     const ong = await interesseRepo.buscarEmailOngPorId(Number(necessidade.ong_id));
@@ -191,6 +193,8 @@ export async function aceitarInteresse(params: {
         titulo: "Interesse aceito",
         mensagem: `${interesse.nome_ong} aceitou seu interesse em ajudar a necessidade "${interesse.titulo_necessidade}". ID da solicitacao: #${interesse.id}. Aguardando a entrega!`,
         tipo: "interesse_aceito",
+        referenciaTipo: "interesse",
+        referenciaId: interesse.id,
     });
 
     if (interesse.email_usuario) {
@@ -284,11 +288,14 @@ export async function receberInteresse(params: {
         titulo: "Doacao recebida",
         mensagem: `${interesse.nome_ong} confirmou o recebimento da sua doacao para "${interesse.titulo_necessidade}". ${detalhesRecebimento} Obrigado pela ajuda!`,
         tipo: "interesse_recebido",
+        referenciaTipo: "interesse",
+        referenciaId: interesse.id,
     });
 
     if (interesse.email_usuario) {
         emailService.enviarConfirmacaoRecebimentoUsuario({
             interesseId: interesse.id,
+            ongId: Number(interesse.ong_id),
             emailUsuario: interesse.email_usuario,
             nomeUsuario: interesse.nome_usuario,
             nomeOng: interesse.nome_ong,
@@ -314,6 +321,8 @@ export async function receberInteresse(params: {
                 titulo: "Meta atingida!",
                 mensagem: `A necessidade "${interesse.titulo_necessidade}" atingiu a meta de doacoes e foi concluida automaticamente!`,
                 tipo: "meta_atingida",
+                referenciaTipo: "interesse",
+                referenciaId: interesse.id,
             });
         }
     }
@@ -355,6 +364,8 @@ export async function cancelarInteresse(params: {
         titulo: "Interesse cancelado",
         mensagem: `${interesse.nome_ong} cancelou o interesse relacionado a necessidade "${interesse.titulo_necessidade}".${mensagemMotivo}`,
         tipo: "interesse_cancelado",
+        referenciaTipo: "interesse",
+        referenciaId: interesse.id,
     });
 
     if (interesse.email_usuario) {

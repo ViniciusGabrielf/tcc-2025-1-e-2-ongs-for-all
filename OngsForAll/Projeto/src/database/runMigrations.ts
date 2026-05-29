@@ -21,6 +21,11 @@ const ONG_LOCALIZACAO_COLS: ColDef[] = [
   ["instrucoes_chegada",    "TEXT NULL"],
 ];
 
+const NOTIFICACAO_REFERENCIA_COLS: ColDef[] = [
+  ["referencia_tipo", "VARCHAR(50) NULL"],
+  ["referencia_id",   "INT NULL"],
+];
+
 async function columnExists(table: string, column: string): Promise<boolean> {
   const [rows]: any = await pool.query(
     `SELECT COUNT(*) AS cnt
@@ -81,11 +86,48 @@ async function migration003CreateOngReviews(): Promise<void> {
   `);
 }
 
+async function migration004AddReferenciaNotificacao(): Promise<void> {
+  for (const [column, definition] of NOTIFICACAO_REFERENCIA_COLS) {
+    const exists = await columnExists("notificacoes", column);
+    if (!exists) {
+      await pool.query(`ALTER TABLE notificacoes ADD COLUMN \`${column}\` ${definition}`);
+      console.log(`[migration] notificacoes.${column} adicionado.`);
+    }
+  }
+
+  await pool.query(`
+    UPDATE notificacoes nt
+    SET
+      nt.referencia_tipo = 'interesse',
+      nt.referencia_id = (
+        SELECT i.id
+        FROM interesses_doacao i
+        INNER JOIN usuarios u ON u.id = i.usuario_id
+        INNER JOIN necessidades n ON n.id = i.necessidade_id
+        WHERE i.ong_id = nt.ong_id
+          AND nt.mensagem = CONCAT(u.nome, ' demonstrou interesse em ajudar a necessidade "', n.titulo, '".')
+        ORDER BY ABS(TIMESTAMPDIFF(SECOND, nt.criado_em, i.criado_em)) ASC, i.id DESC
+        LIMIT 1
+      )
+    WHERE nt.tipo = 'novo_interesse'
+      AND nt.referencia_id IS NULL
+  `);
+
+  await pool.query(`
+    UPDATE notificacoes
+    SET referencia_tipo = NULL
+    WHERE tipo = 'novo_interesse'
+      AND referencia_tipo = 'interesse'
+      AND referencia_id IS NULL
+  `);
+}
+
 export async function runMigrations(): Promise<void> {
   try {
     await migration001AddLocalizacaoOng();
     await migration002CreateApoiadores();
     await migration003CreateOngReviews();
+    await migration004AddReferenciaNotificacao();
   } catch (err) {
     console.error("[migration] Erro ao executar migrations:", err);
   }

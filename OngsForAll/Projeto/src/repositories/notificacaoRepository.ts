@@ -6,6 +6,8 @@ export async function createNotificacao(params: {
   titulo: string;
   mensagem: string;
   tipo: string;
+  referenciaTipo?: string | null;
+  referenciaId?: number | null;
 }) {
   await pool.query(
     `
@@ -15,10 +17,12 @@ export async function createNotificacao(params: {
       titulo,
       mensagem,
       tipo,
+      referencia_tipo,
+      referencia_id,
       lida,
       criado_em
     )
-    VALUES (?, ?, ?, ?, ?, 0, NOW())
+    VALUES (?, ?, ?, ?, ?, ?, ?, 0, NOW())
     `,
     [
       params.usuarioId ?? null,
@@ -26,6 +30,8 @@ export async function createNotificacao(params: {
       params.titulo,
       params.mensagem,
       params.tipo,
+      params.referenciaTipo ?? null,
+      params.referenciaId ?? null,
     ]
   );
 }
@@ -34,15 +40,21 @@ export async function listarNotificacoesUsuario(usuarioId: number) {
   const [rows]: any = await pool.query(
     `
     SELECT
-      id,
-      titulo,
-      mensagem,
-      tipo,
-      lida,
-      DATE_FORMAT(criado_em, '%d/%m/%Y %H:%i') AS criado_em
-    FROM notificacoes
-    WHERE usuario_id = ?
-    ORDER BY criado_em DESC
+      nt.id,
+      nt.titulo,
+      nt.mensagem,
+      nt.tipo,
+      nt.referencia_tipo,
+      nt.referencia_id,
+      i.ong_id AS referencia_ong_id,
+      nt.lida,
+      DATE_FORMAT(nt.criado_em, '%d/%m/%Y %H:%i') AS criado_em
+    FROM notificacoes nt
+    LEFT JOIN interesses_doacao i
+      ON nt.referencia_tipo = 'interesse'
+     AND nt.referencia_id = i.id
+    WHERE nt.usuario_id = ?
+    ORDER BY nt.criado_em DESC
     `,
     [usuarioId]
   );
@@ -54,15 +66,21 @@ export async function listarNotificacoesOng(ongId: number) {
   const [rows]: any = await pool.query(
     `
     SELECT
-      id,
-      titulo,
-      mensagem,
-      tipo,
-      lida,
-      DATE_FORMAT(criado_em, '%d/%m/%Y %H:%i') AS criado_em
-    FROM notificacoes
-    WHERE ong_id = ?
-    ORDER BY criado_em DESC
+      nt.id,
+      nt.titulo,
+      nt.mensagem,
+      nt.tipo,
+      nt.referencia_tipo,
+      nt.referencia_id,
+      i.ong_id AS referencia_ong_id,
+      nt.lida,
+      DATE_FORMAT(nt.criado_em, '%d/%m/%Y %H:%i') AS criado_em
+    FROM notificacoes nt
+    LEFT JOIN interesses_doacao i
+      ON nt.referencia_tipo = 'interesse'
+     AND nt.referencia_id = i.id
+    WHERE nt.ong_id = ?
+    ORDER BY nt.criado_em DESC
     `,
     [ongId]
   );
