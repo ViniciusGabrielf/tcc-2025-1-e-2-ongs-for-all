@@ -1,47 +1,142 @@
 <div class="min-h-screen py-10 px-4">
-  <div class="w-full max-w-3xl mx-auto bg-white dark:bg-[#102235] rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 p-6 sm:p-8">
+  <div class="w-full max-w-4xl mx-auto bg-white dark:bg-[#102235] rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 p-6 sm:p-8">
     <div class="mb-8">
       <a href="/register" class="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline mb-4">
         Voltar ao cadastro
       </a>
-      <h1 class="text-3xl font-bold text-[#2D4BA6] dark:text-white">Termos de Uso e Politica de Privacidade</h1>
-      <p class="text-sm text-slate-500 dark:text-white/50 mt-2">Versao {{versaoTermos}}</p>
+      <h1 class="text-3xl font-bold text-[#2D4BA6] dark:text-white">Termos de Uso e Política de Privacidade</h1>
+      <p class="text-sm text-slate-500 dark:text-white/50 mt-2">Versão {{versaoTermos}}</p>
     </div>
 
-    <div class="space-y-6 text-sm leading-6 text-slate-600 dark:text-white/70">
+    <div class="space-y-7 text-sm leading-6 text-slate-600 dark:text-white/70">
       <section>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">1. Aceite dos termos</h2>
-        <p>Ao criar uma conta na ONG For All, voce declara que leu, compreendeu e aceita estes Termos de Uso e a Politica de Privacidade da plataforma.</p>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">1. Objetivo da aplicação</h2>
+        <p>A plataforma ONGs For All tem como finalidade conectar organizações não governamentais de pequeno e médio porte, visitantes, pessoas físicas, voluntários, parceiros institucionais e administradores, promovendo maior visibilidade, transparência e engajamento social.</p>
+        <p class="mt-3">A aplicação permite que visitantes visualizem ONGs cadastradas, consultem necessidades publicadas, filtrem informações por categoria e acessem detalhes públicos sem necessidade de login. O cadastro ou autenticação é exigido apenas para ações restritas, como registrar interesse em apoio, confirmar uma doação de bem, serviço ou voluntariado, enviar mensagens ou acessar painéis específicos.</p>
+        <p class="mt-3">A plataforma atua como intermediadora informacional, permitindo a divulgação de necessidades, o registro de interesses de apoio, a comunicação entre usuários e ONGs, a publicação de evidências e a apresentação de relatórios de impacto. Nesta versão, a aplicação não operacionaliza doações financeiras diretas às ONGs.</p>
       </section>
 
       <section>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">2. Uso da plataforma</h2>
-        <p>A plataforma conecta usuarios, ONGs e empresas parceiras para apoiar necessidades sociais. Cada usuario deve fornecer informacoes verdadeiras, manter seus dados atualizados e usar os recursos de forma respeitosa e licita.</p>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">2. Aceite dos termos</h2>
+        <p>Para concluir o cadastro na plataforma ONGs For All, o usuário deve marcar expressamente a opção "Li e aceito os Termos de Uso e a Política de Privacidade", disponível na tela de cadastro antes da finalização do registro. Sem essa marcação, o cadastro não poderá ser concluído.</p>
+        <p class="mt-3">Ao realizar essa ação, o usuário declara ter lido, compreendido e concordado com todas as condições estabelecidas neste documento.</p>
+        <p class="mt-3">Caso o usuário não concorde com os termos apresentados, não deverá concluir o cadastro nem utilizar as funcionalidades restritas do sistema. A navegação pública da plataforma pode ser realizada sem aceite formal.</p>
       </section>
 
       <section>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">3. Responsabilidades</h2>
-        <p>Usuarios sao responsaveis pelas informacoes, mensagens, imagens, interesses e avaliacoes publicados. ONGs e empresas devem manter seus dados institucionais corretos e cumprir os compromissos assumidos pela plataforma.</p>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">3. Perfis de usuário e fluxo de uso</h2>
+        <p><strong>Visitante:</strong> usuário não autenticado que pode acessar a área pública da plataforma, visualizar ONGs cadastradas e aprovadas, consultar necessidades publicadas, aplicar filtros por categoria e acessar detalhes públicos. Não é possível registrar interesse em apoio, enviar mensagens ou acessar painéis sem realizar cadastro.</p>
+        <p class="mt-3"><strong>Pessoa física / voluntário:</strong> usuário cadastrado que pode registrar interesse em apoiar necessidades por meio de bens, serviços ou voluntariado; acompanhar o status dos apoios registrados; trocar mensagens com ONGs; receber notificações sobre movimentações; acessar calendário de atividades; visualizar e editar seu perfil; e avaliar ONGs por estrelas com comentário opcional. O cadastro exige aceite expresso dos termos e verificação do endereço de e-mail informado.</p>
+        <p class="mt-3"><strong>ONG:</strong> organização cadastrada que pode publicar e gerenciar necessidades; visualizar e gerenciar interesses de apoio recebidos; aceitar, acompanhar e confirmar recebimentos de apoio; registrar evidências e publicar relatórios de impacto; configurar localização pública; enviar documentos para análise administrativa; trocar mensagens com apoiadores; e acessar relatórios gerenciais. O cadastro da ONG está condicionado à análise e aprovação administrativa.</p>
+        <p class="mt-3"><strong>Parceiro institucional / empresa:</strong> pessoa jurídica ou instituição que pode cadastrar-se para apoiar necessidades de ONGs, manter uma vitrine institucional de itens sujeita à aprovação administrativa, e trocar mensagens com ONGs. O cadastro exige aceite expresso dos termos e verificação de e-mail.</p>
+        <p class="mt-3"><strong>Administrador:</strong> equipe responsável pela gestão da plataforma, que pode aprovar ou rejeitar cadastros de ONGs e documentos enviados; moderar itens institucionais, evidências e publicidades; gerenciar apoiadores institucionais; e acompanhar as ações realizadas no sistema. O acesso administrativo é protegido por credencial adicional.</p>
+        <p class="mt-3">Cada usuário é responsável pela veracidade das informações cadastradas e pela guarda de suas credenciais de acesso. O compartilhamento de credenciais não é recomendado e é de responsabilidade exclusiva do próprio usuário.</p>
       </section>
 
       <section>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">4. Conteudos proibidos</h2>
-        <p>Nao e permitido publicar conteudo ofensivo, discriminatorio, enganoso, ilegal, sensivel ou que viole direitos de terceiros. A plataforma pode bloquear, remover ou rejeitar conteudos que descumpram estas regras.</p>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">4. Dados coletados por perfil e finalidade</h2>
+        <p>A plataforma coleta apenas os dados necessários ao funcionamento de cada perfil, conforme descrito a seguir.</p>
+        <p class="mt-3">Para a pessoa física / voluntário, são coletados: nome completo, para identificação do usuário na plataforma; endereço de e-mail, para autenticação, envio de notificações e comunicação transacional; CPF, para verificação de unicidade do cadastro e prevenção de registros duplicados; telefone, como canal de contato opcional; e senha, armazenada em hash criptográfico, para autenticação segura.</p>
+        <p class="mt-3">Para a ONG, são coletados: nome da organização, para identificação pública; CNPJ, para validação da existência e regularidade da organização; área de atuação, para categorização e filtro público; descrição institucional, para apresentação pública; endereço e localização, para exibição pública opcional no mapa, mediante configuração da própria ONG; e-mail institucional, para autenticação e comunicação transacional; telefone institucional, para contato exibido conforme configuração da ONG; e senha em hash criptográfico.</p>
+        <p class="mt-3">Para o parceiro institucional / empresa, são coletados: razão social e nome fantasia, para identificação na plataforma; CNPJ, para validação do cadastro empresarial; e-mail, para autenticação e comunicação transacional; setor de atuação, para categorização interna; e senha em hash criptográfico.</p>
+        <p class="mt-3">Os dados pessoais de pessoas físicas, em especial CPF, e-mail e telefone, não são exibidos publicamente na plataforma, não são compartilhados com ONGs, empresas ou outros usuários, e são utilizados exclusivamente para as finalidades descritas nesta seção.</p>
       </section>
 
       <section>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">5. Dados pessoais</h2>
-        <p>Coletamos dados necessarios para cadastro, autenticacao, comunicacao, seguranca, validacao de documentos, gerenciamento de interesses, doacoes, mensagens e avaliacoes. O tratamento desses dados segue a finalidade da plataforma e as boas praticas de protecao de dados.</p>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">5. Base legal para o tratamento de dados</h2>
+        <p>O tratamento de dados pessoais realizado pela plataforma ONGs For All fundamenta-se nas seguintes hipóteses legais previstas no Art. 7º da Lei n.º 13.709/2018, a Lei Geral de Proteção de Dados Pessoais (LGPD).</p>
+        <p class="mt-3"><strong>Consentimento:</strong> o usuário manifesta concordância livre, informada e inequívoca por meio da marcação expressa do checkbox de aceite no momento do cadastro. O consentimento pode ser revogado a qualquer momento, mediante solicitação ao canal de contato indicado neste documento.</p>
+        <p class="mt-3"><strong>Execução de contrato ou procedimentos preliminares:</strong> parte dos dados é necessária para a prestação do serviço ao usuário, como o e-mail para autenticação e o CNPJ para validação do cadastro de ONGs e empresas.</p>
+        <p class="mt-3"><strong>Legítimo interesse do controlador:</strong> dados de rastreabilidade, como logs de autenticação e registros de ações, são tratados para garantir segurança, prevenir fraudes e manter a integridade das interações registradas no sistema, observados os direitos e expectativas dos titulares.</p>
       </section>
 
       <section>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">6. Comunicacoes</h2>
-        <p>A plataforma pode enviar notificacoes e emails relacionados a cadastro, verificacao de conta, interesses, recebimentos, mensagens, seguranca e atualizacoes importantes.</p>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">6. Segurança dos dados e armazenamento</h2>
+        <p>A plataforma adota medidas técnicas e organizacionais para proteger os dados dos usuários. As senhas são armazenadas exclusivamente em formato de hash criptográfico com bcrypt, nunca em texto simples, de modo que nem a equipe administradora tem acesso às senhas originais dos usuários.</p>
+        <p class="mt-3">O controle de acesso garante que cada perfil acesse apenas as funcionalidades e dados autorizados para seu nível, sendo que o painel administrativo requer credencial adicional. As sessões são gerenciadas com cookies httpOnly e SameSite, com regeneração de sessão no momento do login para mitigar ataques de fixação de sessão.</p>
+        <p class="mt-3">Todos os dados recebidos passam por validação antes de serem processados ou armazenados. As informações são mantidas em banco de dados relacional MySQL, com acesso restrito por credenciais de ambiente, não expostas no código-fonte ou em repositórios públicos. Chaves de API, credenciais de banco, segredos de sessão e configurações sensíveis são gerenciados exclusivamente por variáveis de ambiente.</p>
+        <p class="mt-3">O sistema registra tentativas de login, incluindo e-mail, endereço IP e resultado, com finalidade exclusiva de rastreabilidade e segurança. Arquivos enviados passam por verificação de tipo real e moderação automática por serviços de inteligência artificial, com finalidade de segurança e adequação de conteúdo.</p>
+        <p class="mt-3">Em caso de incidente de segurança que possa afetar dados pessoais dos usuários, a plataforma adotará as providências cabíveis e comunicará os titulares afetados nos termos da legislação aplicável.</p>
       </section>
 
       <section>
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">7. Alteracoes dos termos</h2>
-        <p>Estes termos podem ser atualizados para refletir ajustes legais, tecnicos ou funcionais. A versao aceita no cadastro fica registrada junto da conta.</p>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">7. Visualização pública de ONGs e necessidades</h2>
+        <p>A plataforma permite que visitantes visualizem informações públicas sobre ONGs aprovadas e necessidades ativas sem necessidade de cadastro. Essa funcionalidade tem como objetivo ampliar a visibilidade das organizações e facilitar o acesso de possíveis apoiadores.</p>
+        <p class="mt-3">As informações públicas podem incluir nome da ONG, área de atuação, descrição, contatos institucionais, necessidades cadastradas, evidências e relatórios de impacto disponibilizados pela organização. Dados de pessoas físicas não são exibidos na área pública da plataforma. A localização da pessoa física não é coletada, armazenada nem exibida em nenhuma circunstância.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">8. Registro de apoio e confirmação de recebimento</h2>
+        <p>A plataforma permite que usuários autenticados registrem interesse em apoiar necessidades publicadas por ONGs. Os apoios previstos nesta versão envolvem bens, serviços e voluntariado.</p>
+        <p class="mt-3">Ao registrar interesse em apoio, o usuário deverá fornecer informações verdadeiras e manter comunicação adequada com a ONG. A organização será responsável por avaliar o interesse, alinhar detalhes com o apoiador e confirmar o recebimento quando o apoio for efetivamente realizado.</p>
+        <p class="mt-3">A plataforma não se responsabiliza pela entrega física de bens, pela execução de serviços ou por acordos realizados fora do ambiente do sistema.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">9. Mensagens e comunicação interna</h2>
+        <p>A plataforma disponibiliza recursos de mensagens internas para facilitar a comunicação entre usuários autenticados e ONGs, restrita a assuntos relacionados às necessidades publicadas e aos apoios registrados.</p>
+        <p class="mt-3">O usuário compromete-se a utilizar a comunicação interna de forma respeitosa, sendo proibido o envio de conteúdos ofensivos, discriminatórios, fraudulentos, ilegais ou incompatíveis com a finalidade social da plataforma. A equipe administradora poderá moderar, restringir ou remover conteúdos quando identificar uso inadequado.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">10. Evidências e relatórios de impacto</h2>
+        <p>As ONGs poderão publicar evidências e relatórios de impacto relacionados aos apoios recebidos e às ações realizadas. As evidências podem incluir imagens, documentos e descrições. A ONG é responsável pelo conteúdo publicado e deve garantir autorização para divulgar informações ou imagens de terceiros.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">11. Publicidade institucional e parceiros</h2>
+        <p>A plataforma poderá disponibilizar espaços para publicidade institucional alinhada à finalidade social do projeto. Os conteúdos deverão respeitar os objetivos da ONGs For All. A equipe administradora poderá aprovar, rejeitar, editar ou remover conteúdos de parceiros quando necessário.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">12. Limitações da plataforma</h2>
+        <p>A ONGs For All atua como plataforma de intermediação informacional e não se responsabiliza por:</p>
+        <ul class="list-disc pl-5 mt-3 space-y-1">
+          <li>execução prática da entrega de bens;</li>
+          <li>qualidade, estado ou disponibilidade dos itens oferecidos;</li>
+          <li>prestação de serviços acordados entre usuários e ONGs;</li>
+          <li>logística de retirada, transporte ou entrega dos apoios;</li>
+          <li>informações falsas ou desatualizadas fornecidas por usuários, ONGs ou parceiros;</li>
+          <li>tratativas realizadas fora do ambiente da plataforma.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">13. Compartilhamento de dados</h2>
+        <p>Os dados dos usuários são utilizados exclusivamente para as finalidades descritas neste documento.</p>
+        <p class="mt-3">Em relação ao compartilhamento interno, a plataforma permite que, ao registrar interesse em apoio, o nome do apoiador seja visível à ONG destinatária, para fins de comunicação e confirmação do apoio. Nenhum outro dado pessoal da pessoa física, como CPF, e-mail ou telefone, é compartilhado com ONGs, empresas ou outros usuários.</p>
+        <p class="mt-3">Informações públicas de ONGs, como nome, área de atuação, necessidades, evidências e relatórios de impacto, são exibidas na área pública da plataforma, pois constituem a finalidade central do serviço.</p>
+        <p class="mt-3">A plataforma não comercializa dados pessoais dos usuários. O compartilhamento com terceiros somente ocorrerá quando necessário para cumprimento de obrigação legal ou quando expressamente autorizado pelo titular.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">14. Direitos dos titulares</h2>
+        <p>Em conformidade com o Art. 18 da LGPD, os usuários poderão exercer os seguintes direitos em relação aos seus dados pessoais, mediante solicitação pelo canal de contato indicado neste documento:</p>
+        <ul class="list-disc pl-5 mt-3 space-y-1">
+          <li><strong>Confirmação e acesso:</strong> saber se a plataforma trata seus dados e solicitar cópia das informações armazenadas;</li>
+          <li><strong>Correção:</strong> solicitar atualização ou correção de dados incompletos, inexatos ou desatualizados;</li>
+          <li><strong>Anonimização, bloqueio ou eliminação:</strong> solicitar o bloqueio do tratamento de dados desnecessários ou excessivos, ou sua eliminação quando não houver base legal para o tratamento;</li>
+          <li><strong>Portabilidade:</strong> solicitar a transmissão dos dados a outro fornecedor de serviço, nos termos regulamentados pela ANPD;</li>
+          <li><strong>Eliminação dos dados tratados com consentimento:</strong> revogar o consentimento e solicitar a exclusão dos dados tratados com essa base legal, exceto quando sua manutenção for necessária para cumprimento de obrigação legal;</li>
+          <li><strong>Informação sobre compartilhamento:</strong> ser informado sobre com quem os dados são compartilhados;</li>
+          <li><strong>Revogação do consentimento:</strong> retirar o consentimento a qualquer momento, sem prejuízo à legalidade do tratamento realizado anteriormente.</li>
+        </ul>
+        <p class="mt-3">Alguns dados poderão ser mantidos pelo período necessário para cumprimento de obrigações legais, segurança, prevenção a fraudes ou preservação da integridade dos registros da aplicação.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">15. Propriedade intelectual</h2>
+        <p>O código-fonte, layout, identidade visual, logotipo, estrutura e demais elementos próprios da plataforma ONGs For All pertencem aos seus desenvolvedores. Os conteúdos publicados por usuários, ONGs e parceiros são de responsabilidade de quem os publicou, respeitados os direitos de terceiros e as regras de uso da plataforma.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">16. Alterações dos termos</h2>
+        <p>A equipe responsável pela ONGs For All poderá alterar este documento para adequação a novas funcionalidades, melhorias técnicas ou exigências legais. Quando houver alterações relevantes, os usuários cadastrados poderão ser notificados por e-mail ou por aviso na plataforma.</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">17. Contato e suporte</h2>
+        <p>Dúvidas, solicitações de exercício de direitos, denúncias ou problemas técnicos relacionados à plataforma deverão ser encaminhados para <a href="mailto:ongsforall.suporte@gmail.com" class="font-semibold text-violet-600 dark:text-violet-400 hover:underline">ongsforall.suporte@gmail.com</a>. A equipe buscará responder às solicitações dentro de um prazo razoável, em conformidade com as obrigações previstas na LGPD.</p>
       </section>
     </div>
   </div>
