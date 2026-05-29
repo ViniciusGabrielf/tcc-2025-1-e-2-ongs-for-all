@@ -5,12 +5,16 @@ export async function criarNotificacaoParaOng(params: {
     titulo: string;
     mensagem: string;
     tipo: string;
+    referenciaTipo?: string | null;
+    referenciaId?: number | null;
 }) {
     await notificacaoRepository.createNotificacao({
         ongId: params.ongId,
         titulo: params.titulo,
         mensagem: params.mensagem,
         tipo: params.tipo,
+        referenciaTipo: params.referenciaTipo,
+        referenciaId: params.referenciaId,
     });
 }
 
@@ -19,12 +23,16 @@ export async function criarNotificacaoParaUsuario(params: {
     titulo: string;
     mensagem: string;
     tipo: string;
+    referenciaTipo?: string | null;
+    referenciaId?: number | null;
 }) {
     await notificacaoRepository.createNotificacao({
         usuarioId: params.usuarioId,
         titulo: params.titulo,
         mensagem: params.mensagem,
         tipo: params.tipo,
+        referenciaTipo: params.referenciaTipo,
+        referenciaId: params.referenciaId,
     });
 }
 
@@ -45,14 +53,46 @@ export async function listarNotificacoes(params: {
     }
 
     if (params.tipoConta === "ong") {
-        const notificacoes = await notificacaoRepository.listarNotificacoesOng(params.id);
+        const notificacoes = prepararLinksNotificacoes(
+            await notificacaoRepository.listarNotificacoesOng(params.id)
+        );
         const naoLidas = await notificacaoRepository.contarNaoLidasOng(params.id);
         return { notificacoes, naoLidas };
     }
 
-    const notificacoes = await notificacaoRepository.listarNotificacoesUsuario(params.id);
+    const notificacoes = prepararLinksNotificacoes(
+        await notificacaoRepository.listarNotificacoesUsuario(params.id)
+    );
     const naoLidas = await notificacaoRepository.contarNaoLidasUsuario(params.id);
     return { notificacoes, naoLidas };
+}
+
+function prepararLinksNotificacoes(notificacoes: any[]) {
+    return notificacoes.map((notificacao) => {
+        if (notificacao.tipo !== "novo_interesse") {
+            if (notificacao.tipo === "interesse_recebido") {
+                const ongId = Number(notificacao.referencia_ong_id);
+                if (Number.isFinite(ongId) && ongId > 0) {
+                    return {
+                        ...notificacao,
+                        avaliarOngUrl: `/ongs/${ongId}#avaliacoes`,
+                    };
+                }
+            }
+
+            return notificacao;
+        }
+
+        const referenciaId = Number(notificacao.referencia_id);
+        const interessesRecebidosUrl = Number.isFinite(referenciaId) && referenciaId > 0
+            ? `/ong/interesses?status=todos&busca=${encodeURIComponent(String(referenciaId))}`
+            : "/ong/interesses?status=pendente";
+
+        return {
+            ...notificacao,
+            interessesRecebidosUrl,
+        };
+    });
 }
 
 export async function marcarComoLida(id: number) {

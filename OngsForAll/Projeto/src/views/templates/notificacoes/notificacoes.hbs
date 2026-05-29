@@ -120,11 +120,18 @@
 
         <div class="flex flex-wrap gap-3">
           {{#ifCond tipo 'novo_interesse'}}
-          <a href="/ong/interesses?status=pendente"
+          <a href="{{interessesRecebidosUrl}}"
             class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-[var(--theme-primary)]/25 bg-[var(--theme-primary)]/10 text-[var(--theme-strong)] dark:text-white text-sm font-semibold hover:bg-[var(--theme-primary)]/15 transition">
             Ver interesses recebidos
           </a>
           {{/ifCond}}
+
+          {{#if avaliarOngUrl}}
+          <a href="{{avaliarOngUrl}}"
+            class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#6B8F71] hover:bg-[#2F3E34] text-white text-sm font-semibold transition shadow-sm">
+            Avaliar ONG
+          </a>
+          {{/if}}
 
           {{#unless lida}}
           <form method="POST" action="/notificacoes/{{id}}/lida">

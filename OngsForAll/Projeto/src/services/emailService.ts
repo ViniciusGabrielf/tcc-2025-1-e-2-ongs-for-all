@@ -21,6 +21,19 @@ export async function verificarConexaoEmail() {
 
 const FROM = `"OngsForAll" <${process.env.EMAIL_USER}>`;
 
+function getBaseUrl(): string {
+    const configuredUrl = process.env.APP_BASE_URL || process.env.PUBLIC_BASE_URL;
+    if (configuredUrl) return configuredUrl.replace(/\/$/, "");
+
+    if (process.env.NODE_ENV === "production") {
+        return "https://ongsforall.online";
+    }
+
+    const host = process.env.NODE_APP_HOST || "localhost";
+    const port = process.env.PORT || "3000";
+    return `http://${host}:${port}`;
+}
+
 export async function enviarConfirmacaoInteresseUsuario(params: {
     interesseId: number;
     emailUsuario: string;
@@ -166,6 +179,7 @@ export async function enviarNotificacaoInteresseOng(params: {
 
 export async function enviarConfirmacaoRecebimentoUsuario(params: {
     interesseId: number;
+    ongId: number;
     emailUsuario: string;
     nomeUsuario: string;
     nomeOng: string;
@@ -173,6 +187,7 @@ export async function enviarConfirmacaoRecebimentoUsuario(params: {
     quantidadeRecebida: number;
     observacaoRecebimento?: string | null;
 }) {
+    const avaliarOngUrl = `${getBaseUrl()}/ongs/${params.ongId}#avaliacoes`;
     const detalheObs = params.observacaoRecebimento
         ? `<tr><td style="padding:6px 0;color:#555;">Observação da ONG:</td><td style="padding:6px 0;">${params.observacaoRecebimento}</td></tr>`
         : "";
@@ -202,7 +217,13 @@ export async function enviarConfirmacaoRecebimentoUsuario(params: {
               <tr><td style="padding:6px 0;color:#555;">Quantidade recebida:</td><td style="padding:6px 0;font-weight:600;">${params.quantidadeRecebida}</td></tr>
               ${detalheObs}
             </table>
-            <p style="color:#444;">Sua generosidade faz diferença! Você pode continuar ajudando outras ONGs pela plataforma.</p>
+            <p style="color:#444;margin:0 0 20px;">Sua generosidade faz diferença! Que tal avaliar a ONG e contar como foi sua experiência?</p>
+            <p style="margin:0 0 24px;">
+              <a href="${avaliarOngUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:8px;">
+                Avaliar a ONG
+              </a>
+            </p>
+            <p style="color:#444;">Você também pode continuar ajudando outras ONGs pela plataforma.</p>
           </td>
         </tr>
         <tr>
