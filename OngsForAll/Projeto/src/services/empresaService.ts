@@ -5,6 +5,9 @@ import * as empresaRepo from "../repositories/empresaRepository";
 import * as marketplaceRepo from "../repositories/marketplaceRepository";
 import { formatCnpj, isValidCnpj, normalizeCnpj, validateAndLookupCnpj } from "./cnpjService";
 
+export const TERMOS_USO_VERSAO = "2026-05-29";
+const TERMOS_ACEITE_MSG = "Para criar sua conta, voce precisa aceitar os Termos de Uso e a Politica de Privacidade.";
+
 const PLANOS = {
   starter: {
     label: "Starter",
@@ -102,6 +105,10 @@ function normalizeText(value?: string): string | undefined {
   return trimmed ? trimmed : undefined;
 }
 
+function hasAcceptedTerms(value: unknown): boolean {
+  return value === "on" || value === "true" || value === "1";
+}
+
 type EmpresaCnpjStatus = {
   statusAtual: "validado" | "invalido";
   statusSolicitacao: "pendente" | "rejeitado" | null;
@@ -187,6 +194,10 @@ async function validarEmpresaPodeRealizarAtividades(
 }
 
 export async function cadastrarEmpresa(body: Record<string, string>) {
+  if (!hasAcceptedTerms(body.aceite_termos)) {
+    return { ok: false as const, error: TERMOS_ACEITE_MSG };
+  }
+
   const parsed = cadastroSchema.safeParse({
     nome_fantasia: normalizeText(body.nome_fantasia),
     razao_social: normalizeText(body.razao_social),
@@ -216,6 +227,7 @@ export async function cadastrarEmpresa(body: Record<string, string>) {
       razao_social: razaoSocial,
       cnpj: cnpjPersistido,
       senhaHash,
+      termosVersao: TERMOS_USO_VERSAO,
     });
 
     await empresaRepo.upsertEmpresaCnpjControle({

@@ -37,11 +37,12 @@ export async function createEmpresa(params: {
   descricao?: string;
   setor?: string;
   senhaHash: string;
+  termosVersao: string;
 }): Promise<number> {
   await ensureEmailVerificadoColumns();
   const [result]: any = await pool.query(
-    `INSERT INTO empresas (nome_fantasia, razao_social, email, cnpj, telefone, descricao, setor, senha, email_verificado)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+    `INSERT INTO empresas (nome_fantasia, razao_social, email, cnpj, telefone, descricao, setor, senha, email_verificado, termos_aceitos_em, termos_versao)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NOW(), ?)`,
     [
       params.nome_fantasia,
       params.razao_social ?? null,
@@ -51,6 +52,7 @@ export async function createEmpresa(params: {
       params.descricao ?? null,
       params.setor ?? null,
       params.senhaHash,
+      params.termosVersao,
     ]
   );
   return result.insertId as number;

@@ -4,6 +4,7 @@ import {
   registerUser,
   renderAuthLoginPage,
   renderAuthRegisterPage,
+  renderTermosUsoPage,
   loginUser,
   logoutUser,
   renderForgotPasswordPage,
@@ -33,6 +34,7 @@ export async function authRoutes(fastify: FastifyInstance) {
   fastify.get('/login', renderAuthLoginPage)
 
   fastify.get('/register', renderAuthRegisterPage)
+  fastify.get('/termos-de-uso', renderTermosUsoPage)
   fastify.post('/register-user', registerUser)
   fastify.post('/register-ong', registerONG)
 

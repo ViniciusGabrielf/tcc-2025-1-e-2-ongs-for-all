@@ -11,6 +11,9 @@ import * as emailService from "../services/emailService";
 import { validateAndLookupCnpj } from "../services/cnpjService";
 import { pool } from "../config/ds"; // ainda usado em registerUser/registerONG por enquanto (pode refatorar depois)
 
+const TERMOS_USO_VERSAO = "2026-05-29";
+const TERMOS_ACEITE_MSG = "Para criar sua conta, voce precisa aceitar os Termos de Uso e a Politica de Privacidade.";
+
 // =======================
 // Schemas (validaÃ§Ã£o)
 // =======================
@@ -61,6 +64,10 @@ function getDuplicateFieldMessage(error: any, fields: Record<string, string>, fa
   return fallback;
 }
 
+function hasAcceptedTerms(value: unknown): boolean {
+  return value === "on" || value === "true" || value === "1";
+}
+
 function renderRegisterUserError(reply: FastifyReply, error: string, form?: Record<string, string>) {
   const redirectTo = getSafeRedirectPath(form?.redirect);
   return reply.status(400).view(
@@ -107,12 +114,24 @@ export async function renderAuthRegisterPage(request: FastifyRequest, reply: Fas
   return reply.view("/templates/auth/register.hbs", { activeTab, redirectTo, loginUrl }, { layout: "layouts/authLayout" });
 }
 
+export async function renderTermosUsoPage(_request: FastifyRequest, reply: FastifyReply): Promise<void> {
+  return reply.view(
+    "/templates/auth/termos-uso.hbs",
+    { versaoTermos: TERMOS_USO_VERSAO },
+    { layout: "layouts/authLayout" }
+  );
+}
+
 // =======================
 // Cadastro (mantido com SQL direto por enquanto)
 // =======================
 export async function registerUser(request: FastifyRequest, reply: FastifyReply) {
   try {
     const rawBody = request.body as Record<string, string>;
+    if (!hasAcceptedTerms(rawBody.aceite_termos)) {
+      return renderRegisterUserError(reply, TERMOS_ACEITE_MSG, rawBody);
+    }
+
     const body = registerUserSchema.parse({
       nome: normalizeText(rawBody.nome),
       email: normalizeText(rawBody.email),
@@ -137,9 +156,9 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
 
     await ensureEmailVerificadoColumns();
     await pool.query(
-      `INSERT INTO usuarios (nome, email, senha, cpf, telefone, email_verificado)
-       VALUES (?, ?, ?, ?, ?, 0)`,
-      [body.nome, body.email, hashedPassword, body.cpf, body.telefone]
+      `INSERT INTO usuarios (nome, email, senha, cpf, telefone, email_verificado, termos_aceitos_em, termos_versao)
+       VALUES (?, ?, ?, ?, ?, 0, NOW(), ?)`,
+      [body.nome, body.email, hashedPassword, body.cpf, body.telefone, TERMOS_USO_VERSAO]
     );
 
     const codigo = await authService.gerarEEnviarCodigoVerificacao(body.email, body.nome, "usuario");
@@ -184,7 +203,12 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
       cnpj_ong: string;
       areadeatuacao: string;
       telefoneong: string;
+      aceite_termos?: string;
     };
+
+    if (!hasAcceptedTerms(body.aceite_termos)) {
+      return renderRegisterOngError(reply, TERMOS_ACEITE_MSG, body as any);
+    }
 
     const ong = ongSchema.parse({
       nome: normalizeText(body.nomeong),
@@ -220,9 +244,9 @@ export async function registerONG(request: FastifyRequest, reply: FastifyReply) 
 
     await ensureEmailVerificadoColumns();
     await pool.query(
-      `INSERT INTO ongs (nome, email, senha, cnpj, area_atuacao, telefone, email_verificado)
-       VALUES (?, ?, ?, ?, ?, ?, 0)`,
-      [ong.nome, ong.email, hashedPassword, cnpjValidation.cnpj, ong.area_atuacao, ong.telefone]
+      `INSERT INTO ongs (nome, email, senha, cnpj, area_atuacao, telefone, email_verificado, termos_aceitos_em, termos_versao)
+       VALUES (?, ?, ?, ?, ?, ?, 0, NOW(), ?)`,
+      [ong.nome, ong.email, hashedPassword, cnpjValidation.cnpj, ong.area_atuacao, ong.telefone, TERMOS_USO_VERSAO]
     );
 
     const codigo = await authService.gerarEEnviarCodigoVerificacao(ong.email, ong.nome, "ong");

@@ -52,6 +52,7 @@ export async function cadastrarEmpresa(request: FastifyRequest, reply: FastifyRe
     descricao: body.descricao,
     setor: body.setor,
     senha: body.senha,
+    aceite_termos: body.aceite_termos,
   });
 
   if (!result.ok) {
