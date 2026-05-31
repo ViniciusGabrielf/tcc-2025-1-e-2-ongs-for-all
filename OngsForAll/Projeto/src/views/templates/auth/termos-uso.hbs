@@ -1,7 +1,9 @@
 <div class="min-h-screen py-10 px-4">
   <div class="w-full max-w-4xl mx-auto bg-white dark:bg-[#102235] rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 p-6 sm:p-8">
     <div class="mb-8">
-      <a href="/register" class="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline mb-4">
+      <a href="/register"
+         onclick="if(history.length > 1){ history.back(); } else { window.close(); } return false;"
+         class="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline mb-4">
         Voltar ao cadastro
       </a>
       <h1 class="text-3xl font-bold text-[#2D4BA6] dark:text-white">Termos de Uso e Política de Privacidade</h1>
