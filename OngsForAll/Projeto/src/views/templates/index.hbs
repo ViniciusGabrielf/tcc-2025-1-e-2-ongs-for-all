@@ -239,35 +239,35 @@
 </section>
 
 <!-- Seção Contato com fundo claro -->
-<section id="contato" class="bg-transparent pt-16">
-  <div class="relative items-center w-full mx-auto max-w-7xl px-4 md:px-12 lg:px-16">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 py-10 lg:py-16">
+<section id="contato" class="bg-transparent pt-10 sm:pt-16">
+  <div class="relative w-full mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-16">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 py-8 sm:py-10 lg:py-16">
 
       <!-- SOBRE NÓS -->
-      <div class="text-left text-[#2D4BA6]">
-        <h2 class="text-4xl font-bold mb-4">Fale com a gente</h2>
-        <p class="mb-6 text-gray-600">
+      <div class="text-left text-[#2D4BA6] min-w-0">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Fale com a gente</h2>
+        <p class="mb-6 text-sm sm:text-base text-gray-600">
           Estamos aqui para tirar suas dúvidas e ouvir suas sugestões. Nossa equipe está pronta para ajudar ONGs e
           apoiadores a se conectarem da melhor forma possível.
         </p>
-        <ul class="space-y-4 text-gray-700">
-          <li class="flex items-center gap-3">
-            <box-icon name="map" color="#2D4BA6"></box-icon>
+        <ul class="contact-info-list space-y-4 text-gray-700">
+          <li class="flex items-start gap-3 min-w-0">
+            <box-icon name="map" color="#2D4BA6" class="shrink-0 mt-0.5"></box-icon>
             <span>Av. Eng. Eusébio Stevaux, 823 - Santo Amaro, São Paulo - SP, 04696-000</span>
           </li>
-          <li class="flex items-center gap-3">
-            <box-icon name="phone-call" color="#2D4BA6"></box-icon>
-            <span>(11) 99999-0000</span>
+          <li class="flex items-start gap-3 min-w-0">
+            <box-icon name="phone-call" color="#2D4BA6" class="shrink-0 mt-0.5"></box-icon>
+            <span class="min-w-0 break-words">(11) 99999-0000</span>
           </li>
-          <li class="flex items-center gap-3">
-            <box-icon name="envelope" color="#2D4BA6"></box-icon>
-            <span>ongsforall.notificacoes@gmail.com</span>
+          <li class="flex items-start gap-3 min-w-0">
+            <box-icon name="envelope" color="#2D4BA6" class="shrink-0 mt-0.5"></box-icon>
+            <span class="min-w-0 break-all sm:break-words">ongsforall.notificacoes@gmail.com</span>
           </li>
         </ul>
       </div>
 
       <!-- FORMULÁRIO -->
-      <form method="POST" action="/contato" class="space-y-4">
+      <form method="POST" action="/contato" class="space-y-4 min-w-0">
         <div class="relative">
           <box-icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2" color="#2D4BA6"></box-icon>
           <input type="text" name="nome" placeholder="Seu nome" required
@@ -286,9 +286,9 @@
             class="w-full pl-10 pr-4 pt-3 pb-2 bg-white text-gray-800 border border-gray-300 rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D4BA6]"></textarea>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <button type="submit"
-            class="bg-[#2D4BA6] text-white font-semibold px-6 py-3 rounded hover:bg-[#1e3a8a] transition-all duration-300">
+            class="w-full max-w-[calc(100%-4.75rem)] sm:w-auto sm:max-w-none bg-[#2D4BA6] text-white font-semibold px-6 py-3 rounded hover:bg-[#1e3a8a] transition-all duration-300">
             Enviar
           </button>
           {{#if contatoSucesso}}
