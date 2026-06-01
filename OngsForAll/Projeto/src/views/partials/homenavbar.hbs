@@ -1,5 +1,5 @@
 <header id="navbar"
-  class="fixed top-0 left-0 w-full z-50 bg-transparent text-[#1D3273] flex text-center justify-center transition-all duration-200 ease-in-out">
+  class="fixed top-0 left-0 w-full z-[100] bg-transparent text-[#1D3273] flex text-center justify-center transition-all duration-200 ease-in-out">
   <nav id="navIdent" class="flex flex-row justify-between mx-4 container h-20 items-center lg:max-w-5xl">
     <div>
       <h1 class="text-2xl font-extrabold"><a href="/sobre" class="flex items-center gap-2"><box-icon color="#1D3273"
@@ -23,9 +23,9 @@
     </div>
 
   </nav>
-  <div class="hidden md:hidden z-10" id="mobileMenu">
+  <div class="hidden md:hidden fixed top-20 left-0 right-0 z-[90]" id="mobileMenu">
     <ul
-      class="backdrop-blur-lg bg-white/80 text-base sm:text-xl text-[#1D3273] absolute top-20 pt-8 w-full left-0 min-h-fit flex flex-col gap-y-6 pb-8">
+      class="bg-white text-base sm:text-xl text-[#1D3273] w-full min-h-fit flex flex-col gap-y-6 pt-8 pb-8 shadow-xl border-t border-slate-100">
       <li><a href="/" class="block" onclick="closeMobileMenu()">Início</a></li>
       <li><a href="/sobre#sobre" class="block" onclick="closeMobileMenu()">Sobre</a></li>
       <li><a href="/apoiadores" class="block" onclick="closeMobileMenu()">Apoiadores</a></li>

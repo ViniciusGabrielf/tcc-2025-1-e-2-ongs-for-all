@@ -38,6 +38,11 @@ canvas {
   max-width: 100%;
 }
 
+.contact-info-list span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 body::-webkit-scrollbar {
   width: 12px; /* width of the entire scrollbar */
 }
