@@ -15,7 +15,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Jest](https://img.shields.io/badge/Jest-29-C21325?style=flat-square&logo=jest&logoColor=white)](https://jestjs.io)
 [![Cypress](https://img.shields.io/badge/Cypress-14-69D3A7?style=flat-square&logo=cypress&logoColor=white)](https://www.cypress.io)
-[![License: ISC](https://img.shields.io/badge/License-ISC-8B5CF6?style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-8B5CF6?style=flat-square)](LICENSE)
 
 <br/>
 
@@ -35,6 +35,7 @@
 | [🏗️ Arquitetura](#️-arquitetura) | [🗺️ Rotas da aplicação](#️-rotas-da-aplicação) |
 | [🔌 APIs e integrações](#-apis-e-integrações-externas) | [🧪 Testes](#-testes) |
 | [📁 Estrutura de pastas](#-estrutura-de-pastas) | [🤝 Contribuindo](#-contribuindo) |
+| [🚀 Deploy](#-deploy) | [📄 Licença](#-licença) |
 
 ---
 
@@ -522,6 +523,37 @@ Após rodar `npm test`, abra **`jest-stare/index.html`** para o relatório visua
 
 ---
 
+## 🚀 Deploy
+
+A aplicação está hospedada em um servidor **AWS EC2** com domínio próprio e HTTPS. O fluxo de deploy é o seguinte:
+
+```
+GitHub
+  ↓  push para a branch main
+Servidor AWS EC2
+  ↓  pull das alterações via SSH
+Aplicação Node.js / TypeScript
+  ↓  build (npm run build)
+PM2 mantém a aplicação rodando
+  ↓  reinicia automaticamente em caso de falha ou reinicialização do servidor
+Nginx recebe as requisições do domínio
+  ↓  proxy reverso para a porta 3000
+Nginx encaminha para a aplicação na porta 3000
+  ↓  HTTPS (certificado SSL via Let's Encrypt)
+Usuário acessa pelo domínio com HTTPS
+```
+
+### Componentes de infraestrutura
+
+| Componente | Função |
+|---|---|
+| **AWS EC2** | Servidor virtual onde a aplicação roda |
+| **PM2** | Gerenciador de processos — mantém a app ativa e reinicia automaticamente |
+| **Nginx** | Proxy reverso — recebe requisições HTTPS e repassa para a porta 3000 |
+| **Let's Encrypt** | Certificado SSL/TLS gratuito para HTTPS |
+
+---
+
 ## 🤝 Contribuindo
 
 ```bash
@@ -541,6 +573,34 @@ git push origin feature/minha-feature
 
 # 5. Abra um Pull Request
 ```
+
+---
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Licença MIT**.
+
+Isso permite que o código seja utilizado, estudado, copiado, modificado e distribuído, desde que o aviso de copyright e a licença sejam mantidos.
+
+```
+MIT License
+
+Copyright (c) 2026 Gustavo Da Cruz Nunes, Matheus Silva Agustinho, Vinicius Gabriel Fernandes da Silva.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+```
+
+Consulte o arquivo [LICENSE](LICENSE) para o texto completo.
 
 ---
 
