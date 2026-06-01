@@ -45,7 +45,7 @@
   {{#if destaques.length}}
   <div>
     <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-4">Em destaque</h3>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
       {{#each destaques}}
       <a href="/marketplace/{{id}}"
         class="group relative bg-white dark:bg-[#102235] border-2 border-violet-300 dark:border-violet-500/40 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition block">
@@ -92,7 +92,7 @@
     {{#if destaques.length}}
     <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-white/40 mb-4">Mais itens</h3>
     {{/if}}
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {{#each itens}}
       <a href="/marketplace/{{id}}"
         class="group bg-white dark:bg-[#102235] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition block">
