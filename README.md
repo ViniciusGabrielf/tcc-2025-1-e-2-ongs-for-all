@@ -606,9 +606,9 @@ Consulte o arquivo [LICENSE](LICENSE) para o texto completo.
 
 <div align="center">
 
-Desenvolvido com 💚 por
+Desenvolvido por
 
-**[Gustavo Da Cruz Nunes](https://github.com/gustavo)** · **[Matheus Silva Agustinho](https://github.com/matheus)** · **[Vinicius Gabriel Fernandes da Silva](https://github.com/vinicius)**
+**[Gustavo Da Cruz Nunes](https://github.com/GustavoCruzNunes)** · **[Matheus Silva Agustinho](https://github.com/TheusSilva1910)** · **[Vinicius Gabriel Fernandes da Silva](https://github.com/ViniciusGabrielf)**
 
 <br/>
 
